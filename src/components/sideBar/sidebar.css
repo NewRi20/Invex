@@ -1,7 +1,7 @@
 .sidebar {
   width: 180px;
-  background-color: #4A433C;
-  padding: 32px 0;
+  background-color: hsl(25, 9%, 25%);
+  padding: 20px 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -57,7 +57,7 @@
 }
 
 .nav-link.active {
-  color: var(--white);
+  color: var(--secondary-bg);
 }
 
 .nav-icon {

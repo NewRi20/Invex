@@ -51,7 +51,7 @@ const Sidebar = () => {
       </nav>
       <div className="sidebar-footer">
         <p className="sidebar-footer-text">
-          Developed by Invex Fronda
+          Developed by Irwen Fronda
         </p>
       </div>
     </div>
