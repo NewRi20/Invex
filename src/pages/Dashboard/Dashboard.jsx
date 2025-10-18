@@ -4,70 +4,6 @@ import { ArrowRight, PlusCircle } from 'lucide-react';
 import './Dashboard.css';
 
 const Dashboard = () => {
-  const statsCards = [
-    {
-      title: "Items with Price Update",
-      value: "10",
-      description: "Review price changes this week",
-      bgColor: "var(--card-bg)",
-      textColor: "var(--white)"
-    },
-    {
-      title: "New Items",
-      value: "100",
-      description: "Review new items this week",
-      bgColor: "var(--light-card-bg)",
-      textColor: "var(--text-dark)"
-    },
-    {
-      title: "All Items",
-      value: "30",
-      description: "Review all items this month",
-      bgColor: "var(--light-card-bg)",
-      textColor: "var(--text-dark)"
-    },
-    {
-      title: "Damaged Items",
-      value: "20",
-      description: "Review damaged items this week",
-      bgColor: "var(--light-card-bg)",
-      textColor: "var(--text-dark)"
-    }
-  ];
-
-  const salesCards = [
-    {
-      title: "Sales",
-      value: "5000 Php",
-      description: "Review sales this week",
-      bgColor: "var(--peach-bg)",
-      textColor: "var(--text-dark)"
-    },
-    {
-      title: "Revenue Growth",
-      value: "15%",
-      description: "Review revenue growth this week comparing last week",
-      bgColor: "var(--peach-bg)",
-      textColor: "var(--text-dark)"
-    }
-  ];
-
-  const lowStockCards = [
-    {
-      title: "Items with low sales",
-      value: "3",
-      description: "Review items with low sales this week",
-      bgColor: "var(--card-bg)",
-      textColor: "var(--white)"
-    },
-    {
-      title: "Low Stock Items",
-      value: "5",
-      description: "Review items with low stock this week",
-      bgColor: "var(--card-bg)",
-      textColor: "var(--white)"
-    }
-  ];
 
   const itemsList = [
     { name: "Item 1", quantity: "25" },
@@ -102,7 +38,7 @@ const Dashboard = () => {
             <p className='title'>Items with Price Update</p>
             <span className="arrowIcon"></span>
           </div>
-          <div><h3>10</h3></div>
+          <div><h3>100</h3></div>
           <p className='desc'>Review price changes this week</p>
         </div>
 
@@ -111,7 +47,7 @@ const Dashboard = () => {
             <p className='title'>Items with Price Update</p>
             <span className="arrowIcon"></span>
           </div>
-          <div><h3>10</h3></div>
+          <div><h3>30</h3></div>
           <p className='desc'>Review price changes this week</p>
         </div>
 
@@ -120,45 +56,61 @@ const Dashboard = () => {
             <p className='title'>Items with Price Update</p>
             <span className="arrowIcon"></span>
           </div>
-          <div><h3>10</h3></div>
+          <div><h3>20</h3></div>
           <p className='desc'>Review price changes this week</p>
         </div>
       </div>
 
       {/* Second Row - Sales Cards */}
-      {/* <div className="grid grid-2 mb-3">
-        {salesCards.map((card, index) => (
-          <div key={index} className="card dash-card bg-peach text-dark">
-            <div className="arrow-top-right">
-              <ArrowRight size={20} color="#333333" />
-            </div>
-            <h3 className="card-title-sm">{card.title}</h3>
-            <div className="card-value-lg">{card.value}</div>
-            <p className="card-desc-xs">{card.description}</p>
+      <div className='second-row'>
+        <div className='salesCard'>
+          <div className='title-section'>
+            <p className='title'>Sales</p>
+            <span className="arrowIcon"></span>
           </div>
-        ))}
-      </div> */}
+          <div><h3>5000 <span>Php</span></h3></div>
+          <p className='desc'>Review sales this week</p>
+        </div>
 
-      {/* Third Row - Low Stock and Items List */}
-      {/* <div className="grid grid-3">
-        {lowStockCards.map((card, index) => (
-          <div key={index} className={`card dash-card ${
-              card.bgColor === 'var(--card-bg)'
-                ? 'bg-card text-white'
-                : 'bg-light text-dark'
-            }`}>
-            <div className="arrow-top-right">
-              <ArrowRight size={20} color={card.textColor === 'var(--white)' ? '#FFFFFF' : '#333333'} />
-            </div>
-            <h3 className="card-title-sm">{card.title}</h3>
-            <div className="card-value-lg">{card.value}</div>
-            <p className="card-desc-xs">{card.description}</p>
+        <div className='revenueGrowthCard'>
+          <div className='title-section'>
+            <p className='title'>Revenue Growth</p>
+            <span className="arrowIcon"></span>
           </div>
-        ))}
+          <div><h3>15%</h3></div>
+          <p className='desc'>Review revenue growth this week comparing last week</p>
+        </div>
 
-        
-        <div className="card dash-card bg-card text-white"> 
-          <h3 className="card-title-sm">Items List</h3>
+      </div>
+
+      {/* Third Row */}
+      <div className='third-row'>
+        <div className='inner-container-lowCards'>
+          <div className='lowSalesCard'>
+            <div className='title-section'>
+              <p className='title'>Items with low sales</p>
+              <span className="arrowIcon"></span>
+            </div>
+            <div><h3>3</h3></div>
+            <p className='desc'>Review items with low sales this week</p>
+          </div>
+
+          <div className='lowStockCard'>
+            <div className='title-section'>
+              <p className='title'>Low stock items</p>
+              <span className="arrowIcon"></span>
+            </div>
+            <div><h3>3</h3></div>
+            <p className='desc'>Review items with low stock this week</p>
+          </div>
+        </div>
+
+        <div className="ItemsListCard">
+          <div className='itemListHeader'>
+            <h3 className="card-title">Items List</h3>
+            <h3 className='quantity'>Quantity</h3>
+          </div> 
+          
           <div className="items-list">
             {itemsList.map((item, index) => (
               <div key={index} className="item-row">
@@ -167,11 +119,13 @@ const Dashboard = () => {
               </div>
             ))}
           </div>
-          <div className="fab">
-            <PlusCircle size={24} color="var(--white)" fill="#FF6B6B" />
-          </div>
+          <button type="button" className="plusIconBtn" aria-label="Add new item">
+            <span className="plusIcon" />
+          </button>
+            
         </div>
-      </div> */}
+      </div>
+
     </Layout>
   );
 };
