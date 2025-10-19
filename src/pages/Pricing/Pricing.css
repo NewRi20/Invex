@@ -1,0 +1,141 @@
+.pricing-header {
+    display: flex;
+    background-color: var(--panel-bg);
+    color: var(--card-bg);
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 20px;
+}
+
+.pricing-title{
+  font-size: 20px;
+  font-weight: bold;
+}
+
+
+.section-title {
+  font-size: 16px;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.search-wrap {
+  display: flex;
+  
+  align-items: center;
+  margin-bottom: 20px;
+  border: 1px solid var(--primary-bg);
+  border-radius: 10px;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  margin: 5px 10px;
+}
+
+.search-icon {
+  height: 20px;
+  margin: 5px 5px;
+  color: var(--primary-bg);
+}
+
+.pricing-card {
+  background-color: var(--card-bg);
+  color: var(--primary-bg);
+  padding: 20px;
+  border-radius: 20px;
+  ;
+}
+
+
+.pricing-page {
+  display: grid;
+  grid-template-rows: auto 1fr; /* header + content */
+  gap: 20px;
+}
+
+.pricing-page .grid.grid-2 > * {
+  height: 100%;
+}
+
+.pricing-header-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  margin-bottom: 12px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+
+.pricing-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pricing-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding: 8px 0;
+  border-bottom: 1px solid #E0E0E0;
+}
+
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+.form-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  white-space: nowrap;
+  
+}
+
+.form-group-lg {
+  margin-bottom: 24px;
+}
+
+.label {
+  display: block;
+  font-weight: 500;
+}
+
+.readonly-field {
+  padding: 12px;
+  background-color: var(--input-bg);
+  border-radius: var(--border-radius);
+  font-size: 14px;
+}
+
+.inputNewPrice {
+  padding: 10px;
+  background-color: var(--input-bg);
+  border-radius: var(--border-radius);
+  font-size: 14px;
+  border: 0.5px solid var(--primary-bg);
+  margin-left: 5px;
+}
+
+.inputNewPrice:focus {
+  outline: none;
+  
+}
+
+.confirm-Btn {
+  padding: 10px 20px;
+  background-color: var(--peach-bg);
+  color: var(--text-dark);
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.confirm-Btn:hover {
+  background-color: var(--peach-bg-light);
+}
+
+
