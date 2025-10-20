@@ -24,7 +24,7 @@
   height: 300px;
   border-radius: 10px;
   border: 1px solid var(--primary-bg);
-  margin-bottom: 24px;
+  margin-bottom: 10px;
   padding: 10px;
   
   display: grid;
@@ -55,13 +55,16 @@
   flex: 1 1 0;
   margin-bottom: 0;
   border: none;
-  background-color: var(--tertiary-bg);
+  /* background-color: hsl(27, 9%, 85%); */
+  background-color: var(--card-bg);
+  border: 1px solid var(--primary-bg);
   padding: 8px 12px;
   border-radius: 8px;
   color: var(--primary-bg);
 }
 
 .reportsales-inputrow .reportsales-input::placeholder {
+  /* color: hsl(26, 9%, 55%); */
   color: var(--primary-bg);
   opacity: 0.5;
 }
@@ -167,8 +170,6 @@
 }
 
 /* Top Category List */
-.reportsales-topcatlist {
-}
 .reportsales-topcattitle {
   font-size: 18px;
   font-weight: bold;

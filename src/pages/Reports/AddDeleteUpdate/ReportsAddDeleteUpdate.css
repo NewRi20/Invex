@@ -1,0 +1,95 @@
+
+
+/* Add Item Section */
+.reportadu-additem {
+  background-color: var(--light-card-bg);
+  color: var(--text-dark);
+}
+
+.reportadu-additem-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.reportadu-additem-inputs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.reportadu-additem-inputs .input {
+  margin-bottom: 0;
+}
+
+.reportadu-additem-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.reportadu-additem-btn {
+  background-color: var(--peach-bg);
+  color: var(--text-dark);
+}
+
+.reportadu-additem-btn:hover {
+  background-color: var(--peach-bg-light);
+}
+
+/* Item List Section */
+.reportadu-itemlist {
+  background-color: var(--light-card-bg);
+  color: var(--text-dark);
+}
+
+.reportadu-itemlist-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* Search Bar */
+.reportadu-searchwrap {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.reportadu-search {
+  padding-right: 40px;
+}
+
+.reportadu-search-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+}
+
+/* Item Table */
+.reportadu-tablewrap {
+  background-color: var(--white);
+  border-radius: var(--border-radius);
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Action Buttons */
+.reportadu-actions {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.reportadu-action-btn {
+  background-color: var(--peach-bg);
+  color: var(--text-dark);
+  font-size: 10px;
+  padding: 4px 6px;
+}
+
+.reportadu-action-btn:hover {
+  background-color: var(--peach-bg-light);
+}

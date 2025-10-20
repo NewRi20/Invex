@@ -1,6 +1,6 @@
 import { Search } from 'lucide-react';
 import React from 'react';
-
+import './ReportsAddDeleteUpdate.css';
 
 const ReportsAddDeleteUpdate = () => {
   const itemData = [
@@ -22,122 +22,54 @@ const ReportsAddDeleteUpdate = () => {
 
   return (
     <>
-      {/* Section Header */}
-      <div 
-        className="card mb-3"
-        style={{ 
-          backgroundColor: "var(--card-bg)", 
-          color: "var(--white)",
-          textAlign: "center"
-        }}
-      >
-        <h2 style={{ fontSize: "18px", fontWeight: "bold" }}>Reports</h2>
-      </div>
-
       {/* Add Item Section */}
-      <div 
-        className="card mb-3"
-        style={{ 
-          backgroundColor: "var(--light-card-bg)", 
-          color: "var(--text-dark)"
-        }}
-      >
-        <h3 style={{ 
-          fontSize: "18px", 
-          fontWeight: "bold", 
-          marginBottom: "20px" 
-        }}>
-          Add Item
-        </h3>
+      <div className="card mb-3 reportadu-additem">
+        <h3 className="reportadu-additem-title">Add Item</h3>
 
-        <div className="grid grid-3 mb-3">
+        <div className="reportadu-additem-inputs">
           <input
             type="text"
             placeholder="Name"
             className="input"
-            style={{ marginBottom: "0" }}
           />
           <input
             type="text"
             placeholder="Category"
             className="input"
-            style={{ marginBottom: "0" }}
           />
           <input
             type="text"
             placeholder="Quantity"
             className="input"
-            style={{ marginBottom: "0" }}
           />
         </div>
 
-        <div className="flex-end gap-2">
-          <button 
-            className="btn btn-small"
-            style={{ 
-              backgroundColor: "var(--peach-bg)", 
-              color: "var(--text-dark)"
-            }}
-          >
+        <div className="reportadu-additem-buttons">
+          <button className="btn btn-small reportadu-additem-btn">
             Save
           </button>
-          <button 
-            className="btn btn-small"
-            style={{ 
-              backgroundColor: "var(--peach-bg)", 
-              color: "var(--text-dark)"
-            }}
-          >
+          <button className="btn btn-small reportadu-additem-btn">
             Clear
           </button>
         </div>
       </div>
 
       {/* Item List Section */}
-      <div 
-        className="card"
-        style={{ 
-          backgroundColor: "var(--light-card-bg)", 
-          color: "var(--text-dark)"
-        }}
-      >
-        <h3 style={{ 
-          fontSize: "18px", 
-          fontWeight: "bold", 
-          marginBottom: "20px" 
-        }}>
-          Item List
-        </h3>
+      <div className="card reportadu-itemlist">
+        <h3 className="reportadu-itemlist-title">Item List</h3>
 
         {/* Search Bar */}
-        <div style={{ position: "relative", marginBottom: "20px" }}>
+        <div className="reportadu-searchwrap">
           <input
             type="text"
             placeholder="Search"
-            className="input"
-            style={{ paddingRight: "40px" }}
+            className="input reportadu-search"
           />
-          <Search 
-            size={20} 
-            style={{ 
-              position: "absolute", 
-              right: "12px", 
-              top: "50%", 
-              transform: "translateY(-50%)",
-              color: "var(--text-muted)"
-            }} 
-          />
+          <Search size={20} className="reportadu-search-icon" />
         </div>
 
         {/* Item Table */}
-        <div 
-          style={{ 
-            backgroundColor: "var(--white)", 
-            borderRadius: "var(--border-radius)",
-            padding: "0",
-            overflow: "hidden"
-          }}
-        >
+        <div className="reportadu-tablewrap">
           <table className="table">
             <thead>
               <tr>
@@ -158,49 +90,17 @@ const ReportsAddDeleteUpdate = () => {
                   <td>{item.stock}</td>
                   <td>{item.lastModified}</td>
                   <td>
-                    <div style={{ display: "flex", gap: "4px", flexWrap: "wrap" }}>
-                      <button 
-                        className="btn btn-small"
-                        style={{ 
-                          backgroundColor: "var(--peach-bg)", 
-                          color: "var(--text-dark)",
-                          fontSize: "10px",
-                          padding: "4px 6px"
-                        }}
-                      >
+                    <div className="reportadu-actions">
+                      <button className="btn btn-small reportadu-action-btn">
                         Change Category
                       </button>
-                      <button 
-                        className="btn btn-small"
-                        style={{ 
-                          backgroundColor: "var(--peach-bg)", 
-                          color: "var(--text-dark)",
-                          fontSize: "10px",
-                          padding: "4px 6px"
-                        }}
-                      >
+                      <button className="btn btn-small reportadu-action-btn">
                         Rename
                       </button>
-                      <button 
-                        className="btn btn-small"
-                        style={{ 
-                          backgroundColor: "var(--peach-bg)", 
-                          color: "var(--text-dark)",
-                          fontSize: "10px",
-                          padding: "4px 6px"
-                        }}
-                      >
+                      <button className="btn btn-small reportadu-action-btn">
                         Delete
                       </button>
-                      <button 
-                        className="btn btn-small"
-                        style={{ 
-                          backgroundColor: "var(--peach-bg)", 
-                          color: "var(--text-dark)",
-                          fontSize: "10px",
-                          padding: "4px 6px"
-                        }}
-                      >
+                      <button className="btn btn-small reportadu-action-btn">
                         View
                       </button>
                     </div>

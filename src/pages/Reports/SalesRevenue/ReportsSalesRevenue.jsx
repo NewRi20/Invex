@@ -54,12 +54,12 @@ const ReportsSalesRevenue = () => {
         <div className="reportsales-inputrow">
           <input
             type="text"
-            placeholder="Item name"
+            placeholder="Input item name"
             className="input reportsales-input"
           />
           <input
             type="text"
-            placeholder="Quantity"
+            placeholder="Input item quantity"
             className="input reportsales-input"
           />
           <button className="btn btn-secondary reportsales-btn">Sold</button>
