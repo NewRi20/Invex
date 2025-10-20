@@ -7,8 +7,8 @@
   border-radius: 12px;
   padding: 24px;
 }
-.reportsales-heading {
-  font-size: 24px;
+.reportsales-heading{
+  font-size: 20px;
   font-weight: bold;
   margin-bottom: 8px;
 }
@@ -25,24 +25,54 @@
   border-radius: 10px;
   border: 1px solid var(--primary-bg);
   margin-bottom: 24px;
+  padding: 10px;
+  
   display: grid;
-  align-items: center;
-  justify-content: flex-start;
+  grid-template-columns: 1fr, 2fr, 1fr;
+  text-align: left;
   color: var(--primary-bg);
+}
+
+.reportsales-display td {
+  
+  text-align: left;
+}
+
+.reportsales-display tr {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  align-items: center;
+  margin: 8px;
 }
 
 /* Input Row */
 .reportsales-inputrow {
   display: flex;
   gap: 12px;
-  margin-bottom: 24px;
+  margin-bottom: 30px;
 }
-.reportsales-input {
+.reportsales-inputrow .reportsales-input {
   flex: 1 1 0;
   margin-bottom: 0;
+  border: none;
+  background-color: var(--tertiary-bg);
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: var(--primary-bg);
 }
-.reportsales-btn {
+
+.reportsales-inputrow .reportsales-input::placeholder {
+  color: var(--primary-bg);
+  opacity: 0.5;
+}
+
+.reportsales-inputrow .reportsales-btn {
+  background-color: var(--peach-bg);
   min-width: 60px;
+}
+
+.reportsales-inputrow .reportsales-btn:hover {
+  background-color: var(--peach-bg-light);
 }
 
 /* Summary Cards */
@@ -50,6 +80,7 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 16px;
+  margin-top: 10px;
   margin-bottom: 24px;
 }
 .reportsales-summarycard {
@@ -75,22 +106,45 @@
 
 /* Dropdown */
 .reportsales-dropdownwrap {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 24px;
+  position: relative;
+  display: inline-block;
+  margin-top: 20px;
+  margin-bottom: 10px;
 }
+
 .reportsales-dropdown {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 12px;
-  background-color: var(--light-card-bg);
-  border-radius: var(--border-radius);
-  cursor: pointer;
-}
-.reportsales-dropdownlabel {
-  color: var(--text-dark);
   font-size: 14px;
+  padding: 8px 40px 8px 12px;
+  background-color: var(--peach-bg);
+  border-radius: 10px;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  color: var(--primary-bg);
+}
+
+
+.reportsales-dropdown-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.reportsales-dropdownlabel {
+  color: var(--primary-bg);
+  padding: 8px 12px;
+  font-size: 12px;
+  border: none;
+  outline: none;
+  margin-top: 5px;
 }
 
 /* Top Item List */

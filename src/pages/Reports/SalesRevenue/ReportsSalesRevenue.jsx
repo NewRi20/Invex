@@ -16,6 +16,11 @@ const ReportsSalesRevenue = () => {
     { rank: 1, name: "Category Name", unitSold: "Unit Sold", revenue: "Revenue" }
   ];
 
+  const soldItems = [
+    { code: "0001", name: "4 Blades Clip Fan", unitSold: "10" },
+    { code: "0002", name: "Big 4 Blades Clip Fan", unitSold: "5" }
+  ];
+
   return (
     <>
       <div className="card reportsales-main">
@@ -33,7 +38,13 @@ const ReportsSalesRevenue = () => {
               </tr>
             </thead>
             <tbody>
-              {/* Map through your data here */}
+              {soldItems.map((item, index) => (
+                <tr key={index}>
+                  <td>{item.code}</td>
+                  <td>{item.name}</td>
+                  <td>{item.unitSold}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
           
@@ -43,7 +54,7 @@ const ReportsSalesRevenue = () => {
         <div className="reportsales-inputrow">
           <input
             type="text"
-            placeholder="Item code"
+            placeholder="Item name"
             className="input reportsales-input"
           />
           <input
@@ -54,7 +65,19 @@ const ReportsSalesRevenue = () => {
           <button className="btn btn-secondary reportsales-btn">Sold</button>
         </div>
 
-        {/* Summary Cards */}
+        
+        {/* Dropdown */}
+        <div className="reportsales-dropdownwrap">
+          <select className="reportsales-dropdown" id='selectTimeInterval'>
+            <option className="reportsales-dropdownlabel">Month</option>  
+            <option className="reportsales-dropdownlabel">Week</option>
+            <option className="reportsales-dropdownlabel">Day</option>
+          </select>
+          <ChevronDown className="reportsales-dropdown-icon" size={16} color="var(--primary-bg)" />
+        </div>
+        
+
+        {/* Summary Cards */} 
         <div className="reportsales-summarycards">
           <div className="card reportsales-summarycard">
             <div className="reportsales-summaryrow">
@@ -67,19 +90,13 @@ const ReportsSalesRevenue = () => {
           <div className="card reportsales-summarycard">
             <div className="reportsales-summaryrow">
               <div className="reportsales-summarynum">2500</div>
-              <TrendingUp size={20} color="#00FF00" />
+              <ChevronDown size={20} color="#ff3700ff" />
             </div>
             <div className="reportsales-summarylabel">Total Revenue</div>
           </div>
         </div>
 
-        {/* Dropdown */}
-        <div className="reportsales-dropdownwrap">
-          <div className="reportsales-dropdown">
-            <span className="reportsales-dropdownlabel">Month</span>
-            <ChevronDown size={16} color="var(--text-dark)" />
-          </div>
-        </div>
+      
 
         {/* Top Item List */}
         <div className="reportsales-topitemlist">
