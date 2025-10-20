@@ -63,7 +63,6 @@
   flex: 1 1 0;
   margin-bottom: 0;
   border: none;
-  /* background-color: hsl(27, 9%, 85%); */
   background-color: var(--card-bg);
   border: 1px solid var(--primary-bg);
   padding: 8px 12px;
@@ -72,7 +71,6 @@
 }
 
 .reportsales-inputrow .reportsales-input::placeholder {
-  /* color: hsl(26, 9%, 55%); */
   color: var(--primary-bg);
   opacity: 0.5;
 }
@@ -85,6 +83,7 @@
 .reportsales-inputrow .reportsales-btn:hover {
   background-color: var(--peach-bg-light);
 }
+
 
 /* Summary Cards */
 .reportsales-summarycards {
@@ -163,11 +162,15 @@
   margin-bottom: 24px;
 }
 .reportsales-topitemtitle {
-  font-size: 18px;
+  color: var(--primary-bg);
+  background-color: var(--panel-bg);
+  padding: 20px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+  font-size: 1.2rem;
   font-weight: bold;
-  margin-bottom: 12px;
-  color: var(--white);
 }
+
 .reportsales-topitemtablewrap {
   background-color: var(--white);
   border-radius: var(--border-radius);
@@ -179,10 +182,13 @@
 
 /* Top Category List */
 .reportsales-topcattitle {
-  font-size: 18px;
+  color: var(--primary-bg);
+  background-color: var(--panel-bg);
+  padding: 20px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+  font-size: 1.2rem;
   font-weight: bold;
-  margin-bottom: 12px;
-  color: var(--white);
 }
 .reportsales-topcattablewrap {
   background-color: var(--white);
