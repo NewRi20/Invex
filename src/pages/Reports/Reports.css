@@ -41,6 +41,11 @@
   cursor: default;
 }
 
+.report-card.active {
+  background-color: var(--primary-bg);
+  color: var(--primary-bg-dark);
+}
+
 .report-card-title {
   font-size: 18px;
   margin-bottom: 8px;

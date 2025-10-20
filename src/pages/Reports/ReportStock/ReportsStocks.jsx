@@ -50,8 +50,8 @@ const ReportsStocks = () => {
                   <td>{item.currentStock}</td>
                   <td>
                     <div className="reportstocks-actioninputs">
-                      <input type="text" placeholder="Enter current Stock" className="reportstocks-input" />
-                      <input type="text" placeholder="Enter current amount" className="reportstocks-input" />
+                      <input type="text" placeholder="Enter number to add" className="reportstocks-input" />
+                      <input type="text" placeholder="Enter number to deduct" className="reportstocks-input" />
                     </div>
                   </td>
                   <td>

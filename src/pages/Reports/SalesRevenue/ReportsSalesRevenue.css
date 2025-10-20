@@ -1,0 +1,131 @@
+
+
+/* Main Card */
+.reportsales-main {
+  background-color: var(--card-bg);
+  color: var(--primary-bg);
+  border-radius: 12px;
+  padding: 24px;
+}
+.reportsales-heading {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+.reportsales-desc {
+  font-size: 16px;
+  margin-bottom: 24px;
+  opacity: 0.8;
+}
+
+/* Display Area */
+.reportsales-display {
+  background-color: var(--card-bg);
+  height: 300px;
+  border-radius: 10px;
+  border: 1px solid var(--primary-bg);
+  margin-bottom: 24px;
+  display: grid;
+  align-items: center;
+  justify-content: flex-start;
+  color: var(--primary-bg);
+}
+
+/* Input Row */
+.reportsales-inputrow {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.reportsales-input {
+  flex: 1 1 0;
+  margin-bottom: 0;
+}
+.reportsales-btn {
+  min-width: 60px;
+}
+
+/* Summary Cards */
+.reportsales-summarycards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.reportsales-summarycard {
+  background-color: var(--light-card-bg);
+  color: var(--text-dark);
+  margin-bottom: 0;
+  border-radius: 8px;
+  padding: 16px;
+}
+.reportsales-summaryrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.reportsales-summarynum {
+  font-size: 32px;
+  font-weight: bold;
+}
+.reportsales-summarylabel {
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+/* Dropdown */
+.reportsales-dropdownwrap {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 24px;
+}
+.reportsales-dropdown {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: var(--light-card-bg);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+}
+.reportsales-dropdownlabel {
+  color: var(--text-dark);
+  font-size: 14px;
+}
+
+/* Top Item List */
+.reportsales-topitemlist {
+  margin-bottom: 24px;
+}
+.reportsales-topitemtitle {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 12px;
+  color: var(--white);
+}
+.reportsales-topitemtablewrap {
+  background-color: var(--white);
+  border-radius: var(--border-radius);
+  padding: 16px;
+}
+.reportsales-topitemtable {
+  margin-bottom: 0;
+}
+
+/* Top Category List */
+.reportsales-topcatlist {
+}
+.reportsales-topcattitle {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 12px;
+  color: var(--white);
+}
+.reportsales-topcattablewrap {
+  background-color: var(--white);
+  border-radius: var(--border-radius);
+  padding: 16px;
+}
+.reportsales-topcattable {
+  margin-bottom: 0;
+}

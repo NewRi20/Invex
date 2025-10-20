@@ -105,25 +105,29 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="ItemsListCard">
-          <div className='itemListHeader'>
-            <h3 className="card-title">Items List</h3>
-            <h3 className='quantity'>Quantity</h3>
-          </div> 
-          
-          <div className="items-list">
+        <table className="ItemsListCard">
+          <thead className='itemListHeader'>
+            <tr>
+              <th className="card-title">Items List</th>
+              <th className='quantity'>Quantity</th>
+            </tr>
+          </thead>
+
+          <tbody>
             {itemsList.map((item, index) => (
-              <div key={index} className="item-row">
-                <span>{item.name}</span>
-                <span>{item.quantity}</span>
-              </div>
+              <tr key={index} className="item-row">
+                <td>{item.name}</td>
+                <td>{item.quantity}</td>
+              </tr>
             ))}
-          </div>
+          </tbody>
+
+
           <button type="button" className="plusIconBtn" aria-label="Add new item">
             <span className="plusIcon" />
           </button>
-            
-        </div>
+        
+        </table>
       </div>
 
     </Layout>
