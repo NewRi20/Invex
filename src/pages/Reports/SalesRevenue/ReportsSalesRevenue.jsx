@@ -1,5 +1,5 @@
-import Layout from '../components/Layout';
 import { Search, TrendingUp, ChevronDown } from 'lucide-react';
+import React from 'react';
 
 const ReportsSalesRevenue = () => {
   const topItems = [
@@ -15,7 +15,7 @@ const ReportsSalesRevenue = () => {
   ];
 
   return (
-    <Layout title="Reports - Sales&Revenue">
+    <>
       {/* Section Header */}
       <div 
         className="card mb-3"
@@ -206,7 +206,7 @@ const ReportsSalesRevenue = () => {
           </div>
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 

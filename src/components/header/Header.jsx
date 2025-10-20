@@ -6,7 +6,7 @@ const Header = ({ title }) => {
   return (
     <header className="header">
       <h1 className="header-title">{title}</h1>
-      <span class="profileIcon"></span>
+      <span className="profileIcon"></span>
     </header>
   );
 };

@@ -1,0 +1,136 @@
+
+.reportstocks-main{
+    padding: 20px;
+    background-color: var(--card-bg);
+    color: var(--primary-bg);
+    border-radius: 20px;
+}
+
+.reportstocks-header {
+    display: flex;
+    align-items: center;
+    background-color: var(--panel-bg);
+    color: var(--primary-bg);
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 20px;
+    
+}
+
+.reportstocks-header h2{
+    font-size: 1.2rem;
+    white-space: nowrap;
+}
+
+.reportstocks-searchbar{
+    display: flex;
+    
+    align-items: center;
+    margin-bottom: 20px;
+    border: 1px solid var(--primary-bg);
+    outline: none;
+    border-radius: 10px;
+    margin: 0 0 0 20px;
+    
+}
+
+.reportstocks-searchbar .searchinput{
+    padding: 5px;
+    border: none;
+    outline: none;
+    background-color: transparent;
+    margin: 5px;
+}
+
+
+
+.reportstocks-searchbar .searchicon{
+    height: 20px;
+    margin: 5px;
+    color: var(--primary-bg);
+}
+
+.reportstocks-heading {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.reportstocks-tablewrap {
+    background-color: var(--white);
+    border-radius: var(--border-radius);
+    padding: 0;
+    overflow: hidden;
+}
+
+.reportstocks-actioninputs {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.reportstocks-input {
+    padding: 6px 8px;
+    border: 1px solid #E0E0E0;
+    border-radius: 4px;
+    font-size: 12px;
+    width: 120px;
+    flex: 1 1 100px;
+    min-width: 100px;
+}
+
+.reportstocks-input:focus {
+    outline: none;
+    border-color: var(--primary-bg);
+}
+
+.reportstocks-actionrow {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.reportstocks-date {
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.reportstocks-actionbtns {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.reportstocks-btn {
+    background-color: var(--peach-bg);
+    color: var(--text-dark);
+    padding: 4px 8px;
+    font-size: 10px;
+    white-space: nowrap;
+}
+
+.reportstocks-btn:hover {
+    background-color: var(--peach-bg-light);
+}
+
+.reportstocks-title {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.searchinput{
+    margin: 0;
+    border: none;
+    padding: 10px;
+    border-radius: 15px;
+}
+
+.searchinput:focus{
+    outline: none;
+}
+
+.searchicon{
+    margin-left: -30px;
+}

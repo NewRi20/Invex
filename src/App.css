@@ -22,6 +22,7 @@ body {
 /* Color Palette Variables */
 :root {
   --primary-bg: hsl(25, 9%, 25%);
+  --primary-bg-light: hsl(25, 9%, 35%);
   --secondary-bg: hsl(21, 6%, 51%);
   --tertiary-bg: hsl(38, 8%, 72%);
   --card-bg: hsl(50, 21%, 95%);

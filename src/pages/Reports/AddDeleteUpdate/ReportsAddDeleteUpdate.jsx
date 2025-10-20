@@ -1,5 +1,6 @@
-import Layout from '../components/Layout';
 import { Search } from 'lucide-react';
+import React from 'react';
+
 
 const ReportsAddDeleteUpdate = () => {
   const itemData = [
@@ -20,7 +21,7 @@ const ReportsAddDeleteUpdate = () => {
   ];
 
   return (
-    <Layout title="Reports - AddDeleteUpdate">
+    <>
       {/* Section Header */}
       <div 
         className="card mb-3"
@@ -210,7 +211,7 @@ const ReportsAddDeleteUpdate = () => {
           </table>
         </div>
       </div>
-    </Layout>
+    </>
   );
 };
 
