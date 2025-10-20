@@ -4,17 +4,25 @@
 .reportsales-main {
   background-color: var(--card-bg);
   color: var(--primary-bg);
-  border-radius: 12px;
-  padding: 24px;
+  border-radius: 20px;
+  padding: 20px;
+}
+
+.reportsales-header{
+  display: flex;
+  flex-direction: column;
+  background-color: var(--panel-bg);
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 20px;
 }
 .reportsales-heading{
   font-size: 20px;
   font-weight: bold;
-  margin-bottom: 8px;
+  margin-bottom: 5px;
 }
 .reportsales-desc {
   font-size: 16px;
-  margin-bottom: 24px;
   opacity: 0.8;
 }
 

@@ -2,25 +2,40 @@
 
 /* Add Item Section */
 .reportadu-additem {
-  background-color: var(--light-card-bg);
-  color: var(--text-dark);
+  background-color: var(--card-bg);
+  color: var(--primary-bg);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 20px;
 }
 
+
 .reportadu-additem-title {
+  background-color: var(--panel-bg);
   font-size: 18px;
   font-weight: bold;
+  padding: 20px;
+  border-radius: 20px;
   margin-bottom: 20px;
+  font-size: 1.2rem;
+  white-space: nowrap;
 }
 
 .reportadu-additem-inputs {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .reportadu-additem-inputs .input {
   margin-bottom: 0;
+  border: 1px solid var(--primary-bg);
+}
+
+.reportadu-additem-inputs .input::placeholder {
+  color: var(--primary-bg-light);
+  opacity: 0.5;
 }
 
 .reportadu-additem-buttons {
@@ -40,33 +55,59 @@
 
 /* Item List Section */
 .reportadu-itemlist {
-  background-color: var(--light-card-bg);
-  color: var(--text-dark);
+  background-color: var(--card-bg);
+  color: var(--primary-bg);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 20px;
 }
 
 .reportadu-itemlist-title {
   font-size: 18px;
   font-weight: bold;
+  
+}
+
+.reportadu-itemlist-header {
+  display: flex;
+  align-items: center;
+  
+  background-color: var(--panel-bg);
+  font-size: 18px;
+  font-weight: bold;
+  padding: 20px;
+  border-radius: 20px;
   margin-bottom: 20px;
+  font-size: 1.2rem;
+
 }
 
 /* Search Bar */
 .reportadu-searchwrap {
-  position: relative;
-  margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    border: 1px solid var(--primary-bg);
+    outline: none;
+    border-radius: 10px;
+    margin: 0 0 0 20px;
 }
 
 .reportadu-search {
-  padding-right: 40px;
+    padding: 5px;
+    border: none;
+    outline: none;
+    background-color: transparent;
+    margin: 5px;
 }
 
 .reportadu-search-icon {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-muted);
+    height: 20px;
+    margin: 5px;
+    color: var(--primary-bg);
 }
+
+
 
 /* Item Table */
 .reportadu-tablewrap {
@@ -85,7 +126,7 @@
 
 .reportadu-action-btn {
   background-color: var(--peach-bg);
-  color: var(--text-dark);
+  color: var(--primary-bg);
   font-size: 10px;
   padding: 4px 6px;
 }

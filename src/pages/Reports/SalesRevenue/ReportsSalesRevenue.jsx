@@ -23,9 +23,12 @@ const ReportsSalesRevenue = () => {
 
   return (
     <>
-      <div className="card reportsales-main">
-        <h2 className="reportsales-heading">Sales & Revenue</h2>
-        <p className="reportsales-desc">Sales Daily Report</p>
+      <div className="reportsales-main">
+        <div className="reportsales-header">
+          <h2 className="reportsales-heading">Sales & Revenue</h2>
+          <p className="reportsales-desc">Sales Daily Report</p>
+        </div>
+        
 
         {/* Report Display Area */}
         <div className="reportsales-display">

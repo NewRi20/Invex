@@ -23,7 +23,7 @@ const ReportsAddDeleteUpdate = () => {
   return (
     <>
       {/* Add Item Section */}
-      <div className="card mb-3 reportadu-additem">
+      <div className="reportadu-additem">
         <h3 className="reportadu-additem-title">Add Item</h3>
 
         <div className="reportadu-additem-inputs">
@@ -55,17 +55,19 @@ const ReportsAddDeleteUpdate = () => {
       </div>
 
       {/* Item List Section */}
-      <div className="card reportadu-itemlist">
-        <h3 className="reportadu-itemlist-title">Item List</h3>
+      <div className="reportadu-itemlist">
+        <div className="reportadu-itemlist-header">
+          <h3 className="reportadu-itemlist-title">Item List</h3>
 
-        {/* Search Bar */}
-        <div className="reportadu-searchwrap">
-          <input
-            type="text"
-            placeholder="Search"
-            className="input reportadu-search"
-          />
-          <Search size={20} className="reportadu-search-icon" />
+          {/* Search Bar */}
+          <div className="reportadu-searchwrap">
+            <input
+              type="text"
+              placeholder="Search"
+              className="reportadu-search"
+            />
+            <Search size={20} className="reportadu-search-icon" />
+          </div>
         </div>
 
         {/* Item Table */}
@@ -101,7 +103,7 @@ const ReportsAddDeleteUpdate = () => {
                         Delete
                       </button>
                       <button className="btn btn-small reportadu-action-btn">
-                        View
+                        Save
                       </button>
                     </div>
                   </td>
