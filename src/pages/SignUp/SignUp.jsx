@@ -5,18 +5,12 @@ import './SignUp.css';
 
 const SignUp = () => {
   return (
-    <div className="auth-page signup-page">
-      {/* Header */}
-      <div className="auth-header">
-        <h1 className="auth-header-title">sign up</h1>
-        <div className="auth-header-icon">
-          <User size={20} />
-        </div>
-      </div>
+    <div className="signup-page">
 
       {/* Main Content */}
       <div className="auth-main">
-        <div className="auth-card signup-card">
+
+        <div className="signup-card">
           <h2 className="auth-title">Sign Up</h2>
           <p className="auth-subtitle signup-subtitle">Please enter your information to create an account</p>
 
@@ -43,7 +37,7 @@ const SignUp = () => {
               <input
                 type="date"
                 placeholder="Birthday"
-                className="input"
+                className="input-date"
               />
             </div>
 
@@ -60,9 +54,17 @@ const SignUp = () => {
               />
             </div>
 
+            <div className='homeAddressContainer'>
+              <input
+                type="text"
+                placeholder="Home Address"
+                className="input"
+              />
+            </div>              
+
             <button 
               type="submit"
-              className="btn auth-submit"
+              className="auth-submit"
             >
               Sign Up
             </button>
@@ -82,14 +84,6 @@ const SignUp = () => {
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="auth-footer">
-        <p className="auth-footer-text">Developed by Ines Franda</p>
-        <div className="auth-socials">
-          <Linkedin size={16} color="var(--text-dark)" />
-          <Facebook size={16} color="var(--text-dark)" />
-        </div>
-      </div>
     </div>
   );
 };

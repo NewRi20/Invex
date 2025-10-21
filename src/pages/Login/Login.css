@@ -7,21 +7,6 @@
 	flex-direction: column;
 }
 
-
-.auth-main .auth-card .auth-title {
-	color: var(--primary-bg);
-	font-size: 28px;
-	font-weight: bold;
-}
-
-.auth-main .auth-card .auth-subtitle {
-    font-size: 16px;
-    color: var(--primary-bg);
-    text-align: center;
-    margin-bottom: 32px;
-}
-
-
 .login-page .auth-main {
 	flex: 1;
 	display: flex;
@@ -30,28 +15,26 @@
 	padding: 40px 20px;
 }
 
-.auth-main .auth-card {
+.login-page .auth-card {
 	border-radius: 12px;
 	padding: 40px;
 	width: 100%;
 	max-width: 400px;
 	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    background-color: var(--peach-bg);
+	background-color: var(--peach-bg);
 }
-
-
 
 .login-page .auth-title {
 	font-size: 28px;
 	font-weight: bold;
-	color: var(--text-dark);
+	color: var(--primary-bg);
 	text-align: center;
 	margin-bottom: 8px;
 }
 
 .login-page .auth-subtitle {
 	font-size: 16px;
-	color: var(--text-dark);
+	color: var(--primary-bg);
 	text-align: center;
 	margin-bottom: 32px;
 }
@@ -90,9 +73,9 @@
 
 .login-page .auth-submit {
 	width: 100%;
-	background-color: var(--primary-bg); /* Login primary */
-	color: var(--white);
-	padding: 14px;
+	background-color: var(--primary-bg);
+	color: var(--card-bg);
+	padding: 10px;
 	font-size: 16px;
 	font-weight: bold;
 	margin-bottom: 20px;

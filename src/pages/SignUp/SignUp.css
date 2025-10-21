@@ -2,30 +2,13 @@
 
 .signup-page {
 	min-height: 100vh;
-	background-color: #4A4A4A;
+	background-color: var(--primary-bg);
 	display: flex;
 	flex-direction: column;
 }
 
-.signup-page .auth-header {
-	background-color: #666666;
-	padding: 12px 20px;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-}
 
-.signup-page .auth-header-title {
-	color: var(--white);
-	font-size: 18px;
-	font-weight: bold;
-}
-
-.signup-page .auth-header-icon {
-	color: var(--white);
-}
-
-.signup-page .auth-main {
+.auth-main {
 	flex: 1;
 	display: flex;
 	align-items: center;
@@ -33,29 +16,28 @@
 	padding: 40px 20px;
 }
 
-.signup-page .auth-card {
+.signup-card {
 	border-radius: 12px;
 	padding: 40px;
 	width: 100%;
 	max-width: 500px;
 	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+	background-color: var(--peach-bg);
 }
 
-.signup-page .signup-card {
-	background-color: #E8CFC7;
-}
 
-.signup-page .auth-title {
+
+.signup-card .auth-title {
 	font-size: 28px;
 	font-weight: bold;
-	color: var(--text-dark);
+	color: var(--primary-bg);
 	text-align: center;
 	margin-bottom: 8px;
 }
 
 .signup-page .auth-subtitle {
 	font-size: 14px;
-	color: var(--text-dark);
+	color: var(--primary-bg);
 	text-align: center;
 	margin-bottom: 32px;
 }
@@ -71,20 +53,39 @@
 	margin-bottom: 24px;
 }
 
-.signup-page .auth-card .input {
-	background-color: var(--input-bg);
-	color: var(--text-dark);
+.auth-grid .input,
+.auth-grid .input-date,
+.homeAddressContainer .input{
+	background-color: var(--card-bg);
+	color: var(--primary-bg);
 	margin-bottom: 0;
+	padding: 10px 12px;
+	border: none;
+	border-radius: 8px;
 }
+
+.auth-grid .input::placeholder,
+.homeAddressContainer .input::placeholder {
+	color: var(--primary-bg);
+	opacity: 0.5;
+}
+
+.auth-grid .input-date{
+	color: var(--primary-bg);
+}
+
 
 .signup-page .auth-submit {
 	width: 100%;
-	background-color: #5C5C5C; /* SignUp primary */
-	color: var(--white);
-	padding: 14px;
+	background-color: var(--primary-bg); 
+	color: var(--card-bg);
+	padding: 10px;
 	font-size: 16px;
 	font-weight: bold;
-	margin-bottom: 20px;
+	margin: 24px 0 10px 0;
+	border: none;
+	border-radius: 12px;
+	outline: none;
 }
 
 .signup-page .auth-switch {
@@ -92,32 +93,15 @@
 }
 
 .signup-page .auth-switch-text {
-	color: var(--text-dark);
+	color: var(--primary-bg);
 	font-size: 14px;
 }
 
 .signup-page .auth-switch-link {
-	color: var(--text-dark);
-	font-size: 14px;
-	font-weight: 500;
+	color: var(--primary-bg);
+	font-size: 15px;
+	font-weight: 600;
 	text-decoration: none;
 }
 
-.signup-page .auth-footer {
-	background-color: #666666;
-	padding: 12px 20px;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-}
-
-.signup-page .auth-footer-text {
-	color: var(--white);
-	font-size: 12px;
-}
-
-.signup-page .auth-socials {
-	display: flex;
-	gap: 12px;
-}
 
