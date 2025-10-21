@@ -1,0 +1,92 @@
+
+/* Cards */
+.profileedit-card {
+  background-color: var(--card-bg);
+  color: var(--primary-bg);
+  padding: 20px;
+	margin-bottom: 20px;
+	border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.profileedit-section-title {
+  font-size: 18px;
+  font-weight: bold;
+	align-items: center;
+	background-color: var(--panel-bg);
+	padding: 20px;
+	margin-bottom: 20px;
+	border-radius: 20px;
+}
+
+/* Form Fields */
+.profileedit-field {
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 20px;
+
+}
+
+.profileedit-field-last {
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 20px;
+}
+
+.profileedit-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.profileedit-field .input,
+.profileedit-field-last .input{
+  border: 1px solid var(--primary-bg);
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+}
+
+.profileedit-field .input::placeholder,
+.profileedit-field-last .input::placeholder {
+  color: var(--primary-bg);
+  opacity: 0.5;
+}
+
+/* Buttons */
+.profileedit-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.profileedit-btn {
+  background-color: var(--peach-bg);
+  color: var(--primary-bg);
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+}
+
+.profileedit-btn:hover {
+  opacity: 0.9;
+}
+
+/* Logout */
+.profileedit-logout-container {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+.profileedit-logout-btn {
+  background-color: var(--peach-bg);
+  color: var(--primary-bg);
+  padding: 12px 24px;
+}
+
+.profileedit-logout-btn:hover {
+  opacity: 0.9;
+}

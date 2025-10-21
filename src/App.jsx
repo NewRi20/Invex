@@ -4,7 +4,7 @@ import Dashboard from './pages/Dashboard/Dashboard';
 import Inventory from './pages/Inventory/Inventory';
 import Pricing from './pages/Pricing/Pricing';
 import Reports from './pages/Reports/Reports';
-import Profile from './pages/Profile';
+import Profile from './pages/Profile/Profile/Profile';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 

@@ -1,0 +1,82 @@
+/* Main Container */
+.profile-container {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 16px;
+}
+
+/* Cards */
+.business-profile-card,
+.owner-profile-card {
+	color: var(--primary-bg);
+	display: flex;
+	flex-direction: column;
+	background-color: var(--card-bg);
+	padding: 20px;
+	margin-bottom: 20px;
+	border-radius: 20px;
+}
+
+.profile-section-title-container {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	background-color: var(--panel-bg);
+	padding: 20px;
+	margin-bottom: 5px;
+	border-radius: 20px;
+}
+
+.profile-section-title{
+	font-size: 18px;
+	font-weight: bold;
+}
+
+.profile-edit-btn {
+	background-color: var(--peach-bg);
+	color: var(--primary-bg);
+	padding: 6px 12px;
+	font-size: 12px;
+	display: flex;
+	align-items: center;
+	border-radius: 8px;
+	border: none;
+	text-decoration: none;
+}
+
+.profile-edit-icon {
+	margin-right: 4px;
+}
+
+.profile-field-group {
+	padding: 20px;
+	margin-bottom: 0px;
+	border-radius: 20px;
+}
+
+.profile-field-title {
+	font-size: 16px;
+	font-weight: 600;
+	margin-bottom: 8px;
+}
+
+.profile-field-subtext {
+	margin-top: 15px;
+	font-size: 14px;
+	opacity: 0.9;
+	line-height: 1.4;
+}
+
+.profile-muted {
+	font-size: 14px;
+	opacity: 0.9;
+	margin-top: 5px;
+}
+
+/* Edit Container */
+.profile-edit-container {
+	margin-top: 20px;
+	width: 100%;
+}
+
