@@ -5,8 +5,8 @@ import Inventory from './pages/Inventory/Inventory';
 import Pricing from './pages/Pricing/Pricing';
 import Reports from './pages/Reports/Reports';
 import Profile from './pages/Profile/Profile/Profile';
-import Login from './pages/Login';
-import SignUp from './pages/SignUp';
+import Login from './pages/Login/Login';
+import SignUp from './pages/SignUp/SignUp';
 import Help from './pages/Help/Help';
 
 function App() {

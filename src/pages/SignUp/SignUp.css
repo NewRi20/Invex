@@ -1,0 +1,123 @@
+/* Auth (Sign Up) Page Styles */
+
+.signup-page {
+	min-height: 100vh;
+	background-color: #4A4A4A;
+	display: flex;
+	flex-direction: column;
+}
+
+.signup-page .auth-header {
+	background-color: #666666;
+	padding: 12px 20px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.signup-page .auth-header-title {
+	color: var(--white);
+	font-size: 18px;
+	font-weight: bold;
+}
+
+.signup-page .auth-header-icon {
+	color: var(--white);
+}
+
+.signup-page .auth-main {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 40px 20px;
+}
+
+.signup-page .auth-card {
+	border-radius: 12px;
+	padding: 40px;
+	width: 100%;
+	max-width: 500px;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.signup-page .signup-card {
+	background-color: #E8CFC7;
+}
+
+.signup-page .auth-title {
+	font-size: 28px;
+	font-weight: bold;
+	color: var(--text-dark);
+	text-align: center;
+	margin-bottom: 8px;
+}
+
+.signup-page .auth-subtitle {
+	font-size: 14px;
+	color: var(--text-dark);
+	text-align: center;
+	margin-bottom: 32px;
+}
+
+.signup-page .auth-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 16px;
+	margin-bottom: 16px;
+}
+
+.signup-page .auth-grid--mb24 {
+	margin-bottom: 24px;
+}
+
+.signup-page .auth-card .input {
+	background-color: var(--input-bg);
+	color: var(--text-dark);
+	margin-bottom: 0;
+}
+
+.signup-page .auth-submit {
+	width: 100%;
+	background-color: #5C5C5C; /* SignUp primary */
+	color: var(--white);
+	padding: 14px;
+	font-size: 16px;
+	font-weight: bold;
+	margin-bottom: 20px;
+}
+
+.signup-page .auth-switch {
+	text-align: center;
+}
+
+.signup-page .auth-switch-text {
+	color: var(--text-dark);
+	font-size: 14px;
+}
+
+.signup-page .auth-switch-link {
+	color: var(--text-dark);
+	font-size: 14px;
+	font-weight: 500;
+	text-decoration: none;
+}
+
+.signup-page .auth-footer {
+	background-color: #666666;
+	padding: 12px 20px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.signup-page .auth-footer-text {
+	color: var(--white);
+	font-size: 12px;
+}
+
+.signup-page .auth-socials {
+	display: flex;
+	gap: 12px;
+}
+
