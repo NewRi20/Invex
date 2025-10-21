@@ -49,6 +49,26 @@
 	margin-right: 4px;
 }
 
+/* Add Business Information Button */
+.addBusinessInfo-Btn {
+	background-color: var(--peach-bg);
+	color: var(--primary-bg);
+	padding: 10px;
+	margin: 5px;
+	font-size: 12px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius:10px;
+	border: none;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.addBusinessInfo-Btn:hover {
+	background-color: var(--peach-bg-light);
+}
+
 .profile-field-group {
 	padding: 20px;
 	margin-bottom: 0px;
@@ -79,4 +99,68 @@
 	margin-top: 20px;
 	width: 100%;
 }
+
+/* Business Information Form */
+.business-info-form {
+	padding: 20px;
+	background-color: var(--panel-bg);
+	border-radius: 10px;
+}
+
+.form-field {
+	margin-bottom: 16px;
+}
+
+.form-label {
+	display: block;
+	margin-bottom: 8px;
+	font-size: 14px;
+	font-weight: 500;
+	color: var(--primary-bg);
+}
+
+.form-input {
+	width: 100%;
+	border: 1px solid var(--primary-bg);
+	padding: 10px;
+	border-radius: 10px;
+	background-color: var(--card-bg);
+	color: var(--primary-bg);
+}
+
+.form-input::placeholder {
+	color: var(--primary-bg);
+	opacity: 0.5;
+}
+
+.form-input:focus {
+	outline: none;
+	border-color: var(--peach-bg);
+}
+
+.form-buttons {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+	margin-top: 20px;
+}
+
+.form-btn-save {
+	background-color: var(--peach-bg);
+	color: var(--primary-bg);
+}
+
+.form-btn-save:hover {
+	background-color: var(--peach-bg-light);
+}
+
+.form-btn-cancel {
+	background-color: var(--tertiary-bg);
+	color: var(--primary-bg);
+}
+
+.form-btn-cancel:hover {
+	opacity: 0.8;
+}
+
 

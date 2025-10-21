@@ -21,7 +21,7 @@ const Sidebar = () => {
     { path: '/reports', icon: FileText, label: 'Reports' },
     { path: '/profile', icon: User, label: 'Profile' },
     { path: '/help', icon: HelpCircle, label: 'Help' },
-    { path: '/logout', icon: LogOut, label: 'Logout' }
+    { path: '/login', icon: LogOut, label: 'Logout' }
   ];
 
   return (

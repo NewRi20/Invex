@@ -7,6 +7,7 @@ import Reports from './pages/Reports/Reports';
 import Profile from './pages/Profile/Profile/Profile';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
+import Help from './pages/Help/Help';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/reports" element={<Reports />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/help" element={<Help />} />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </Router>

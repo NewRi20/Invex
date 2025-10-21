@@ -9,10 +9,51 @@ import BusinessProfileEdit from '../EditProfile/Business/BusinessProfileEdit.jsx
 import OwnerProfileEdit from '../EditProfile/Owner/OwnerBusinessInfo.jsx';
 
 const Profile = () => {
+
+  const [BusinessInfo, setBusinessInfo] = useState([
+    { name: '',
+      address: '',
+      started: '' 
+    }
+  ]);
+
+
+  // Check if BusinessInfo has valid data (non-empty values)
+  const hasValidBusinessInfo = BusinessInfo.some(info => 
+    info.name?.trim() || info.address?.trim() || info.started?.trim()
+  );
+
   const [editTab, setEditTab] = useState(null);
+  const [showBusinessForm, setShowBusinessForm] = useState(false);
+  const [businessFormData, setBusinessFormData] = useState({
+    name: '',
+    address: '',
+    started: ''
+  });
 
   const handleEditCardClick = (key) => {
     setEditTab(key);
+  }
+
+  const handleBusinessFormChange = (e) => {
+    const { name, value } = e.target;
+    setBusinessFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  }
+
+  const handleBusinessFormSubmit = (e) => {
+    e.preventDefault();
+    // Update BusinessInfo with the form data
+    setBusinessInfo([businessFormData]);
+    console.log('Business Info submitted:', businessFormData);
+    setShowBusinessForm(false);
+  }
+
+  const handleBusinessFormCancel = () => {
+    setShowBusinessForm(false);
+    setBusinessFormData({ name: '', address: '', started: '' });
   }
 
   return (
@@ -34,18 +75,83 @@ const Profile = () => {
             </button>
           </div>
 
-          <div className="profile-field-group">
-            <div className="profile-field-title">
-              FRONDA MINI HARDWARE STORE
-            </div>
-            <div className="profile-field-subtext">
-              Blk-33 Lot 1 Phase 1 Southville BB Brgy San Isidro Rodriguez Rizal
-            </div>
+          {/* Renders Business Information if there is valid data */}
+          {hasValidBusinessInfo ? 
+            (<div>
+              {BusinessInfo.map((info, index) => (
+                <div key={index} className="profile-field-group">
+                  <div className="profile-field-title">{info.name}</div>
+                  <div className="profile-field-subtext">{info.address}</div>
+                  <div className="profile-muted">Started in {info.started}</div>
+                </div>
+              ))}
+              </div>) : showBusinessForm ? (
+          
+                /* Business Information Form */
+                <form className="business-info-form" onSubmit={handleBusinessFormSubmit}>
+                  <div className="form-field">
+                    <label className="form-label">Business Name:</label>
+                    <input
+                      type="text"
+                      name="name"
+                      className="input form-input"
+                      placeholder="Enter business name"
+                      value={businessFormData.name}
+                      onChange={handleBusinessFormChange}
+                      required
+                    />
+                  </div>
 
-            <div className="profile-muted">
-              Started in October 2021
-            </div>
-          </div>
+                  <div className="form-field">
+                    <label className="form-label">Business Address:</label>
+                    <input
+                      type="text"
+                      name="address"
+                      className="input form-input"
+                      placeholder="Enter business address"
+                      value={businessFormData.address}
+                      onChange={handleBusinessFormChange}
+                      required
+                    />
+                  </div>
+
+                  <div className="form-field">
+                    <label className="form-label">Date Started:</label>
+                    <input
+                      type="date"
+                      name="started"
+                      className="input form-input"
+                      value={businessFormData.started}
+                      onChange={handleBusinessFormChange}
+                      required
+                    />
+                  </div>
+
+                  <div className="form-buttons">
+                    <button type="submit" className="btn btn-small form-btn-save">
+                      Save
+                    </button>
+                    <button 
+                      type="button" 
+                      className="btn btn-small form-btn-cancel"
+                      onClick={handleBusinessFormCancel}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              ) : (
+              <div 
+                className='addBusinessInfo-Btn' 
+                role='button'
+                onClick={() => setShowBusinessForm(true)}
+              >
+                <p>Add Business Information</p>
+              </div>
+          )}
+
+
+
 
         </div>
 
