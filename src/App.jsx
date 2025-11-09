@@ -7,7 +7,6 @@ import Reports from './pages/Reports/Reports';
 import Profile from './pages/Profile/Profile/Profile';
 import Login from './pages/Login/Login';
 import SignUp from './pages/SignUp/SignUp';
-import Help from './pages/Help/Help';
 import axios from 'axios';
 
 function App() {
@@ -28,12 +27,12 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/inventory" element={<Inventory />} />
+        <Route path="/inventory/*" element={<Inventory />} />
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/reports/*" element={<Reports />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/help" element={<Help />} />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </Router>
 

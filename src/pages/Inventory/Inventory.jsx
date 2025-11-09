@@ -1,16 +1,23 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Layout from '../../components/Layout';
 import './Inventory.css';
+import { Link, useLocation } from 'react-router-dom';
 
 
 const Inventory = () => {
-
-  const summaryCards = [
-    { key: 'all', title: 'All Items', description: 'All item list' },
-    { key: 'new', title: 'New Items', description: 'New item list' },
-    { key: 'categories', title: 'Categories', description: 'All item category list' },
-    { key: 'damaged', title: 'Damaged Items', description: 'Damage item list' },
+  const summaryCardId = [
+    {id: 1, path:'/inventory/all-items',title: 'All Items', description: 'All item list'},
+    {id: 2, path:'/inventory/new-items',title: 'New Items', description: 'New item list'},
+    {id: 3, path:'/inventory/categories',title: 'Categories', description: 'All item category list'},
+    {id: 4, path:'/inventory/damaged-items',title: 'Damaged Items', description: 'Damage item list'},
   ];
+
+  const summaryCards = summaryCardId.map(({ path, title, description }) => ({
+    key: path.split('/').pop(),
+    title,
+    description,
+    link:path,
+  }));
 
   const allItemsData = [
     {
@@ -78,18 +85,27 @@ const Inventory = () => {
 
   const [activeTab, setActiveTab] = useState('all');
 
+  const location = useLocation();
+
+  useEffect(() => {
+    if(location.pathname.startsWith('/inventory/')){
+      const tab = location.pathname.split('/').pop();
+      setActiveTab(tab || 'all-items');
+    }
+    else if(location.pathname === '/inventory'){
+      setActiveTab('all-items');
+    }
+  }, [location.pathname]);
+
   return (
     <Layout title="Inventory">
       {/* Summary Cards */}
       <div className="summary-grid">
         {summaryCards.map((card) => (
-          <div
+          <Link
             key={card.key}
+            to={card.link}
             className={`summary-card ${activeTab === card.key ? 'active' : ''}`}
-            onClick={() => setActiveTab(card.key)}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setActiveTab(card.key); }}
           >
             <h3 className="title">
               {card.title}
@@ -97,7 +113,7 @@ const Inventory = () => {
             <p className="desc">
               {card.description}
             </p>
-          </div>
+          </Link>
         ))}
       </div>
 

@@ -11,6 +11,7 @@
   cursor: pointer;
   background-color: var(--card-bg);
   color: var(--primary-bg);
+  text-decoration: none;
 }
 
 .summary-card.active {

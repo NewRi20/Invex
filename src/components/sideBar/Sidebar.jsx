@@ -5,7 +5,6 @@ import {
   Package,
   Tag,
   FileText,
-  HelpCircle,
   LogOut,
   User
 } from 'lucide-react';
@@ -20,7 +19,6 @@ const Sidebar = () => {
     { path: '/pricing', icon: Tag, label: 'Pricing' },
     { path: '/reports', icon: FileText, label: 'Reports' },
     { path: '/profile', icon: User, label: 'Profile' },
-    { path: '/help', icon: HelpCircle, label: 'Help' },
     { path: '/login', icon: LogOut, label: 'Logout' }
   ];
 

@@ -1,6 +1,5 @@
 import React from 'react';
 import Layout from '../../components/Layout';
-// import { ArrowRight, PlusCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom'; 
 import './Dashboard.css';
 
@@ -16,19 +15,6 @@ const Dashboard = () => {
     { name: "Item 6", quantity: "6" }
   ];
 
-  // const navItems = [
-  //   { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  //   { path: '/inventory', icon: Package, label: 'Inventory' },
-  //   { path: '/pricing', icon: Tag, label: 'Pricing' },
-  //   { path: '/reports', icon: FileText, label: 'Reports' },
-  //   { path: '/profile', icon: User, label: 'Profile' },
-  //   { path: '/help', icon: HelpCircle, label: 'Help' },
-  //   { path: '/login', icon: LogOut, label: 'Logout' }
-  // ];
-
-  // handleAddNewItem = () => {
-    
-  // }
 
   return (
     <Layout title="Dashboard">
@@ -43,7 +29,7 @@ const Dashboard = () => {
         <div className='priceUpdate'>
           <div className='title-section'>
             <p className='title'>Items with Price Update</p>
-            <span className="arrowIcon"></span>
+            <span className="arrowIcon" onClick={() => navigate('/pricing')}></span>
           </div>
           <div><h3>10</h3></div>
           <p className='desc'>Review price changes this week</p>
@@ -51,29 +37,29 @@ const Dashboard = () => {
 
         <div className='newItems'>
           <div className='title-section'>
-            <p className='title'>Items with Price Update</p>
-            <span className="arrowIcon"></span>
+            <p className='title'>New Items</p>
+            <span className="arrowIcon" onClick={() => navigate('/inventory/new-items')}></span>
           </div>
           <div><h3>100</h3></div>
-          <p className='desc'>Review price changes this week</p>
+          <p className='desc'>Review new items this week</p>
         </div>
 
         <div className='allItems'>
           <div className='title-section'>
-            <p className='title'>Items with Price Update</p>
-            <span className="arrowIcon"></span>
+            <p className='title'>All Items</p>
+            <span className="arrowIcon" onClick={() => navigate('/inventory/all-items')}></span>
           </div>
           <div><h3>30</h3></div>
-          <p className='desc'>Review price changes this week</p>
+          <p className='desc'>Review all items this week</p>
         </div>
 
         <div className='damagedItems'>
           <div className='title-section'>
-            <p className='title'>Items with Price Update</p>
-            <span className="arrowIcon"></span>
+            <p className='title'>Damaged Items</p>
+            <span className="arrowIcon" onClick={() => navigate('/inventory/damaged-items')}></span>
           </div>
           <div><h3>20</h3></div>
-          <p className='desc'>Review price changes this week</p>
+          <p className='desc'>Review damaged items this week</p>
         </div>
       </div>
 
@@ -82,7 +68,7 @@ const Dashboard = () => {
         <div className='salesCard'>
           <div className='title-section'>
             <p className='title'>Sales</p>
-            <span className="arrowIcon"></span>
+            <span className="arrowIcon" onClick={() => navigate('/reports/sales/sales-revenue')}></span>
           </div>
           <div><h3>5000 <span>Php</span></h3></div>
           <p className='desc'>Review sales this week</p>
@@ -91,7 +77,7 @@ const Dashboard = () => {
         <div className='revenueGrowthCard'>
           <div className='title-section'>
             <p className='title'>Revenue Growth</p>
-            <span className="arrowIcon"></span>
+            <span className="arrowIcon" onClick={() => navigate('/reports/sales/sales-revenue')}></span>
           </div>
           <div><h3>15%</h3></div>
           <p className='desc'>Review revenue growth this week comparing last week</p>
@@ -104,17 +90,17 @@ const Dashboard = () => {
         <div className='inner-container-lowCards'>
           <div className='lowSalesCard'>
             <div className='title-section'>
-              <p className='title'>Items with low sales</p>
-              <span className="arrowIcon"></span>
+              <p className='title'>Items with top sales</p>
+              <span className="arrowIcon" onClick={() => navigate('/reports/sales/sales-revenue')}></span>
             </div>
             <div><h3>3</h3></div>
-            <p className='desc'>Review items with low sales this week</p>
+            <p className='desc'>Review items with top sales this week</p>
           </div>
 
           <div className='lowStockCard'>
             <div className='title-section'>
               <p className='title'>Low stock items</p>
-              <span className="arrowIcon"></span>
+              <span className="arrowIcon" onClick={() => navigate('/reports/stocks')}></span>
             </div>
             <div><h3>3</h3></div>
             <p className='desc'>Review items with low stock this week</p>
