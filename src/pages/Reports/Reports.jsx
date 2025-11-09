@@ -1,70 +1,55 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Layout from '../../components/Layout';
 import './Reports.css';
 import ReportsSalesRevenue from './SalesRevenue/ReportsSalesRevenue.jsx';
 import ReportsStocks from './ReportStock/ReportsStocks.jsx';
 import ReportsAddDeleteUpdate from './AddDeleteUpdate/ReportsAddDeleteUpdate.jsx';
+import { Link, useLocation } from 'react-router-dom';
 
 
 const Reports = () => {
   const [clickedTab, setClickedTab] = useState(null);
+  
+  const reportId = [
+    {id: 1, path: '/reports/sales-revenue', title: 'Sales & Revenue' },
+    {id: 2, path: '/reports/stocks', title: 'Stocks' },
+    {id: 3, path: '/reports/add-delete-update', title: 'Add Delete Update' }
+  ]
 
-  const reportCards = [
-    {
-      key: "sales-revenue",
-      title: "Sales & Revenue",
-      description: "Daily Report",
-      link: "/reports/sales-revenue"
-    },
-    {
-      key: "stocks",
-      title: "Stocks",
-      description: "Daily Report",
-      link: "/reports/stocks",
-    },
-    {
-      key: "add-delete-update",
-      title: "Add Delete Update",
-      description: "Add, delete and update items",
-      link: "/reports/add-delete-update"
+  const reportCards = reportId.map(({ id, path, title }) => ({
+    key: path.split('/').pop(),
+    title,
+    description: id === 3 ? 'Add, delete and update items' : 'Daily Report',
+    link: path,
+  }));
+
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname.startsWith('/reports/')) {
+      const seg = location.pathname.split('/').pop();
+      setClickedTab(seg || 'sales-revenue');
+    } else if (location.pathname === '/reports') {
+      setClickedTab('sales-revenue');
     }
-  ];
-
-  const handleCardClick = (key) => {
-    setClickedTab(key);
-  };
+  }, [location.pathname]);
 
   return (
     <Layout title="Reports">
-      {/* Section Header */}
-      <div className="reports-header">
-        <h2 className="reports-title">Reports</h2>
-      </div>
-
-      {/* Report Cards */}
       <div className="reports-grid">
         {reportCards.map((card) => (
-          <div
+          <Link
             key={card.key}
+            to={card.link}
             className={`report-card${clickedTab === card.key ? ' active' : ''}`}
-            role="button"
-            tabIndex={0}
-            onClick={() => handleCardClick(card.key)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                if (e.key === ' ') e.preventDefault();
-                handleCardClick(card.key);
-              }
-            }}
           >
             <h3 className="report-card-title">{card.title}</h3>
             <p className="report-card-desc">{card.description}</p>
-          </div>
-        
+          </Link>
         ))}
       </div>
 
-      {/* Render selected report content below cards */}
+      
       <div className="reports-content">
         {clickedTab === 'sales-revenue' && <ReportsSalesRevenue />}
         {clickedTab === 'stocks' && <ReportsStocks />}

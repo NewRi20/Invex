@@ -1,9 +1,11 @@
 import React from 'react';
 import Layout from '../../components/Layout';
-import { ArrowRight, PlusCircle } from 'lucide-react';
+// import { ArrowRight, PlusCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom'; 
 import './Dashboard.css';
 
 const Dashboard = () => {
+  const navigate = useNavigate();
 
   const itemsList = [
     { name: "Item 1", quantity: "25" },
@@ -13,6 +15,20 @@ const Dashboard = () => {
     { name: "Item 5", quantity: "10" },
     { name: "Item 6", quantity: "6" }
   ];
+
+  // const navItems = [
+  //   { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+  //   { path: '/inventory', icon: Package, label: 'Inventory' },
+  //   { path: '/pricing', icon: Tag, label: 'Pricing' },
+  //   { path: '/reports', icon: FileText, label: 'Reports' },
+  //   { path: '/profile', icon: User, label: 'Profile' },
+  //   { path: '/help', icon: HelpCircle, label: 'Help' },
+  //   { path: '/login', icon: LogOut, label: 'Logout' }
+  // ];
+
+  // handleAddNewItem = () => {
+    
+  // }
 
   return (
     <Layout title="Dashboard">
@@ -105,29 +121,34 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <table className="ItemsListCard">
-          <thead className='itemListHeader'>
-            <tr>
-              <th className="card-title">Items List</th>
-              <th className='quantity'>Quantity</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {itemsList.map((item, index) => (
-              <tr key={index} className="item-row">
-                <td>{item.name}</td>
-                <td>{item.quantity}</td>
+        <div className="items-list-container">
+          <table className="ItemsListCard">
+            <thead className='itemListHeader'>
+              <tr>
+                <th className="card-title">Items List</th>
+                <th className='quantity'>Quantity</th>
               </tr>
-            ))}
-          </tbody>
+            </thead>
 
+            <tbody>
+              {itemsList.map((item, index) => (
+                <tr key={index} className="item-row">
+                  <td>{item.name}</td>
+                  <td>{item.quantity}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
-          <button type="button" className="plusIconBtn" aria-label="Add new item">
+          <button 
+            type="button" 
+            className="plusIconBtn" 
+            aria-label="Add new item" 
+            onClick={() => navigate('/reports/add-delete-update')}
+          >
             <span className="plusIcon" />
           </button>
-        
-        </table>
+        </div>
       </div>
 
     </Layout>
