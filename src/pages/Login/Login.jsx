@@ -18,7 +18,7 @@ const Login = () => {
               <div className="auth-group auth-group--lg">
                 <input
                   type="email"
-                  placeholder="Email Address"
+                  placeholder="Email"
                   className="input"
                 />
               </div>
