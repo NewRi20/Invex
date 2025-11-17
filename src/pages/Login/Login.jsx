@@ -3,9 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../AuthProvider'; // <-- Make sure this path is correct
 import './Login.css';
 
-// Optional: for a nice Google icon
-// Install with: npm install react-icons
-// import { FcGoogle } from 'react-icons/fc';
 
 const Login = () => {
   // 1. Get auth state and functions from our hook

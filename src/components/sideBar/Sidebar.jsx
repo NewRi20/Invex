@@ -9,9 +9,11 @@ import {
   User
 } from 'lucide-react';
 import './sidebar.css';
+import { useAuth } from '../../AuthProvider';
 
 const Sidebar = () => {
   const location = useLocation();
+  const { signOut } = useAuth();
 
   const navItems = [
     { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -19,7 +21,7 @@ const Sidebar = () => {
     { path: '/pricing', icon: Tag, label: 'Pricing' },
     { path: '/reports', icon: FileText, label: 'Reports' },
     { path: '/profile', icon: User, label: 'Profile' },
-    { path: '/login', icon: LogOut, label: 'Logout' }
+    
   ];
 
   return (
@@ -31,8 +33,10 @@ const Sidebar = () => {
         <ul className="nav-menu">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = location.pathname === item.path ||
-              (item.path === '/reports' && location.pathname.startsWith('/reports'));
+            // 4. Fixed the 'isActive' logic to be more robust
+            // This now works for /inventory, /reports, and any sub-pages.
+            const isActive = location.pathname.startsWith(item.path);
+            
             return (
               <li key={item.path} className="nav-item">
                 <Link
@@ -40,11 +44,19 @@ const Sidebar = () => {
                   className={`nav-link${isActive ? ' active' : ''}`}
                 >
                   <Icon className="nav-icon" size={38} />
-                  {item.label}
+                    {item.label}
                 </Link>
               </li>
             );
           })}
+
+          {/* 5. Added a real Logout button as a separate list item */}
+          <li className="nav-item">
+            <button className="nav-link" onClick={signOut}>
+              <LogOut className="nav-icon" size={38} />
+              Logout
+            </button>
+          </li>
         </ul>
       </nav>
       <div className="sidebar-footer">
