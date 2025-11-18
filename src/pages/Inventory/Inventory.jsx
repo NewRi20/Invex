@@ -2,91 +2,63 @@ import React, { useEffect, useState } from 'react';
 import Layout from '../../components/Layout';
 import './Inventory.css';
 import { Link, useLocation } from 'react-router-dom';
-
+import { useAuth } from '../../AuthProvider';
 
 const Inventory = () => {
-  const summaryCardId = [
-    {id: 1, path:'/inventory/all-items',title: 'All Items', description: 'All item list'},
-    {id: 2, path:'/inventory/new-items',title: 'New Items', description: 'New item list'},
-    {id: 3, path:'/inventory/categories',title: 'Categories', description: 'All item category list'},
-    {id: 4, path:'/inventory/damaged-items',title: 'Damaged Items', description: 'Damage item list'},
-  ];
-
-  const summaryCards = summaryCardId.map(({ path, title, description }) => ({
-    key: path.split('/').pop(),
-    title,
-    description,
-    link:path,
-  }));
-
-  const allItemsData = [
-    {
-      name: "4 Blades Clip Fan",
-      category: "Clip Fan",
-      quantity: "1",
-      price: "180",
-      damage: "0",
-      dateAdded: "8/10/2025"
-    },
-    {
-      name: "4 Blades Clip Fan",
-      category: "Clip Fan",
-      quantity: "1",
-      price: "180",
-      damage: "0",
-      dateAdded: "8/10/2025"
-    },
-    {
-      name: "4 Blades Clip Fan",
-      category: "Clip Fan",
-      quantity: "1",
-      price: "180",
-      damage: "0",
-      dateAdded: "8/10/2025"
-    }
-  ];
-
-  const newItemsData = [
-    {
-      name: "Big 4 Blades Clip Fan",
-      category: "Clip Fan",
-      quantity: "1",
-      price: "200",
-      damage: "0",
-      dateAdded: "19/10/2025"
-    }
-  ];
-
-  const categoryData = [
-    {
-      name: "Clip Fan",
-      quantity: "5"
-    },
-    {
-      name: "LED Bulb EC Light",
-      quantity: "3"
-    },
-    {
-      name: "Ceiling Fan",
-      quantity: "1"
-    }
-  ];
-
-  const damagedItemsData = [
-    {
-      name: "4 Blades Clip Fan",
-      category: "Clip Fan",
-      quantity: "1",
-      price: "180",
-      damage: "0",
-      dateAdded: "8/10/2025"
-    }
-  ];
-
-  const [activeTab, setActiveTab] = useState('all');
-
+  const { session } = useAuth();
   const location = useLocation();
+  const [activeTab, setActiveTab] = useState('all-items');
+  
+  // --- State for Data ---
+  const [allItems, setAllItems] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
+  // --- Fetch Data from Backend ---
+  useEffect(() => {
+    if (session) {
+      const fetchData = async () => {
+        setLoading(true);
+        try {
+          // 1. Fetch All Items
+          const itemsRes = await fetch('/api/items/', {
+            headers: { 'Authorization': `Bearer ${session.access_token}` }
+          });
+          const itemsData = await itemsRes.json();
+
+          // 2. Fetch Categories
+          const catRes = await fetch('/api/items/categories', {
+            headers: { 'Authorization': `Bearer ${session.access_token}` }
+          });
+          const catData = await catRes.json();
+
+          if (itemsRes.ok) setAllItems(itemsData);
+          if (catRes.ok) setCategories(catData);
+
+        } catch (error) {
+          console.error("Error loading inventory:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchData();
+    }
+  }, [session]);
+
+  // --- Filter Logic ---
+  
+  // 1. New Items: Added within the last 7 days
+  const newItemsData = allItems.filter(item => {
+    const dateAdded = new Date(item.date_added);
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    return dateAdded >= oneWeekAgo;
+  });
+
+  // 2. Damaged Items: damaged_quantity > 0
+  const damagedItemsData = allItems.filter(item => item.damaged_quantity > 0);
+
+  // --- Helpers for Tab Logic ---
   useEffect(() => {
     if(location.pathname.startsWith('/inventory/')){
       const tab = location.pathname.split('/').pop();
@@ -97,24 +69,38 @@ const Inventory = () => {
     }
   }, [location.pathname]);
 
+  const summaryCardId = [
+    {id: 1, path:'/inventory/all-items', title: 'All Items', description: 'All item list'},
+    {id: 2, path:'/inventory/new-items', title: 'New Items', description: 'Added this week'},
+    {id: 3, path:'/inventory/categories', title: 'Categories', description: 'Category list'},
+    {id: 4, path:'/inventory/damaged-items', title: 'Damaged Items', description: 'Damage Report'},
+  ];
+
+  if (loading) {
+    return (
+      <Layout title="Inventory">
+        <div style={{padding: "20px"}}>Loading Inventory...</div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout title="Inventory">
       {/* Summary Cards */}
       <div className="summary-grid">
-        {summaryCards.map((card) => (
-          <Link
-            key={card.key}
-            to={card.link}
-            className={`summary-card ${activeTab === card.key ? 'active' : ''}`}
-          >
-            <h3 className="title">
-              {card.title}
-            </h3>
-            <p className="desc">
-              {card.description}
-            </p>
-          </Link>
-        ))}
+        {summaryCardId.map((card) => {
+          const key = card.path.split('/').pop();
+          return (
+            <Link
+              key={card.id}
+              to={card.path}
+              className={`summary-card ${activeTab === key ? 'active' : ''}`}
+            >
+              <h3 className="title">{card.title}</h3>
+              <p className="desc">{card.description}</p>
+            </Link>
+          );
+        })}
       </div>
 
       {/* Inventory Table */}
@@ -123,40 +109,61 @@ const Inventory = () => {
           <thead>
             {activeTab === 'categories' ? (
               <tr>
-                <th>Category</th>
-                <th>Quantity</th>
+                <th>Category Name</th>
+                <th>Total Quantity</th>
               </tr>
             ) : (
               <tr>
-                <th>Name</th>
+                {/* --- ADDED ITEM CODE HEADER --- */}
+                <th>Item Code</th>
+                <th>Item Name</th>
                 <th>Category</th>
                 <th>Quantity</th>
-                <th>Price per piece</th>
-                <th>Damage</th>
+                <th>Price</th>
+                <th>Damaged</th>
                 <th>Date Added</th>
               </tr>
             )}
           </thead>
           <tbody>
+            {/* --- RENDER CATEGORIES --- */}
             {activeTab === 'categories' ? (
-              categoryData.map((row, idx) => (
-                <tr key={idx}>
-                  <td>{row.name}</td>
-                  <td>{row.quantity}</td>
-                </tr>
-              ))
-            ) : (
-              (activeTab === 'new' ? newItemsData : activeTab === 'damaged' ? damagedItemsData : allItemsData)
-                .map((item, index) => (
-                  <tr key={index}>
-                    <td>{item.name}</td>
-                    <td>{item.category}</td>
-                    <td>{item.quantity}</td>
-                    <td>{item.price}</td>
-                    <td>{item.damage}</td>
-                    <td>{item.dateAdded}</td>
+              categories.length > 0 ? (
+                categories.map((cat) => (
+                  <tr key={cat.id}>
+                    <td>{cat.name}</td>
+                    <td>{cat.quantity || 0}</td>
                   </tr>
                 ))
+              ) : (
+                <tr><td colSpan="2" style={{textAlign:'center'}}>No categories found</td></tr>
+              )
+            ) : (
+              /* --- RENDER ITEMS (All, New, Damaged) --- */
+              (() => {
+                let dataToShow = allItems;
+                if (activeTab === 'new-items') dataToShow = newItemsData;
+                if (activeTab === 'damaged-items') dataToShow = damagedItemsData;
+
+                if (dataToShow.length === 0) {
+                   return <tr><td colSpan="7" style={{textAlign:'center'}}>No items found</td></tr>;
+                }
+
+                return dataToShow.map((item) => (
+                  <tr key={item.id}>
+                    {/* --- ADDED ITEM CODE CELL --- */}
+                    {/* Shows the raw ID (UUID) */}
+                    <td style={{fontFamily: 'monospace', fontSize: '12px'}}>{item.id}</td>
+                    
+                    <td>{item.item_name}</td>
+                    <td>{item.item_category?.name || 'Uncategorized'}</td>
+                    <td>{item.quantity}</td>
+                    <td>₱{item.price}</td>
+                    <td>{item.damaged_quantity}</td>
+                    <td>{item.date_added}</td>
+                  </tr>
+                ));
+              })()
             )}
           </tbody>
         </table>
