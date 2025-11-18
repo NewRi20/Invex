@@ -14,6 +14,9 @@
 }
 
 .login-page .auth-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   border-radius: 12px;
   padding: 40px;
   width: 100%;
@@ -27,20 +30,17 @@
   font-weight: bold;
   color: var(--primary-bg);
   text-align: center;
-  margin-bottom: 8px;
+  margin-bottom: 20px;
 }
 
 .login-page .auth-subtitle {
   font-size: 16px;
   color: var(--primary-bg);
   text-align: center;
-  margin-bottom: 32px; /* Kept margin for spacing */
+  margin-bottom: 10px; 
 }
 
-/* * Removed .auth-group, .auth-card .input, 
- * .auth-forgot, and .auth-switch styles 
- * as they are no longer needed.
- */
+
 
 .login-page .auth-submit {
   width: 100%;
@@ -49,27 +49,22 @@
   padding: 10px;
   font-size: 16px;
   font-weight: bold;
-  margin-bottom: 20px; /* You can adjust this if needed */
+  margin-bottom: 10px; 
 }
 
-/* --- NEW STYLES FOR GOOGLE BUTTON --- */
 
-/* This targets the button we just made */
 .login-page .google-btn {
-    /* Overrides the default auth-submit colors */
     background-color: #4285F4;
     color: white;
     border: 1px solid #4285F4;
-
-    /* New styles for layout (if you add an icon) */
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px; /* Adds space between icon and text */
+    gap: 10px; 
     transition: background-color 0.2s;
 }
 
 .login-page .google-btn:hover {
     background-color: #357ae8;
-	color: white; /* Ensure text stays white on hover */
+	color: white; 
 }
