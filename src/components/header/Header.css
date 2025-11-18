@@ -25,5 +25,8 @@
   mask-repeat: no-repeat;
   -webkit-mask-size: 100% 100%;
   mask-size: 100% 100%;
+  color: var(--white); 
 }
+
+
 

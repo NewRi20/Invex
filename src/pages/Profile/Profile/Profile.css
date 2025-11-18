@@ -43,6 +43,7 @@
 	border-radius: 8px;
 	border: none;
 	text-decoration: none;
+	cursor: pointer;
 }
 
 .profile-edit-icon {
@@ -164,3 +165,34 @@
 }
 
 
+.profile-field-subtext em,
+.profile-muted em {
+  font-style: italic;
+  opacity: 0.7;
+}
+
+.profileedit-logout-container {
+  margin-top: auto; 
+  padding-top: 20px; 
+  border-top: 1px solid var(--panel-bg);
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.profileedit-logout-btn {
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background-color: var(--peach-bg);
+  color: var(--primary-bg);
+  padding: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.profileedit-logout-btn:hover {
+  opacity: 0.8;
+}

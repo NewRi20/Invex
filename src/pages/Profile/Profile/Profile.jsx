@@ -1,207 +1,398 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate
 import Layout from '../../../components/Layout';
 import { Edit } from 'lucide-react';
 import './Profile.css';
 
+// 1. Import your Auth hook
+import { useAuth } from '../../../AuthProvider';
 
-import BusinessProfileEdit from '../EditProfile/Business/BusinessProfileEdit.jsx';
-import OwnerProfileEdit from '../EditProfile/Owner/OwnerBusinessInfo.jsx';
+// Removed imports for BusinessProfileEdit and OwnerProfileEdit
+// as we'll handle the edit logic inline.
 
 const Profile = () => {
+  // 2. Get real data and functions from AuthProvider
+  const { profile, session, signOut } = useAuth();
+  const navigate = useNavigate();
 
-  const [BusinessInfo, setBusinessInfo] = useState([
-    { name: '',
-      address: '',
-      started: '' 
-    }
-  ]);
-
-
-  // Check if BusinessInfo has valid data (non-empty values)
-  const hasValidBusinessInfo = BusinessInfo.some(info => 
-    info.name?.trim() || info.address?.trim() || info.started?.trim()
-  );
-
-  const [editTab, setEditTab] = useState(null);
-  const [showBusinessForm, setShowBusinessForm] = useState(false);
-  const [businessFormData, setBusinessFormData] = useState({
-    name: '',
-    address: '',
-    started: ''
+  // --- State for Business Owner Info ---
+  const [isEditingOwner, setIsEditingOwner] = useState(false);
+  const [ownerFormData, setOwnerFormData] = useState({
+    first_name: '',
+    last_name: '',
+    home_address: '',
+    birthday: '',
   });
 
-  const handleEditCardClick = (key) => {
-    setEditTab(key);
-  }
+  // --- State for Business Info (left as-is from your code) ---
+  const [BusinessInfo, setBusinessInfo] = useState(null);
+  const [isEditingBusiness, setIsEditingBusiness] = useState(false);
+  const [businessFormData, setBusinessFormData] = useState({
+    name: '', address: '', started: ''
+  });
 
-  const handleBusinessFormChange = (e) => {
+  const [isLoadingBusiness, setIsLoadingBusiness] = useState(true);
+
+  // 3. Populate Owner form data when the profile loads
+  useEffect(() => {
+    if (profile) {
+      setOwnerFormData({
+        first_name: profile.first_name || '',
+        last_name: profile.last_name || '',
+        home_address: profile.home_address || '',
+        birthday: profile.birthday || '',
+      });
+    }
+  }, [profile]); // This runs when 'profile' changes
+
+  useEffect(() => {
+    if (session) {
+      const fetchBusinessInfo = async () => {
+        setIsLoadingBusiness(true);
+        try {
+          const response = await fetch('/api/business/me', {
+            headers: { 'Authorization': `Bearer ${session.access_token}` }
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || `Business API failed with status ${response.status}`);
+          }
+                 
+          const data = await response.json();
+          
+          if (data) { // Check if data is not null
+            setBusinessInfo(data);
+            // Pre-fill the form with the loaded data
+            setBusinessFormData({
+              name: data.business_name || '',
+              address: data.business_address || '',
+              started: data.year_founded || ''
+            });
+          }
+        } catch (error) {
+          console.error(error.message);
+        } finally {
+          setIsLoadingBusiness(false);
+        }
+      };
+      fetchBusinessInfo();
+    }
+  }, [session]);
+
+
+  // Handle changes to the owner's edit form
+  const handleOwnerFormChange = (e) => {
     const { name, value } = e.target;
-    setBusinessFormData(prev => ({
+    setOwnerFormData(prev => ({
       ...prev,
       [name]: value
     }));
-  }
+  };
 
-  const handleBusinessFormSubmit = (e) => {
+  // 5. Handle submission of the owner's edit form
+  const handleOwnerFormSubmit = async (e) => {
     e.preventDefault();
-    // Update BusinessInfo with the form data
-    setBusinessInfo([businessFormData]);
-    console.log('Business Info submitted:', businessFormData);
-    setShowBusinessForm(false);
-  }
+    if (!session) {
+      alert("You are not logged in.");
+      return;
+    }
+
+    try {
+      // Call your Flask backend's PUT /api/users/me endpoint
+      const response = await fetch('/api/users/me', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify(ownerFormData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update profile');
+      }
+
+      // Success!
+      alert('Profile updated successfully!');
+      setIsEditingOwner(false);
+      // Reload the page to force AuthProvider to refetch the new profile
+      window.location.reload(); 
+
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      alert(`Error: ${error.message}`);
+    }
+  };
+
+  // 6. Handle canceling the owner's edit
+  const handleOwnerFormCancel = () => {
+    setIsEditingOwner(false);
+    // Reset form to its original state from the profile
+    if (profile) {
+      setOwnerFormData({
+        first_name: profile.first_name || '',
+        last_name: profile.last_name || '',
+        home_address: profile.home_address || '',
+        birthday: profile.birthday || '',
+      });
+    }
+  };
+
+  // 7. A real logout handler
+  const handleLogout = () => {
+    signOut();
+    navigate('/login'); 
+  };
+
+  // --- Handlers for Business Info (unchanged) ---
+  const handleBusinessFormChange = (e) => {
+    const { name, value } = e.target;
+    setBusinessFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleBusinessFormSubmit = async (e) => {
+    e.preventDefault();
+    if (!session) {
+      alert("You are not logged in.");
+      return;
+    }
+
+    try {
+      // Call our new PUT /api/business/me endpoint
+      const response = await fetch('/api/business/me', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        // Send the form data (name, address, started)
+        body: JSON.stringify(businessFormData), 
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update business info');
+      }
+
+      alert('Business info updated!');
+      setIsEditingBusiness(false);
+      window.location.reload(); // Easiest way to refetch all data
+
+    } catch (error) {
+      console.error('Error updating business info:', error);
+      alert(`Error: ${error.message}`);
+    }
+  };
 
   const handleBusinessFormCancel = () => {
-    setShowBusinessForm(false);
-    setBusinessFormData({ name: '', address: '', started: '' });
+    setIsEditingBusiness(false);
+    // Reset form to the last loaded data
+    if (BusinessInfo) {
+      setBusinessFormData({
+        name: BusinessInfo.business_name || '',
+        address: BusinessInfo.business_address || '',
+        started: BusinessInfo.year_founded || ''
+      });
+    }
+  };
+
+
+  if (!profile || isLoadingBusiness) {
+    return (
+      <Layout title="Profile">
+        <div>Loading profile...</div>
+      </Layout>
+    );
   }
 
   return (
     <Layout title="Profile">
-
       <div className="profile-container">
-        {/* Business Information */}
+
+        {/* --- Business Information Card (UPDATED) --- */}
         <div className="business-profile-card">
           <div className="profile-section-title-container">
-            <h3 className="profile-section-title">
-              Business Information
-            </h3>
-            <button 
-              className="profile-edit-btn"
-              onClick={() => handleEditCardClick('business-profile')}
-            >
-              <Edit size={14} className="profile-edit-icon" />
-              Edit
-            </button>
+            <h3 className="profile-section-title">Business Information</h3>
+            {/* Show Edit button ONLY if not editing AND data exists */}
+            {!isEditingBusiness && BusinessInfo && (
+              <button 
+                className="profile-edit-btn"
+                onClick={() => setIsEditingBusiness(true)} 
+              >
+                <Edit size={14} className="profile-edit-icon" />
+                Edit
+              </button>
+            )}
           </div>
 
-          {/* Renders Business Information if there is valid data */}
-          {hasValidBusinessInfo ? 
-            (<div>
-              {BusinessInfo.map((info, index) => (
-                <div key={index} className="profile-field-group">
-                  <div className="profile-field-title">{info.name}</div>
-                  <div className="profile-field-subtext">{info.address}</div>
-                  <div className="profile-muted">Started in {info.started}</div>
-                </div>
-              ))}
-              </div>) : showBusinessForm ? (
-          
-                /* Business Information Form */
-                <form className="business-info-form" onSubmit={handleBusinessFormSubmit}>
-                  <div className="form-field">
-                    <label className="form-label">Business Name:</label>
-                    <input
-                      type="text"
-                      name="name"
-                      className="input form-input"
-                      placeholder="Enter business name"
-                      value={businessFormData.name}
-                      onChange={handleBusinessFormChange}
-                      required
-                    />
-                  </div>
-
-                  <div className="form-field">
-                    <label className="form-label">Business Address:</label>
-                    <input
-                      type="text"
-                      name="address"
-                      className="input form-input"
-                      placeholder="Enter business address"
-                      value={businessFormData.address}
-                      onChange={handleBusinessFormChange}
-                      required
-                    />
-                  </div>
-
-                  <div className="form-field">
-                    <label className="form-label">Date Started:</label>
-                    <input
-                      type="date"
-                      name="started"
-                      className="input form-input"
-                      value={businessFormData.started}
-                      onChange={handleBusinessFormChange}
-                      required
-                    />
-                  </div>
-
-                  <div className="form-buttons">
-                    <button type="submit" className="btn btn-small form-btn-save">
-                      Save
-                    </button>
-                    <button 
-                      type="button" 
-                      className="btn btn-small form-btn-cancel"
-                      onClick={handleBusinessFormCancel}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </form>
-              ) : (
-              <div 
-                className='addBusinessInfo-Btn' 
-                role='button'
-                onClick={() => setShowBusinessForm(true)}
-              >
-                <p>Add Business Information</p>
+          {/* This logic now shows Form, Display, or "Add" button */}
+          {isEditingBusiness ? (
+            /* --- Business Edit Form --- */
+            <form className="business-info-form" onSubmit={handleBusinessFormSubmit}>
+              <div className="form-field">
+                <label className="form-label">Business Name:</label>
+                <input
+                  type="text"
+                  name="name" // Matches state: businessFormData.name
+                  className="input form-input"
+                  placeholder="Enter business name"
+                  value={businessFormData.name}
+                  onChange={handleBusinessFormChange}
+                  required
+                />
               </div>
+              <div className="form-field">
+                <label className="form-label">Business Address:</label>
+                <input
+                  type="text"
+                  name="address" // Matches state: businessFormData.address
+                  className="input form-input"
+                  placeholder="Enter business address"
+                  value={businessFormData.address}
+                  onChange={handleBusinessFormChange}
+                  required
+                />
+              </div>
+              <div className="form-field">
+                <label className="form-label">Date Started:</label>
+                <input
+                  type="date"
+                  name="started" // Matches state: businessFormData.started
+                  className="input form-input"
+                  value={businessFormData.started}
+                  onChange={handleBusinessFormChange}
+                  required
+                />
+              </div>
+              <div className="form-buttons">
+                <button type="submit" className="btn btn-small form-btn-save">Save</button>
+                <button type="button" className="btn btn-small form-btn-cancel" onClick={handleBusinessFormCancel}>Cancel</button>
+              </div>
+            </form>
+          ) : BusinessInfo ? (
+            /* --- Business Display Info (Data exists) --- */
+            <div className="profile-field-group">
+              {/* Note: We use the DB column names here */}
+              <div className="profile-field-title">{BusinessInfo.business_name}</div>
+              <div className="profile-field-subtext">{BusinessInfo.business_address}</div>
+              <div className="profile-muted">Started in {BusinessInfo.year_founded}</div>
+            </div>
+          ) : (
+            /* --- "Add Info" Button (No data exists) --- */
+            <div 
+              className='addBusinessInfo-Btn' 
+              role='button'
+              onClick={() => setIsEditingBusiness(true)} // Just open the form
+            >
+              <p>Add Business Information</p>
+            </div>
           )}
-
-
-
-
         </div>
 
-        {/* Business Owner Information */}
+        {/* Business Owner Information (Now dynamic) */}
         <div className="owner-profile-card">
           <div className="profile-section-title-container">
             <h3 className="profile-section-title">
               Business Owner Information
             </h3>
-            <button 
-              className="profile-edit-btn"
-              onClick={() => handleEditCardClick('owner-profile')}
-            >
-              <Edit size={14} className="profile-edit-icon" />
-              Edit
-            </button>
+            {/* 8. Hide Edit button when already editing */}
+            {!isEditingOwner && (
+              <button 
+                className="profile-edit-btn"
+                onClick={() => setIsEditingOwner(true)}
+              >
+                <Edit size={14} className="profile-edit-icon" />
+                Edit
+              </button>
+            )}
           </div>
 
-          <div className="profile-field-group">
-            <div className="profile-field-title">
-              Marlene Fronde
+          {/* 9. Show edit form or display info */}
+          {isEditingOwner ? (
+            /* --- Owner Edit Form --- */
+            <form className="business-info-form" onSubmit={handleOwnerFormSubmit}>
+              <div className="form-field">
+                <label className="form-label">First Name:</label>
+                <input
+                  type="text"
+                  name="first_name"
+                  className="input form-input"
+                  value={ownerFormData.first_name}
+                  onChange={handleOwnerFormChange}
+                  required
+                />
+              </div>
+              <div className="form-field">
+                <label className="form-label">Last Name:</label>
+                <input
+                  type="text"
+                  name="last_name"
+                  className="input form-input"
+                  value={ownerFormData.last_name}
+                  onChange={handleOwnerFormChange}
+                  required
+                />
+              </div>
+              <div className="form-field">
+                <label className="form-label">Home Address:</label>
+                <input
+                  type="text"
+                  name="home_address"
+                  className="input form-input"
+                  placeholder="Enter your address"
+                  value={ownerFormData.home_address}
+                  onChange={handleOwnerFormChange}
+                />
+              </div>
+              <div className="form-field">
+                <label className="form-label">Birthday:</label>
+                <input
+                  type="date"
+                  name="birthday"
+                  className="input form-input"
+                  value={ownerFormData.birthday}
+                  onChange={handleOwnerFormChange}
+                />
+              </div>
+              <div className="form-buttons">
+                <button type="submit" className="btn btn-small form-btn-save">
+                  Save
+                </button>
+                <button 
+                  type="button" 
+                  className="btn btn-small form-btn-cancel"
+                  onClick={handleOwnerFormCancel}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          ) : (
+            /* --- Owner Display Info --- */
+            <div className="profile-field-group">
+              <div className="profile-field-title">
+                {profile.first_name} {profile.last_name}
+              </div>
+              <div className="profile-field-subtext">
+                {profile.home_address || <em>No address provided</em>}
+              </div>
+              <div className="profile-muted">
+                {profile.birthday || <em>No birthday provided</em>}
+              </div>
             </div>
-            <div className="profile-field-subtext">
-              Block 52A Lot 6 Phase 1 Southville BB Brgy San Isidro Rodriguez Rizal
-            </div>
+          )}
 
-            <div className="profile-muted">
-              May 9, 1984
-            </div>
-          </div>
-
-          {/* Logout Button */}
+          {/* 10. Fixed Logout Button */}
           <div className="profileedit-logout-container">
-            <Link 
-              to="/signup"
+            <button 
+              onClick={handleLogout}
               className="btn profileedit-logout-btn"
             >
               Logout
-            </Link>
+            </button>
           </div>
-          
         </div>
       </div>
-
-      <div className="profile-edit-container">
-        {editTab === 'business-profile' && <BusinessProfileEdit />}
-        {editTab === 'owner-profile' && <OwnerProfileEdit />}
-      </div>
-
-
     </Layout>
   );
 };
