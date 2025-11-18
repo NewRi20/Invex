@@ -31,3 +31,26 @@ def get_categories(current_user_id):
         return jsonify(response.data), 200
     except Exception as e:
         return jsonify({'message': 'Error fetching categories', 'error': str(e)}), 500
+    
+
+# --- 3. Update Item Price (Protected) ---
+@item_bp.route('/<item_id>/price', methods=['PATCH'])
+@token_required
+def update_item_price(current_user_id, item_id):
+    try:
+        data = request.get_json()
+        new_price = data.get('price')
+        
+        if new_price is None:
+            return jsonify({'message': 'Price is required'}), 400
+
+        # Update the price in the database
+        response = supabase.table('item') \
+                           .update({'price': new_price}) \
+                           .eq('id', item_id) \
+                           .eq('user_id', current_user_id) \
+                           .execute()
+        
+        return jsonify(response.data), 200
+    except Exception as e:
+        return jsonify({'message': 'Error updating price', 'error': str(e)}), 500
