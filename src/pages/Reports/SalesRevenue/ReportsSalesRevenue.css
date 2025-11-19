@@ -72,7 +72,15 @@
     text-align: left;
 }
 
-
+.reportsales-display td button{
+    background-color: var(--peach-bg);
+    color: var(--primary-bg);
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+}
 
 /* Input Row */
 .reportsales-inputrow {

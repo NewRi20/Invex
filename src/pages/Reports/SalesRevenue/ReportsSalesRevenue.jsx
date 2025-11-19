@@ -15,11 +15,13 @@ const ReportsSalesRevenue = () => {
     top_categories: [],
     raw_sales: []
   });
+  const [editingSaleId, setEditingSaleId] = useState(null); 
+  const [editQuantity, setEditQuantity] = useState('');
   
   // --- Modal & Form State ---
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [inventoryItems, setInventoryItems] = useState([]); // For the dropdown
+  const [inventoryItems, setInventoryItems] = useState([]); 
   const [saleForm, setSaleForm] = useState({
     item_id: '',
     quantity: ''
@@ -42,10 +44,9 @@ const ReportsSalesRevenue = () => {
     }
   };
 
-  // --- 2. Fetch Inventory List (For the Modal Dropdown) ---
+  // --- Fetch Inventory List (For the Modal Dropdown) ---
   const fetchInventoryList = async () => {
     try {
-      // Re-using your existing items route
       const response = await fetch('/api/items/', {
         headers: { 'Authorization': `Bearer ${session.access_token}` }
       });
@@ -67,7 +68,7 @@ const ReportsSalesRevenue = () => {
   }, [session, filter]);
 
 
-  // --- 3. Handle Add Sale Submit ---
+  // --- Handle Add Sale Submit ---
   const handleSaleSubmit = async (e) => {
     e.preventDefault();
     if (!saleForm.item_id || !saleForm.quantity) {
@@ -103,6 +104,69 @@ const ReportsSalesRevenue = () => {
     }
   };
 
+
+  const handleDelete = async (saleId) => {
+    if (!window.confirm("Are you sure you want to delete this sale transaction? Stock will be added back.")) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/reports/${saleId}`, { 
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${session.access_token}` }
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Failed to delete sale.");
+        }
+
+        alert("Sale deleted and stock restored!");
+        fetchReport(); 
+        fetchInventoryList(); 
+    } catch (error) {
+        console.error("Delete Failed:", error);
+        alert(`Deletion Failed: ${error.message}`);
+    }
+  };
+
+  // --- Save Edited Quantity ---
+  const handleSaveEdit = async (saleId) => {
+      // 1. Get the new quantity from the input state
+      const newQuantity = parseInt(editQuantity, 10);
+      
+      if (isNaN(newQuantity) || newQuantity <= 0) {
+          alert("Quantity must be a positive number (1 or greater).");
+          return;
+      }
+
+      try {
+          // 2. Send PATCH request to the backend's sale correction endpoint
+          const response = await fetch(`/api/reports/${saleId}`, {
+              method: 'PATCH',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${session.access_token}`
+              },
+              body: JSON.stringify({ unit_sold: newQuantity }) 
+          });
+
+          if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.detail || errorData.message || 'Failed to save edit.');
+          }
+
+          alert("Sale corrected and stock adjusted successfully!");
+          setEditingSaleId(null);
+          setEditQuantity('');
+          fetchReport(); 
+
+      } catch (error) {
+          console.error("Save Failed:", error);
+          alert(`Save Failed: ${error.message}`);
+      }
+  };
+
   if (loading && !data.top_items) return <div style={{padding:'20px'}}>Loading Report...</div>;
 
   return (
@@ -124,11 +188,15 @@ const ReportsSalesRevenue = () => {
                 <th>Unit Sold</th>
                 <th>Revenue</th>
                 <th>Date Sold</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
               {data.raw_sales && data.raw_sales.length > 0 ? (
                 data.raw_sales.map((sale, index) => {
+
+                    const isEditing = editingSaleId === sale.id;
+
                     // Check if the item was deleted (item is null)
                     const itemName = sale.item?.item_name || 'UNLISTED ITEM';
                     const itemPrice = sale.item?.price || 0;
@@ -137,14 +205,61 @@ const ReportsSalesRevenue = () => {
                     return (
                         <tr key={index}>
                             <td>{itemName}</td> 
-                            <td>{sale.unit_sold}</td>
+                            {/* <td>{sale.unit_sold}</td> */}
+                            <td className="text-center">
+                                {isEditing ? (
+                                    <input 
+                                        type="number" 
+                                        value={editQuantity}
+                                        onChange={(e) => setEditQuantity(e.target.value)}
+                                        min="1"
+                                        style={{width: '70px', textAlign: 'center'}}
+                                    />
+                                ) : (
+                                    sale.unit_sold
+                                )}
+                            </td>
                             <td>₱{revenue}</td> 
                             <td>{sale.sale_date}</td> 
+                            <td className="text-center">
+                              {isEditing ? (
+                                  <div style={{display:'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap:'10px'}}>
+                                      <button 
+                                          onClick={() => handleSaveEdit(sale.id)}
+                                      >
+                                          Save
+                                      </button>
+                                      <button 
+                                          onClick={() => setEditingSaleId(null)}
+                                      >
+                                          Cancel
+                                      </button>
+                                  </div>
+                              ) : (
+                                  <div style={{display:'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap:'10px'}}>
+                                    <button 
+                                          className="EditBtn"
+                                          onClick={() => {
+                                              setEditingSaleId(sale.id);
+                                              setEditQuantity(sale.unit_sold.toString()); 
+                                          }}
+                                      >
+                                          Edit
+                                      </button>
+                                      <button 
+                                          className="deleteBtn"
+                                          onClick={() => handleDelete(sale.id)}
+                                      >
+                                          Undo Sale
+                                      </button>
+                                  </div>
+                              )}
+                          </td>
                         </tr>
                     )
                 })
               ) : (
-                <tr><td colSpan="4" style={{textAlign:'center'}}>No sales found for this period</td></tr>
+                <tr><td colSpan="5" style={{textAlign:'center'}}>No sales found for this period</td></tr>
               )}
             </tbody>
           </table>
