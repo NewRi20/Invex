@@ -30,6 +30,7 @@ def get_my_business_info(current_user_id):
         return jsonify(response.data), 200
     except Exception as e:
         return jsonify({'message': 'Error fetching business info', 'error': str(e)}), 500
+    
 
 # --- PROTECTED ROUTE: Create or Update the user's business info ---
 @business_bp.route('/me', methods=['PUT'])
