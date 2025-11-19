@@ -205,7 +205,20 @@ const ReportsAddDeleteUpdate = () => {
     // --- New Handler: Submit New Category ---
     const handleSaveNewCategory = async (e) => {
         e.preventDefault();
-        if (!newCategoryName.trim()) return;
+
+        const newName = newCategoryName.trim();
+        if (!newName) return;
+
+        const normalizedNewName = newName.toLowerCase().replace(/\s/g, '');
+        const existingNormalizedNames = categories.map(cat => 
+            cat.name.toLowerCase().replace(/\s/g, '')
+        );
+        
+        if (existingNormalizedNames.includes(normalizedNewName)) {
+            alert(`Category "${newName}" is too similar to an existing category. Please use a unique name.`);
+            return;
+        }
+
 
         try {
             const response = await fetch('/api/items/categories', {
@@ -229,6 +242,31 @@ const ReportsAddDeleteUpdate = () => {
             
         } catch (error) {
             alert(`Error adding category: ${error.message}`);
+        }
+    };
+
+
+    const handleDeleteCategory = async (categoryId, categoryName) => {
+        if (!window.confirm(`Are you sure you want to permanently delete the category: ${categoryName}? All linked items will become Uncategorized.`)) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/items/categories/${categoryId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${session.access_token}` }
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to delete category.');
+            }
+
+            alert(`Category ${categoryName} deleted successfully.`);
+            fetchItems(); // Refresh items list and category list
+            
+        } catch (error) {
+            alert(`Deletion Failed: ${error.message}`);
         }
     };
 
@@ -294,13 +332,60 @@ const ReportsAddDeleteUpdate = () => {
                     </button>
                 </div>
             </form>
+
+            {/* --- Category Management List --- */}
+            <div className="reportadu-categorylist">
+                <div className='manageCatHeader'>
+                    <h3 className="reportadu-additem-title">Manage Categories</h3>
+                    <div className="reportadu-additem">
+                        <button onClick={() => setShowCategoryModal(true)} className="btn btn-secondary">
+                            Add New Category
+                        </button>
+                    </div>
+                </div>
+                
+                
+                <div className="reportadu-tablewrap">
+                    <table className="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th className="text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {Array.isArray(categories) && categories.length > 0 ? (
+                                categories.map((cat) => (
+                                    <tr key={cat.id}>
+                                        <td>{cat.id}</td>
+                                        <td>{cat.name}</td>
+                                        <td className="text-right">
+                                            <button 
+                                                className="btn btn-small reportadu-action-btn delete-cat-btn"
+                                                onClick={() => handleDeleteCategory(cat.id, cat.name)}
+                                            >
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="3" style={{ textAlign: 'center' }}>No categories created.</td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
             
-            {/* --- Adding New Category Button --- */}
-            <div className="reportadu-additem">
+            
+            {/* <div className="reportadu-additem">
                 <button onClick={() => setShowCategoryModal(true)} className="btn btn-secondary">
                     Add New Category
                 </button>
-            </div>
+            </div> */}
 
             {/* --- Adding New Category Modal --- */}
             {showCategoryModal && (

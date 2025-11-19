@@ -195,3 +195,25 @@ def add_new_category(current_user_id):
         return jsonify(response.data[0]), 201
     except Exception as e:
         return jsonify({'message': 'Error adding category', 'error': str(e)}), 500
+    
+
+# --- 9. Delete Category (DELETE) ---
+@item_bp.route('/categories/<category_id>', methods=['DELETE'])
+@token_required
+def delete_category(current_user_id, category_id):
+    try:
+        # Check if the category exists and perform deletion
+        response = supabase.table('item_category') \
+                           .delete() \
+                           .eq('id', category_id) \
+                           .execute()
+        
+        if not response.data:
+            return jsonify({'message': 'Category not found.'}), 404
+        
+        # Database automatically sets item.item_category to NULL (due to ON DELETE SET NULL)
+        
+        return jsonify({'message': f'Category {category_id} deleted. Items were unlinked.'}), 200
+        
+    except Exception as e:
+        return jsonify({'message': 'Error deleting category', 'error': str(e)}), 500

@@ -1,7 +1,8 @@
 
 
 /* Add Item Section */
-.reportadu-additem {
+.reportadu-additem,
+.reportadu-categorylist{
   background-color: var(--card-bg);
   color: var(--primary-bg);
   border-radius: 20px;
@@ -9,6 +10,12 @@
   margin-bottom: 20px;
 }
 
+.reportadu-categorylist .manageCatHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
 
 .reportadu-additem-title {
   background-color: var(--panel-bg);
