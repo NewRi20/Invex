@@ -1,19 +1,22 @@
-import { Search } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import React, { useState, useEffect, useCallback } from 'react';
 import './ReportsAddDeleteUpdate.css';
-import { useAuth } from '../../../AuthProvider'; // Import Auth
+import { useAuth } from '../../../AuthProvider'; 
+
 
 const ReportsAddDeleteUpdate = () => {
     const { session } = useAuth();
 
     // --- State ---
     const [allItems, setAllItems] = useState([]);
-    const [categories, setCategories] = useState([]); // To populate category dropdown
+    const [categories, setCategories] = useState([]); 
     const [filteredItems, setFilteredItems] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [loading, setLoading] = useState(true);
-    const [isEditingId, setIsEditingId] = useState(null); // ID of the item currently being edited
-    const [editFormData, setEditFormData] = useState({}); // Data for the item being edited
+    const [isEditingId, setIsEditingId] = useState(null); 
+    const [editFormData, setEditFormData] = useState({}); 
+    const [newCategoryName, setNewCategoryName] = useState('');
+    const [showCategoryModal, setShowCategoryModal] = useState(false);
 
     // --- Form State for Adding New Item ---
     const [newItemForm, setNewItemForm] = useState({
@@ -124,15 +127,15 @@ const ReportsAddDeleteUpdate = () => {
     // 2. Start Editing
     const handleRenameClick = (item) => {
         setIsEditingId(item.id);
-        // Initialize form data with current values
+
         setEditFormData({
             item_name: item.item_name,
             item_category: item.item_category,
-            price: item.price // Include price for the general update route
+            price: item.price 
         });
     };
     
-    // 3. Save Edit/Rename/Category Change
+    // Save Edit/Rename/Category Change
     const handleSaveChanges = async (itemId) => {
         const payload = {
             item_name: editFormData.item_name,
@@ -153,7 +156,7 @@ const ReportsAddDeleteUpdate = () => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${session.access_token}`
                 },
-                // Send the clean, converted payload
+                
                 body: JSON.stringify(cleanedPayload) 
             });
 
@@ -162,16 +165,16 @@ const ReportsAddDeleteUpdate = () => {
                 throw new Error(errorData.message || 'Failed to update item');
             }
             
-            // Success
+            
             alert('Item updated successfully!');
             setIsEditingId(null);
-            fetchItems(); // Refresh the list to show new data
+            fetchItems(); 
         } catch (error) {
             alert(`Update Failed: ${error.message}`);
         }
     };
 
-    // 4. Delete Item
+    //Delete Item
     const handleDeleteItem = async (itemId) => {
         if (!window.confirm("Are you sure you want to delete this item? This action cannot be undone.")) return;
         
@@ -193,10 +196,40 @@ const ReportsAddDeleteUpdate = () => {
         }
     };
     
-    // 5. Cancel Edit
+    //Cancel Edit
     const handleCancelEdit = () => {
         setIsEditingId(null);
         setEditFormData({});
+    };
+
+    // --- New Handler: Submit New Category ---
+    const handleSaveNewCategory = async (e) => {
+        e.preventDefault();
+        if (!newCategoryName.trim()) return;
+
+        try {
+            const response = await fetch('/api/items/categories', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session.access_token}`
+                },
+                body: JSON.stringify({ name: newCategoryName })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to add category');
+            }
+            
+            alert(`Category '${newCategoryName}' added successfully!`);
+            setShowCategoryModal(false);
+            setNewCategoryName('');
+            fetchItems(); 
+            
+        } catch (error) {
+            alert(`Error adding category: ${error.message}`);
+        }
     };
 
     if (loading) return <div>Loading Inventory...</div>;
@@ -261,6 +294,47 @@ const ReportsAddDeleteUpdate = () => {
                     </button>
                 </div>
             </form>
+            
+            {/* --- Adding New Category Button --- */}
+            <div className="reportadu-additem">
+                <button onClick={() => setShowCategoryModal(true)} className="btn btn-secondary">
+                    Add New Category
+                </button>
+            </div>
+
+            {/* --- Adding New Category Modal --- */}
+            {showCategoryModal && (
+                <div className="modal-overlay" onClick={() => setShowCategoryModal(false)}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h3>Create New Category</h3>
+                            <button onClick={() => setShowCategoryModal(false)} className="modal-close-btn">
+                                <X size={20} />
+                            </button>
+                        </div>
+                        
+                        <form onSubmit={handleSaveNewCategory}>
+                            <div className="form-group">
+                                <label>Category Name</label>
+                                <input 
+                                    type="text" 
+                                    className="input" 
+                                    required
+                                    value={newCategoryName}
+                                    onChange={(e) => setNewCategoryName(e.target.value)}
+                                    placeholder="e.g., Electronics, Clip Fans"
+                                />
+                            </div>
+
+                            <div className="modal-actions">
+                                <button type="submit" className="btn btn-small btn-secondary" style={{width: '100%'}}>
+                                    Save Category
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
 
             {/* Item List Section */}
             <div className="reportadu-itemlist">

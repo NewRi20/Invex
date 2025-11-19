@@ -178,20 +178,20 @@ def delete_item(current_user_id, item_id):
         return jsonify({'message': 'Error deleting item', 'error': str(e)}), 500
 
 
-# # --- 8. Add New Category (POST) ---
-# @item_bp.route('/categories', methods=['POST'])
-# @token_required
-# def add_new_category(current_user_id):
-#     try:
-#         data = request.get_json()
-#         category_name = data.get('name')
+# --- 8. Add New Category (POST) ---
+@item_bp.route('/categories', methods=['POST'])
+@token_required
+def add_new_category(current_user_id):
+    try:
+        data = request.get_json()
+        category_name = data.get('name')
 
-#         if not category_name:
-#             return jsonify({'message': 'Category name is required.'}), 400
+        if not category_name:
+            return jsonify({'message': 'Category name is required.'}), 400
 
-#         response = supabase.table('item_category').insert({'name': category_name}).execute()
+        response = supabase.table('item_category').insert({'name': category_name}).execute()
         
-#         # Return the new category object
-#         return jsonify(response.data[0]), 201
-#     except Exception as e:
-#         return jsonify({'message': 'Error adding category', 'error': str(e)}), 500
+        # Return the new category object
+        return jsonify(response.data[0]), 201
+    except Exception as e:
+        return jsonify({'message': 'Error adding category', 'error': str(e)}), 500

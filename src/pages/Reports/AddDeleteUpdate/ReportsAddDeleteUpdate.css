@@ -134,3 +134,14 @@
 .reportadu-action-btn:hover {
   background-color: var(--peach-bg-light);
 }
+
+
+.reportadu-additem .btn.btn-secondary {
+  background-color: var(--peach-bg);
+}
+
+.reportadu-additem .btn.btn-secondary:hover {
+  background-color: var(--peach-bg-light);
+}
+
+
