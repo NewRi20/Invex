@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from supabase_client import supabase
 from auth_decorator import token_required
-from datetime import datetime
+from datetime import datetime, timezone
 
 item_bp = Blueprint('item_bp', __name__)
 
@@ -43,19 +43,35 @@ def update_item_price(current_user_id, item_id):
 
         new_price_num = float(new_price_str)
         
-        update_payload = {
-            'price': new_price_num,
-            'price_last_update': datetime.now().date().isoformat()
-        }
+        current_item_res = supabase.table('item') \
+                                   .select('price') \
+                                   .eq('id', item_id) \
+                                   .eq('user_id', current_user_id) \
+                                   .single() \
+                                   .execute()
         
+        old_price = float(current_item_res.data.get('price', 0))
+
+        update_payload = {'price': new_price_num}
+
+        # 2. CONDITIONAL UPDATE: Only stamp date if the price is genuinely different
+        if new_price_num != old_price:
+            timestamp_utc = datetime.now(timezone.utc)
+            # Use standard format for timestamp with time zone (timestamptz)
+            update_payload['price_last_update'] = timestamp_utc.strftime('%Y-%m-%dT%H:%M:%SZ')
+        
+        # 3. Execute Update
         response = supabase.table('item') \
                            .update(update_payload) \
                            .eq('id', item_id) \
                            .eq('user_id', current_user_id) \
                            .execute()
         
-        return jsonify(response.data), 200
-    
+        if not response.data:
+             return jsonify({'message': 'Item not found or unauthorized.'}), 404
+             
+        return jsonify(response.data[0]), 200
+        
     except ValueError:
          return jsonify({'message': 'Invalid price format. Must be a number.'}), 400
     except Exception as e:
@@ -118,17 +134,17 @@ def update_item_stock(current_user_id, item_id):
 def add_new_item(current_user_id):
     try:
         data = request.get_json()
-        
+        timestamp_utc = datetime.now(timezone.utc)
         item_record = {
             'item_name': data.get('name'),
             'item_category': int(data.get('category_id', 0)), 
             'quantity': int(data.get('quantity', 0)),
             'price': float(data.get('price', 0)),
             'damaged_quantity': 0,
-            'user_id': current_user_id
+            'user_id': current_user_id,
+            'price_last_update': timestamp_utc.strftime('%Y-%m-%dT%H:%M:%SZ')
         }
         
-        # 2. Insert into the item table
         response = supabase.table('item').insert(item_record).execute()
         
         return jsonify(response.data[0]), 201
@@ -143,13 +159,14 @@ def add_new_item(current_user_id):
 def update_item_details(current_user_id, item_id):
     try:
         data = request.get_json()
-        # Ensure only updatable fields are passed
-        updatable_fields = ['item_name', 'item_category', 'quantity', 'damaged_quantity']
+        
+        updatable_fields = ['item_name', 'item_category', 'price', 'quantity', 'damaged_quantity']
         payload = {k: v for k, v in data.items() if k in updatable_fields}
 
-        if not payload:
-            return jsonify({'message': 'No valid fields provided for update.'}), 400
-        
+        if 'price' in payload:
+            timestamp_utc = datetime.now(timezone.utc)
+            payload['price_last_update'] = timestamp_utc.strftime('%Y-%m-%dT%H:%M:%SZ') 
+
         response = supabase.table('item') \
                            .update(payload) \
                            .eq('id', item_id) \

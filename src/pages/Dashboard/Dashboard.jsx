@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Layout from '../../components/Layout';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate, useLocation } from 'react-router-dom'; 
 import './Dashboard.css';
 import { useAuth } from '../../AuthProvider';
-import { ChevronDown } from 'lucide-react'; // Import ChevronDown for dropdown
+import { ChevronDown } from 'lucide-react'; 
 
 const Dashboard = () => {
     const { profile, session } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
     
     // --- State ---
     const [filter, setFilter] = useState('week'); 
@@ -30,6 +31,7 @@ const Dashboard = () => {
         if (currentFilter === 'day') date.setDate(date.getDate() - 1);
         else if (currentFilter === 'week') date.setDate(date.getDate() - 7);
         else if (currentFilter === 'month') date.setMonth(date.getMonth() - 1);
+        date.setHours(0, 0, 0, 0);
         return date;
     };
 
@@ -67,6 +69,7 @@ const Dashboard = () => {
             const newPriceUpdates = safeAllItems.filter(item => {
                 if (!item.price_last_update) return false; 
                 const priceUpdatedDate = new Date(item.price_last_update);
+                priceUpdatedDate.setHours(0, 0, 0, 0);
                 return priceUpdatedDate >= dateThreshold;
             });
             
@@ -95,8 +98,9 @@ const Dashboard = () => {
 
     useEffect(() => {
         fetchDashboardData();
-    }, [fetchDashboardData]);
+    }, [fetchDashboardData, location.key]);
 
+    
     if (loading || !profile) {
         return (
             <Layout title="Dashboard">
@@ -228,7 +232,7 @@ const Dashboard = () => {
                         </thead>
 
                         <tbody>
-                            {stats.lowStockList.map((item, index) => (
+                            {Array.isArray(stats.lowStockList) && stats.lowStockList.map((item, index) => (
                                 <tr key={index} className="item-row">
                                     <td>{item.item_name}</td>
                                     <td>{item.quantity}</td>

@@ -3,6 +3,7 @@ import Layout from '../../components/Layout';
 import { Search } from 'lucide-react';
 import './Pricing.css';
 import { useAuth } from '../../AuthProvider';
+import { useNavigate } from 'react-router-dom';
 
 const Pricing = () => {
   const { session } = useAuth();
@@ -12,6 +13,7 @@ const Pricing = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [newPrice, setNewPrice] = useState('');
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   // --- 1. Fetch Items ---
   useEffect(() => {
@@ -75,6 +77,7 @@ const Pricing = () => {
       fetchItems(); 
       setSelectedItem(null);
       setNewPrice('');
+      navigate('/dashboard', { replace: true });
 
     } catch (error) {
       console.error("Error updating price:", error);
