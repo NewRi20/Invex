@@ -10,9 +10,6 @@ item_bp = Blueprint('item_bp', __name__)
 @token_required
 def get_items(current_user_id):
     try:
-        # Fetch all items for this user
-        # We also fetch the LINKED category name using the foreign key
-        # Syntax: column, link_table(column)
         response = supabase.table('item') \
                            .select('*, item_category(name)') \
                            .eq('user_id', current_user_id) \
@@ -39,7 +36,7 @@ def get_categories(current_user_id):
 def update_item_price(current_user_id, item_id):
     try:
         data = request.get_json()
-        new_price_str = data.get('price') # Price comes as a string from frontend input
+        new_price_str = data.get('price') 
         
         if new_price_str is None or new_price_str == "":
             return jsonify({'message': 'Price is required'}), 400
@@ -51,7 +48,6 @@ def update_item_price(current_user_id, item_id):
             'price_last_update': datetime.now().date().isoformat()
         }
         
-        # Update the price in the database
         response = supabase.table('item') \
                            .update(update_payload) \
                            .eq('id', item_id) \
@@ -71,10 +67,8 @@ def update_item_price(current_user_id, item_id):
 @token_required
 def update_item_stock(current_user_id, item_id):
     try:
-        # 1. Get incoming data from the frontend
         incoming_data = request.get_json()
         
-        # Fetching the current state first
         current_item_res = supabase.table('item') \
                                    .select('quantity, damaged_quantity') \
                                    .eq('id', item_id) \
@@ -88,16 +82,12 @@ def update_item_stock(current_user_id, item_id):
         current_stock = current_item_res.data.get('quantity', 0)
         current_damaged = current_item_res.data.get('damaged_quantity', 0)
 
-        #Extracting inputs from the frontend payload (assumes keys from React component)
+        
         stock_added = int(incoming_data.get('addStock', 0))
         damaged_removed = int(incoming_data.get('removeDamaged', 0))
-        
-        # Calculate New Values based on your business logic
         net_stock_change = stock_added - damaged_removed
-        
-        # B. Damaged Quantity Change: Add new damaged items
-        net_damaged_change = damaged_removed # We assume the input is the NEW TOTAL to add to damaged count
-        
+        net_damaged_change = damaged_removed
+
         new_total_stock = current_stock + net_stock_change
         new_total_damaged = current_damaged + net_damaged_change
         
@@ -129,8 +119,6 @@ def add_new_item(current_user_id):
     try:
         data = request.get_json()
         
-        # 1. Map input names to DB names (assuming React sends name, category_id, quantity, price, etc.)
-        # The frontend will be updated to send the category ID, not the name.
         item_record = {
             'item_name': data.get('name'),
             'item_category': int(data.get('category_id', 0)), 

@@ -107,7 +107,7 @@ const ReportsAddDeleteUpdate = () => {
                     name: newItemForm.name,
                     category_id: parseInt(newItemForm.category_id),
                     quantity: parseInt(newItemForm.quantity),
-                    price: 0 
+                    price: parseFloat(newItemForm.price) || 0
                 })
             });
 
@@ -127,22 +127,23 @@ const ReportsAddDeleteUpdate = () => {
     // 2. Start Editing
     const handleRenameClick = (item) => {
         setIsEditingId(item.id);
-
+        const categoryId = item.item_category?.id || '';
         setEditFormData({
             item_name: item.item_name,
-            item_category: item.item_category,
+            item_category: categoryId,
             price: item.price 
         });
     };
     
     // Save Edit/Rename/Category Change
     const handleSaveChanges = async (itemId) => {
+        const priceValue = parseFloat(editFormData.price);
         const payload = {
             item_name: editFormData.item_name,
-            price: parseFloat(editFormData.price), 
             item_category: editFormData.item_category 
                 ? parseInt(editFormData.item_category, 10) 
                 : undefined, 
+            price: isNaN(priceValue) ? 0 : priceValue, 
         };
 
         const cleanedPayload = Object.fromEntries(
@@ -493,16 +494,7 @@ const ReportsAddDeleteUpdate = () => {
                                             </td>
                                             <td>{item.quantity}</td>
                                             <td>
-                                                {isEditing ? (
-                                                    <input 
-                                                        type="number" 
-                                                        name="price" 
-                                                        value={editFormData.price}
-                                                        onChange={handleEditChange}
-                                                    />
-                                                ) : (
-                                                    `₱${item.price}`
-                                                )}
+                                                {`₱${item.price}`}
                                             </td>
                                             <td>{item.date_added}</td>
                                             <td>
