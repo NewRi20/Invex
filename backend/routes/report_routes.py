@@ -95,20 +95,21 @@ def get_sales_report(current_user_id):
 def add_sale(current_user_id):
     try:
         data = request.get_json()
-        item_id = data.get('item_id')
+        item_id = int(data.get('item_id'))
         quantity_sold = int(data.get('quantity'))
 
         if not item_id or not quantity_sold:
             return jsonify({'message': 'Item and Quantity are required'}), 400
 
         item_res = supabase.table('item') \
-                           .select('quantity') \
+                           .select('quantity, price') \
                            .eq('id', item_id) \
                            .single() \
                            .execute()
         
         item = item_res.data
         current_stock = item['quantity']
+        item_price = item['price']
 
         
         if current_stock < quantity_sold:
@@ -120,15 +121,12 @@ def add_sale(current_user_id):
             'unit_sold': quantity_sold,
         }
         sale_response = supabase.table('sale_report').insert(sale_record).execute()
-
         new_quantity = current_stock - quantity_sold
 
-        
         supabase.table('item') \
-                 .update({'quantity': new_quantity}) \
-                 .eq('id', item_id) \
-                 .execute()
-        
+                    .update({'quantity': new_quantity, 'price': item_price}) \
+                    .eq('id', item_id) \
+                    .execute()
         message = "Sale recorded and stock updated."
 
         return jsonify({'message': message, 'sale': sale_response.data}), 201
@@ -180,6 +178,7 @@ def delete_sale(current_user_id, sale_id):
 
     except Exception as e:
         return jsonify({'message': 'Error deleting sale', 'error': str(e)}), 500
+    
     
 
 # --- Edit Sale Stock Record ---
