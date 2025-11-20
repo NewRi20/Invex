@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 from supabase_client import supabase
 from auth_decorator import token_required
+from datetime import datetime
 
 item_bp = Blueprint('item_bp', __name__)
 
@@ -21,8 +22,7 @@ def get_items(current_user_id):
     except Exception as e:
         return jsonify({'message': 'Error fetching items', 'error': str(e)}), 500
 
-# --- 2. Get Categories (Public/Protected) ---
-# We use token_required just to be safe, though the data is generic
+# --- 2. Get Categories  ---
 @item_bp.route('/categories', methods=['GET'])
 @token_required
 def get_categories(current_user_id):
@@ -33,25 +33,35 @@ def get_categories(current_user_id):
         return jsonify({'message': 'Error fetching categories', 'error': str(e)}), 500
     
 
-# --- 3. Update Item Price (Protected) ---
+# --- 3. Update Item Price ---
 @item_bp.route('/<item_id>/price', methods=['PATCH'])
 @token_required
 def update_item_price(current_user_id, item_id):
     try:
         data = request.get_json()
-        new_price = data.get('price')
+        new_price_str = data.get('price') # Price comes as a string from frontend input
         
-        if new_price is None:
+        if new_price_str is None or new_price_str == "":
             return jsonify({'message': 'Price is required'}), 400
 
+        new_price_num = float(new_price_str)
+        
+        update_payload = {
+            'price': new_price_num,
+            'price_last_update': datetime.now().date().isoformat()
+        }
+        
         # Update the price in the database
         response = supabase.table('item') \
-                           .update({'price': new_price}) \
+                           .update(update_payload) \
                            .eq('id', item_id) \
                            .eq('user_id', current_user_id) \
                            .execute()
         
         return jsonify(response.data), 200
+    
+    except ValueError:
+         return jsonify({'message': 'Invalid price format. Must be a number.'}), 400
     except Exception as e:
         return jsonify({'message': 'Error updating price', 'error': str(e)}), 500
     
@@ -112,7 +122,7 @@ def update_item_stock(current_user_id, item_id):
     
 
 
-# --- 5. Add New Item (POST) ---
+# --- 5. Add New Item ---
 @item_bp.route('/add', methods=['POST'])
 @token_required
 def add_new_item(current_user_id):
@@ -146,8 +156,12 @@ def update_item_details(current_user_id, item_id):
     try:
         data = request.get_json()
         # Ensure only updatable fields are passed
-        updatable_fields = ['item_name', 'item_category', 'price', 'quantity', 'damaged_quantity']
+        updatable_fields = ['item_name', 'item_category', 'quantity', 'damaged_quantity']
         payload = {k: v for k, v in data.items() if k in updatable_fields}
+
+        if not payload:
+            return jsonify({'message': 'No valid fields provided for update.'}), 400
+        
         response = supabase.table('item') \
                            .update(payload) \
                            .eq('id', item_id) \
@@ -217,3 +231,22 @@ def delete_category(current_user_id, category_id):
         
     except Exception as e:
         return jsonify({'message': 'Error deleting category', 'error': str(e)}), 500
+    
+
+# --- Get Low Stock Items ---
+@item_bp.route('/low-stock', methods=['GET'])
+@token_required
+def get_low_stock_items(current_user_id):
+    try:
+        # Define the low stock threshold (e.g., quantity <= 5)
+        response = supabase.table('item') \
+                           .select('item_name, quantity') \
+                           .eq('user_id', current_user_id) \
+                           .lte('quantity', 5) \
+                           .order('quantity') \
+                           .limit(6) \
+                           .execute()
+        
+        return jsonify(response.data), 200
+    except Exception as e:
+        return jsonify({'message': 'Error fetching low stock list', 'error': str(e)}), 500

@@ -66,17 +66,13 @@ const Pricing = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${session.access_token}`
         },
-        body: JSON.stringify({ price: newPrice })
+        body: JSON.stringify({ price: newPrice.toString() })
       });
 
       if (!response.ok) throw new Error('Failed to update price');
 
       alert('Price updated successfully!');
-      
-      // Refresh the list to show the new price
       fetchItems(); 
-      
-      // Reset selection
       setSelectedItem(null);
       setNewPrice('');
 
@@ -115,7 +111,7 @@ const Pricing = () => {
             <div className="pricing-header-row">
               <div style={{flex: 2}}>Name</div>
               <div className="text-center" style={{flex: 1}}>Price</div>
-              <div className="text-right" style={{flex: 1}}>Date Added</div>
+              <div className="text-right" style={{flex: 1}}>Last Update</div>
             </div>
 
             {/* Table Data */}
@@ -134,7 +130,7 @@ const Pricing = () => {
                   >
                     <div style={{flex: 2}}>{item.item_name}</div>
                     <div className="text-center" style={{flex: 1}}>₱{item.price}</div>
-                    <div className="text-right" style={{flex: 1, fontSize: '12px'}}>{item.date_added}</div>
+                    <div className="text-right" style={{flex: 1, fontSize: '12px'}}>{item.price_last_update || item.date_added}</div>
                   </div>
                 ))
               )}
@@ -155,6 +151,13 @@ const Pricing = () => {
                 <div className="form-group">
                   <label className="label">Current Price:</label>
                   <div className="readonly-field">₱{selectedItem.price}</div>
+                </div>
+
+                <div className="form-group">
+                    <label className="label">Last Updated:</label>
+                    <div className="readonly-field">
+                        {selectedItem.price_last_update || selectedItem.date_added}
+                    </div>
                 </div>
 
                 <div className="form-group form-group-lg">
