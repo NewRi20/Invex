@@ -9,8 +9,6 @@ business_bp = Blueprint('business_bp', __name__)
 @token_required
 def get_my_business_info(current_user_id):
     try:
-        # The 'user_id' column in business_info is unique, so .single() is safe
-        # .maybe_single() returns None instead of an error if no row is found
         response = supabase.table('business_info') \
                            .select('*') \
                            .eq('user_id', current_user_id) \
