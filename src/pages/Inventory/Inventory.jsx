@@ -3,38 +3,34 @@ import Layout from '../../components/Layout';
 import './Inventory.css';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../AuthProvider';
-import { Search } from 'lucide-react'; // Import Search icon
+import { Search } from 'lucide-react'; 
 
 const Inventory = () => {
     const { session } = useAuth();
     const location = useLocation();
     const [activeTab, setActiveTab] = useState('all-items');
-    
-    // --- State for Data ---
     const [allItems, setAllItems] = useState([]);
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
-    // [filteredItems] is no longer needed, as we filter everything on demand.
     const [searchQuery, setSearchQuery] = useState('');
 
-    // --- Search Handler ---
+    
     const handleSearch = (e) => {
         setSearchQuery(e.target.value);
     };
 
-    // --- Fetch Data from Backend (Unchanged) ---
+    
     useEffect(() => {
         if (session) {
             const fetchData = async () => {
                 setLoading(true);
                 try {
-                    // 1. Fetch All Items (with category name join)
+                    
                     const itemsRes = await fetch('/api/items/', {
                         headers: { 'Authorization': `Bearer ${session.access_token}` }
                     });
                     
 
-                    // 2. Fetch Categories
                     const catRes = await fetch('/api/items/categories', {
                         headers: { 'Authorization': `Bearer ${session.access_token}` }
                     });
@@ -92,7 +88,6 @@ const Inventory = () => {
     
     const dataToShow = getVisibleData(); 
 
-    // --- Helpers for Tab Logic (Unchanged) ---
     useEffect(() => {
         if(location.pathname.startsWith('/inventory/')){
             const tab = location.pathname.split('/').pop();
@@ -139,8 +134,6 @@ const Inventory = () => {
 
             {/* Inventory Table */}
             <div className="table-card">
-                
-                {/* Search Input for filtering items */}
                 {activeTab !== 'categories' && (
                     <div className="inventory-search-wrap">
                         <input

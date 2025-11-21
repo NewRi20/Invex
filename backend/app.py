@@ -8,7 +8,6 @@ from routes.report_routes import report_bp
 
 
 app = Flask(__name__)
-# Enable CORS for your React app
 CORS(app) 
 
 
@@ -19,10 +18,10 @@ app.register_blueprint(business_bp, url_prefix='/api/business')
 
 
 
-# A simple health check route
+
 @app.route('/')
 def home():
     return jsonify({'status': 'Flask backend is running!'})
 
 if __name__ == '__main__':
-    app.run(debug=True) # Runs on http://127.0.0.1:5000
+    app.run(debug=True) 

@@ -27,7 +27,7 @@ const ReportsSalesRevenue = () => {
     quantity: ''
   });
 
-  // --- 1. Fetch Report Data ---
+  
   const fetchReport = async () => {
     setLoading(true);
     try {
@@ -44,7 +44,7 @@ const ReportsSalesRevenue = () => {
     }
   };
 
-  // --- Fetch Inventory List (For the Modal Dropdown) ---
+  
   const fetchInventoryList = async () => {
     try {
       const response = await fetch('/api/items/', {
@@ -60,7 +60,7 @@ const ReportsSalesRevenue = () => {
     }
   };
 
-  // Initial Load
+  
   useEffect(() => {
     if (session) {
       fetchReport();
@@ -69,7 +69,7 @@ const ReportsSalesRevenue = () => {
   }, [session, filter]);
 
 
-  // --- Handle Add Sale Submit ---
+  
   const handleSaleSubmit = async (e) => {
     e.preventDefault();
     if (!saleForm.item_id || !saleForm.quantity) {
@@ -88,7 +88,6 @@ const ReportsSalesRevenue = () => {
         });
 
         if (!response.ok) {
-            // Read the specific error message from Flask
             const errorData = await response.json();
             throw new Error(errorData.message || "Failed to record sale");
         }
@@ -131,9 +130,9 @@ const ReportsSalesRevenue = () => {
     }
   };
 
-  // --- Save Edited Quantity ---
+  
   const handleSaveEdit = async (saleId) => {
-      // 1. Get the new quantity from the input state
+      
       const newQuantity = parseInt(editQuantity, 10);
       
       if (isNaN(newQuantity) || newQuantity <= 0) {
@@ -142,7 +141,7 @@ const ReportsSalesRevenue = () => {
       }
 
       try {
-          // 2. Send PATCH request to the backend's sale correction endpoint
+          
           const response = await fetch(`/api/reports/${saleId}`, {
               method: 'PATCH',
               headers: {
@@ -197,8 +196,6 @@ const ReportsSalesRevenue = () => {
                 data.raw_sales.map((sale, index) => {
 
                     const isEditing = editingSaleId === sale.id;
-
-                    // Check if the item was deleted (item is null)
                     const itemName = sale.item?.item_name || 'UNLISTED ITEM';
                     const itemPrice = sale.item?.price || 0;
                     const revenue = sale.unit_sold * itemPrice;
@@ -267,7 +264,6 @@ const ReportsSalesRevenue = () => {
 
         {/* --- ACTION ROW --- */}
         <div className="reportsales-inputrow">
-          {/* Replaced inputs with a generic "Add Sale" button that opens Modal */}
           <div style={{flex: 1, display: 'flex', alignItems: 'center', gap: '10px'}}>
              <span style={{fontSize: '14px', opacity: 0.7}}>Record a new transaction:</span>
           </div>

@@ -229,3 +229,51 @@
   font-size: 14px;
   padding: 4px 0;
 }
+
+
+/* --- TABLET LAYOUT (Max 1024px wide) --- */
+@media screen and (max-width: 1024px) {
+    /* 1. Reduce the main 4-column row to 2 columns */
+    .first-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* 2. Low Cards Inner container also reduces to 1 column for better stacking */
+    .third-row .inner-container-lowCards {
+        grid-template-columns: 1fr; 
+    }
+}
+
+
+/* --- MOBILE LAYOUT (Max 600px wide) --- */
+@media screen and (max-width: 600px) {
+    /* 1. Stack ALL main content rows into 1 single column */
+    .first-row,
+    .second-row,
+    .third-row {
+        grid-template-columns: 1fr;
+    }
+
+    /* 2. The inner-container must also be stacked */
+    .third-row .inner-container-lowCards {
+        grid-template-columns: 1fr; 
+        /* Added margin to separate it visually from the item list below */
+        margin-bottom: 10px; 
+    }
+    
+    /* 3. Reduce large font sizes for better fit on small screens */
+    .priceUpdate h3,
+    .newItems h3,
+    .allItems h3,
+    .damagedItems h3,
+    .salesCard h3,
+    .revenueGrowthCard h3,
+    .inner-container-lowCards .lowStockCard h3 {
+        font-size: 50px; /* Reduced from 70px */
+    }
+    
+    /* 4. Increase padding on the welcome card for better touch targets */
+    .welcome-card {
+        padding: 15px 10px;
+    }
+}
