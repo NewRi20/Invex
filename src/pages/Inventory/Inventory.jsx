@@ -32,7 +32,7 @@ const Inventory = () => {
                     const itemsRes = await fetch('/api/items/', {
                         headers: { 'Authorization': `Bearer ${session.access_token}` }
                     });
-                    const itemsData = await itemsRes.json();
+                    
 
                     // 2. Fetch Categories
                     const catRes = await fetch('/api/items/categories', {
@@ -40,7 +40,11 @@ const Inventory = () => {
                     });
                     const catData = await catRes.json();
 
-                    if (itemsRes.ok) setAllItems(itemsData);
+                    if (itemsRes.ok) {
+                        const itemsResponse = await itemsRes.json();
+                        const itemList = Array.isArray(itemsResponse.items) ? itemsResponse.items : [];
+                        setAllItems(itemList);
+                    };
                     if (catRes.ok) setCategories(catData);
 
                 } catch (error) {

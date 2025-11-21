@@ -14,10 +14,35 @@ def get_items(current_user_id):
                            .select('*, item_category(name)') \
                            .eq('user_id', current_user_id) \
                            .execute()
-        
-        return jsonify(response.data), 200
+        all_items = response.data
+        total_inventory_value = 0
+
+        for item in all_items:
+            quantity_str = item.get('quantity')
+            price_str = item.get('price')
+            
+            
+            def safe_float_convert(value):
+                try:
+                    return float(str(value).replace(',', '').strip())
+                except (ValueError, TypeError):
+                    return 0.0
+
+            quantity = safe_float_convert(quantity_str)
+            price = safe_float_convert(price_str)
+            
+            if quantity > 0 and price > 0:
+                total_inventory_value += quantity * price
+
+
+        return jsonify({
+            'items': all_items,
+            'totalInventoryValue': total_inventory_value 
+        }), 200
     except Exception as e:
         return jsonify({'message': 'Error fetching items', 'error': str(e)}), 500
+    
+
 
 # --- 2. Get Categories  ---
 @item_bp.route('/categories', methods=['GET'])

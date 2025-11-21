@@ -31,10 +31,12 @@ const ReportsStocks = () => {
             const data = await response.json();
             
             // Extract the simple name from the nested object (item_category)
-            const processedData = data.map(item => ({
+            const processedData = Array.isArray(data.items)
+            ? data.items.map(item => ({
                 ...item,
                 categoryName: item.item_category?.name || 'Uncategorized',
-            }));
+            }))
+            : [];
 
             setAllItems(processedData);
             setFilteredItems(processedData);

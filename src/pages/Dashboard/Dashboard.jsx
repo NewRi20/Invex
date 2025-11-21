@@ -19,7 +19,7 @@ const Dashboard = () => {
         totalSales: 0,
         lowStockCount: 0,
         lowStockList: [],
-        revenueGrowth: 'N/A',
+        totalInventoryValue: 0,
         priceUpdates: 0,
         salesData: {}, 
     });
@@ -42,30 +42,26 @@ const Dashboard = () => {
         setLoading(true);
 
         const headers = { 'Authorization': `Bearer ${session.access_token}` };
-        
-        //Send the filter to the Sales Report Endpoint
         const salesUrl = `/api/reports/sales?filter=${filter}`;
         
         const fetchPromises = [
             fetch(salesUrl, { headers }).then(res => res.json()), 
-            fetch('/api/items/', { headers }).then(res => res.json()),         
+            fetch('/api/items/', { headers }).then(res => res.ok ? res.json() : { items: [], totalInventoryValue: 0 }),         
             fetch('/api/items/low-stock', { headers }).then(res => res.json()), 
         ];
 
         try {
-            const [salesReport, allItemsData, lowStockList] = await Promise.all(fetchPromises);
-
-            const safeAllItems = Array.isArray(allItemsData) ? allItemsData : [];
+            const [salesReport, itemReport, lowStockList] = await Promise.all(fetchPromises);
+            const safeAllItems = Array.isArray(itemReport.items) ? itemReport.items : [];
+            const totalInventoryValue = itemReport.totalInventoryValue  || 0;
             
-            // 1. Calculate 'New Items' based on the selected filter range
             const dateThreshold = getDateRange(filter);
+
             const damagedItems = safeAllItems.filter(item => item.damaged_quantity > 0);
-            
             const newItems = safeAllItems.filter(item => {
                 const dateAdded = new Date(item.date_added);
                 return dateAdded >= dateThreshold;
             });
-
             const newPriceUpdates = safeAllItems.filter(item => {
                 if (!item.price_last_update) return false; 
                 const priceUpdatedDate = new Date(item.price_last_update);
@@ -86,7 +82,7 @@ const Dashboard = () => {
                 
                 lowStockCount: lowStockList.length,
                 lowStockList: lowStockList,
-                revenueGrowth: 'N/A', // Placeholder
+                totalInventoryValue: totalInventoryValue,
             });
 
         } catch (error) {
@@ -190,11 +186,11 @@ const Dashboard = () => {
 
                 <div className='revenueGrowthCard'>
                     <div className='title-section'>
-                        <p className='title'>Revenue Growth</p>
-                        <span className="arrowIcon" onClick={() => navigate('/reports/sales/sales-revenue')}></span>
+                        <p className='title'>Total Inventory Value</p>
+                        <span className="arrowIcon" onClick={() => navigate('/inventory/all-items')}></span>
                     </div>
-                    <div><h3>{stats.revenueGrowth}</h3></div>
-                    <p className='desc'>Review revenue growth this week comparing last week</p>
+                    <div><h3>₱{stats.totalInventoryValue.toLocaleString('en-US', { minimumFractionDigits: 2 })}</h3></div>
+                    <p className='desc'>Value of all saleable stock in inventory</p>
                 </div>
 
             </div>

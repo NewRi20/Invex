@@ -43,10 +43,12 @@ const ReportsAddDeleteUpdate = () => {
             });
             const catData = await catRes.json();
 
-            const processedData = itemsData.map(item => ({
+            const processedData = Array.isArray(itemsData.items)
+            ? itemsData.items.map(item => ({
                 ...item,
                 categoryName: item.item_category?.name || 'Uncategorized',
-            }));
+            }))
+            : [];
 
             setAllItems(processedData);
             setFilteredItems(processedData);

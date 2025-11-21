@@ -30,11 +30,20 @@ const Pricing = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        setItems(data);
-        setFilteredItems(data);
-      }
+        const itemList = Array.isArray(data.items) ? data.items : [];
+        setItems(itemList);
+        setFilteredItems(itemList);
+      } else {
+             // Handle server error responses (e.g., 500)
+             const errorBody = await response.json().catch(() => ({ message: 'Server error' }));
+             console.error("API Error:", errorBody.message);
+             setItems([]);
+             setFilteredItems([]);
+        }
     } catch (error) {
-      console.error("Error fetching items:", error);
+      console.error("Network Error fetching items:", error);
+      setItems([]);
+      setFilteredItems([]);
     } finally {
       setLoading(false);
     }

@@ -11,19 +11,21 @@ def get_sales_report(current_user_id):
     try:
 
         time_filter = request.args.get('filter', 'day')
-        today = datetime.now().date()
+        local = datetime.now()
         if time_filter == 'week':
-            start_date = today - timedelta(days=7)
+            start_date = local - timedelta(days=7)
         elif time_filter == 'month':
-            start_date = today - timedelta(days=30)
+            start_date = local - timedelta(days=30)
         else: # 'day'
-            start_date = today
+            start_date = datetime.utcnow().replace(
+                hour=0, minute=0, second=0, microsecond=0
+            ).isoformat() + 'Z'
 
         # Fetch Sales Data (Fixed Join Syntax to be simpler)
         response = supabase.table('sale_report') \
                            .select('*, item(id, item_name, price, item_category(name))') \
                            .eq('user_id', current_user_id) \
-                           .gte('sale_date', start_date.isoformat()) \
+                           .gte('sale_date', start_date) \
                            .execute()
         
         sales_data = response.data

@@ -51,8 +51,9 @@ const ReportsSalesRevenue = () => {
         headers: { 'Authorization': `Bearer ${session.access_token}` }
       });
       if (response.ok) {
-        const items = await response.json();
-        setInventoryItems(items);
+        const itemsResponse = await response.json();
+        const itemList = Array.isArray(itemsResponse.items) ? itemsResponse.items : [];
+        setInventoryItems(itemList);
       }
     } catch (error) {
       console.error("Error fetching items list:", error);
@@ -205,7 +206,6 @@ const ReportsSalesRevenue = () => {
                     return (
                         <tr key={index}>
                             <td>{itemName}</td> 
-                            {/* <td>{sale.unit_sold}</td> */}
                             <td className="text-center">
                                 {isEditing ? (
                                     <input 
