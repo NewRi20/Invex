@@ -24,4 +24,4 @@ def home():
     return jsonify({'status': 'Flask backend is running!'})
 
 if __name__ == '__main__':
-    app.run(debug=True) 
+    app.run() 
