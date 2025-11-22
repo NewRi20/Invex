@@ -6,18 +6,26 @@ from routes.item_routes import item_bp
 from routes.business_routes import business_bp
 from routes.report_routes import report_bp
 
+import re
 
 app = Flask(__name__)
-CORS(app, resources={
-    r"/api/*": {
-        "origins": [
-            "http://localhost:5173",
-            "https://invex-five.vercel.app/"
-        ],
-        "allow_headers": ["Content-Type", "Authorization"],
-        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
-    }
-})
+
+# Allow requests from localhost and any Vercel deployment
+def is_allowed_origin(origin):
+    if not origin:
+        return False
+    allowed_patterns = [
+        r'^http://localhost:\d+$',
+        r'^https://.*\.vercel\.app$',
+    ]
+    return any(re.match(pattern, origin) for pattern in allowed_patterns)
+
+# Simple CORS - Allow all Vercel subdomains
+CORS(app, 
+     origins=lambda origin, *args: origin if is_allowed_origin(origin) else None,
+     allow_headers=["Content-Type", "Authorization"],
+     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+     supports_credentials=True)
 
 
 app.register_blueprint(report_bp, url_prefix='/api/reports')
