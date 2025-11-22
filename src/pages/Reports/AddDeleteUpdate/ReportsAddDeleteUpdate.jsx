@@ -1,7 +1,8 @@
 import { Search, X } from 'lucide-react';
 import React, { useState, useEffect, useCallback } from 'react';
 import './ReportsAddDeleteUpdate.css';
-import { useAuth } from '../../../AuthProvider'; 
+import { useAuth } from '../../../AuthProvider';
+import { API_BASE_URL } from '../../../config'; 
 
 
 const ReportsAddDeleteUpdate = () => {
@@ -32,13 +33,13 @@ const ReportsAddDeleteUpdate = () => {
         setLoading(true);
         try {
             // Fetch All Items for display/editing
-            const itemsRes = await fetch('/api/items/', {
+            const itemsRes = await fetch(`${API_BASE_URL}/items/`, {
                 headers: { 'Authorization': `Bearer ${session.access_token}` }
             });
             const itemsData = await itemsRes.json();
             
             // Fetch Categories for the dropdowns
-            const catRes = await fetch('/api/items/categories', {
+            const catRes = await fetch(`${API_BASE_URL}/items/categories`, {
                  headers: { 'Authorization': `Bearer ${session.access_token}` }
             });
             const catData = await catRes.json();
@@ -99,7 +100,7 @@ const ReportsAddDeleteUpdate = () => {
         e.preventDefault();
         
         try {
-            const response = await fetch('/api/items/add', {
+            const response = await fetch(`${API_BASE_URL}/items/add`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -153,7 +154,7 @@ const ReportsAddDeleteUpdate = () => {
         );
 
         try {
-            const response = await fetch(`/api/items/${itemId}`, {
+            const response = await fetch(`${API_BASE_URL}/items/${itemId}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -182,7 +183,7 @@ const ReportsAddDeleteUpdate = () => {
         if (!window.confirm("Are you sure you want to delete this item? This action cannot be undone.")) return;
         
         try {
-            const response = await fetch(`/api/items/${itemId}`, {
+            const response = await fetch(`${API_BASE_URL}/items/${itemId}`, {
                 method: 'DELETE',
                  headers: { 'Authorization': `Bearer ${session.access_token}` }
             });
@@ -224,7 +225,7 @@ const ReportsAddDeleteUpdate = () => {
 
 
         try {
-            const response = await fetch('/api/items/categories', {
+            const response = await fetch(`${API_BASE_URL}/items/categories`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -255,7 +256,7 @@ const ReportsAddDeleteUpdate = () => {
         }
 
         try {
-            const response = await fetch(`/api/items/categories/${categoryId}`, {
+            const response = await fetch(`${API_BASE_URL}/items/categories/${categoryId}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${session.access_token}` }
             });

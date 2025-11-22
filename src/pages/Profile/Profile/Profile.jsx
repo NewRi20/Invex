@@ -6,6 +6,7 @@ import './Profile.css';
 
 // 1. Import your Auth hook
 import { useAuth } from '../../../AuthProvider';
+import { API_BASE_URL } from '../../../config';
 
 // Removed imports for BusinessProfileEdit and OwnerProfileEdit
 // as we'll handle the edit logic inline.
@@ -50,7 +51,7 @@ const Profile = () => {
       const fetchBusinessInfo = async () => {
         setIsLoadingBusiness(true);
         try {
-          const response = await fetch('/api/business/me', {
+          const response = await fetch(`${API_BASE_URL}/business/me`, {
             headers: { 'Authorization': `Bearer ${session.access_token}` }
           });
 
@@ -100,7 +101,7 @@ const Profile = () => {
 
     try {
       // Call your Flask backend's PUT /api/users/me endpoint
-      const response = await fetch('/api/users/me', {
+      const response = await fetch(`${API_BASE_URL}/users/me`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -160,7 +161,7 @@ const Profile = () => {
 
     try {
       // Call our new PUT /api/business/me endpoint
-      const response = await fetch('/api/business/me', {
+      const response = await fetch(`${API_BASE_URL}/business/me`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

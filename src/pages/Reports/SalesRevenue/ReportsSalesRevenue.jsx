@@ -2,6 +2,7 @@ import { Search, TrendingUp, ChevronDown, Plus, X } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import './ReportsSalesRevenue.css';
 import { useAuth } from '../../../AuthProvider';
+import { API_BASE_URL } from '../../../config';
 
 const ReportsSalesRevenue = () => {
   const { session } = useAuth();
@@ -31,7 +32,7 @@ const ReportsSalesRevenue = () => {
   const fetchReport = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/reports/sales?filter=${filter}`, {
+      const response = await fetch(`${API_BASE_URL}/reports/sales?filter=${filter}`, {
         headers: { 'Authorization': `Bearer ${session.access_token}` }
       });
       if (!response.ok) throw new Error("Failed to fetch report");
@@ -47,7 +48,7 @@ const ReportsSalesRevenue = () => {
   
   const fetchInventoryList = async () => {
     try {
-      const response = await fetch('/api/items/', {
+      const response = await fetch(`${API_BASE_URL}/items/`, {
         headers: { 'Authorization': `Bearer ${session.access_token}` }
       });
       if (response.ok) {
@@ -78,7 +79,7 @@ const ReportsSalesRevenue = () => {
     }
 
     try {
-        const response = await fetch('/api/reports/sales', {
+        const response = await fetch(`${API_BASE_URL}/reports/sales`, {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
@@ -111,7 +112,7 @@ const ReportsSalesRevenue = () => {
     }
 
     try {
-        const response = await fetch(`/api/reports/${saleId}`, { 
+        const response = await fetch(`${API_BASE_URL}/reports/${saleId}`, { 
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${session.access_token}` }
         });
@@ -142,7 +143,7 @@ const ReportsSalesRevenue = () => {
 
       try {
           
-          const response = await fetch(`/api/reports/${saleId}`, {
+          const response = await fetch(`${API_BASE_URL}/reports/${saleId}`, {
               method: 'PATCH',
               headers: {
                   'Content-Type': 'application/json',

@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Search } from 'lucide-react';
 import './ReportStocks.css';
-import { useAuth } from '../../../AuthProvider'; // Import Auth
+import { useAuth } from '../../../AuthProvider';
+import { API_BASE_URL } from '../../../config'; // Import Auth
 
 const ReportsStocks = () => {
     const { session } = useAuth();
@@ -25,7 +26,7 @@ const ReportsStocks = () => {
         setLoading(true);
         try {
             // Re-using the /api/items/ route to get all user items
-            const response = await fetch('/api/items/', {
+            const response = await fetch(`${API_BASE_URL}/items/`, {
                 headers: { 'Authorization': `Bearer ${session.access_token}` }
             });
             const data = await response.json();
@@ -110,7 +111,7 @@ const ReportsStocks = () => {
         
         try {
             // 2. Call PATCH endpoint
-            const response = await fetch(`/api/items/${itemId}/stock`, {
+            const response = await fetch(`${API_BASE_URL}/items/${itemId}/stock`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
