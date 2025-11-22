@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
+import { API_BASE_URL } from './config';
 
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -70,7 +71,7 @@ export function AuthProvider({ children }) {
       const token = sessionData.access_token;
       console.log('Got session token.'); 
 
-      const response = await fetch('/api/users/me', {
+      const response = await fetch(`${API_BASE_URL}/users/me`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },

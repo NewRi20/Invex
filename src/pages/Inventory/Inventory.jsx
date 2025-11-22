@@ -3,6 +3,7 @@ import Layout from '../../components/Layout';
 import './Inventory.css';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../AuthProvider';
+import { API_BASE_URL } from '../../config';
 import { Search } from 'lucide-react'; 
 
 const Inventory = () => {
@@ -26,12 +27,12 @@ const Inventory = () => {
                 setLoading(true);
                 try {
                     
-                    const itemsRes = await fetch('/api/items/', {
+                    const itemsRes = await fetch(`${API_BASE_URL}/items/`, {
                         headers: { 'Authorization': `Bearer ${session.access_token}` }
                     });
                     
 
-                    const catRes = await fetch('/api/items/categories', {
+                    const catRes = await fetch(`${API_BASE_URL}/items/categories`, {
                         headers: { 'Authorization': `Bearer ${session.access_token}` }
                     });
                     const catData = await catRes.json();

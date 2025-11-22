@@ -3,6 +3,7 @@ import Layout from '../../components/Layout';
 import { useNavigate, useLocation } from 'react-router-dom'; 
 import './Dashboard.css';
 import { useAuth } from '../../AuthProvider';
+import { API_BASE_URL } from '../../config';
 import { ChevronDown } from 'lucide-react'; 
 
 const Dashboard = () => {
@@ -42,12 +43,12 @@ const Dashboard = () => {
         setLoading(true);
 
         const headers = { 'Authorization': `Bearer ${session.access_token}` };
-        const salesUrl = `/api/reports/sales?filter=${filter}`;
+        const salesUrl = `${API_BASE_URL}/reports/sales?filter=${filter}`;
         
         const fetchPromises = [
             fetch(salesUrl, { headers }).then(res => res.json()), 
-            fetch('/api/items/', { headers }).then(res => res.ok ? res.json() : { items: [], totalInventoryValue: 0 }),         
-            fetch('/api/items/low-stock', { headers }).then(res => res.json()), 
+            fetch(`${API_BASE_URL}/items/`, { headers }).then(res => res.ok ? res.json() : { items: [], totalInventoryValue: 0 }),         
+            fetch(`${API_BASE_URL}/items/low-stock`, { headers }).then(res => res.json()), 
         ];
 
         try {

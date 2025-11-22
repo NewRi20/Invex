@@ -3,6 +3,7 @@ import Layout from '../../components/Layout';
 import { Search } from 'lucide-react';
 import './Pricing.css';
 import { useAuth } from '../../AuthProvider';
+import { API_BASE_URL } from '../../config';
 import { useNavigate } from 'react-router-dom';
 
 const Pricing = () => {
@@ -37,7 +38,7 @@ const Pricing = () => {
   const fetchItems = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/items/', {
+      const response = await fetch(`${API_BASE_URL}/items/`, {
         headers: { 'Authorization': `Bearer ${session.access_token}` }
       });
       if (response.ok) {
@@ -83,7 +84,7 @@ const Pricing = () => {
     if (!selectedItem || !newPrice) return;
 
     try {
-      const response = await fetch(`/api/items/${selectedItem.id}/price`, {
+      const response = await fetch(`${API_BASE_URL}/items/${selectedItem.id}/price`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

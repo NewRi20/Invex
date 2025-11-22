@@ -8,7 +8,16 @@ from routes.report_routes import report_bp
 
 
 app = Flask(__name__)
-CORS(app) 
+CORS(app, resources={
+    r"/api/*": {
+        "origins": [
+            "http://localhost:5173",
+            "https://invex-five.vercel.app/"
+        ],
+        "allow_headers": ["Content-Type", "Authorization"],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+    }
+})
 
 
 app.register_blueprint(report_bp, url_prefix='/api/reports')
