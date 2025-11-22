@@ -6,26 +6,14 @@ from routes.item_routes import item_bp
 from routes.business_routes import business_bp
 from routes.report_routes import report_bp
 
-import re
-
 app = Flask(__name__)
 
-# Allow requests from localhost and any Vercel deployment
-def is_allowed_origin(origin):
-    if not origin:
-        return False
-    allowed_patterns = [
-        r'^http://localhost:\d+$',
-        r'^https://.*\.vercel\.app$',
-    ]
-    return any(re.match(pattern, origin) for pattern in allowed_patterns)
-
-# Simple CORS - Allow all Vercel subdomains
+# Configure CORS to allow all Vercel deployments
 CORS(app, 
-     origins=lambda origin, *args: origin if is_allowed_origin(origin) else None,
+     resources={r"/api/*": {"origins": "*"}},
      allow_headers=["Content-Type", "Authorization"],
      methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-     supports_credentials=True)
+     supports_credentials=False)
 
 
 app.register_blueprint(report_bp, url_prefix='/api/reports')
