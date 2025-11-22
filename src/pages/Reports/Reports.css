@@ -42,3 +42,37 @@
   font-size: 14px;
   opacity: 0.8;
 }
+
+/* Responsive: reports grid */
+@media (max-width: 1024px) {
+  .reports-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .report-card {
+    padding: 14px 16px;
+  }
+
+  .report-card-title { font-size: 16px; }
+}
+
+@media (max-width: 600px) {
+  .reports-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .report-card {
+    padding: 12px 14px;
+    border-radius: 12px;
+  }
+
+  .report-card-title { font-size: 15px; }
+  .report-card-desc { font-size: 13px; }
+}
+
+/* Small tweak so active state has consistent contrast on mobile */
+@media (max-width: 420px) {
+  .report-card.active { padding: 12px 14px; }
+}

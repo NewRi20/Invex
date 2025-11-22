@@ -11,6 +11,31 @@
   color: var(--white);
 }
 
+/* Hamburger placed left of title on tablet/mobile */
+.hamburger {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--white);
+  margin-right: 12px;
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.hamburger svg { color: var(--white); }
+
+@media (max-width: 1024px) {
+  .hamburger { display: inline-flex; }
+  /* move title slightly to the right when hamburger present */
+  .header-title { margin-left: 0; }
+}
+
+@media (max-width: 600px) {
+  .hamburger { display: inline-flex; }
+  .header { padding: 12px 18px; }
+}
+
 
 
 .profileIcon {

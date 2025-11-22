@@ -15,6 +15,18 @@ const Pricing = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  // Format ISO/date strings to a human-friendly date + time
+  const formatDateTime = (value) => {
+    if (!value) return '';
+    try {
+      const d = new Date(value);
+      if (Number.isNaN(d.getTime())) return value; // fallback to original
+      return d.toLocaleString(); // respects user's locale, includes date and time
+    } catch (e) {
+      return value;
+    }
+  };
+
   // --- 1. Fetch Items ---
   useEffect(() => {
     if (session) {
@@ -133,7 +145,14 @@ const Pricing = () => {
               ) : filteredItems.length === 0 ? (
                 <div style={{padding: '20px', textAlign: 'center'}}>No items found</div>
               ) : (
-                filteredItems.map((item) => (
+                filteredItems
+                  .slice()
+                  .sort((a, b) => {
+                    const aDate = new Date(a.price_last_update || a.date_added);
+                    const bDate = new Date(b.price_last_update || b.date_added);
+                    return bDate - aDate;
+                  })
+                  .map((item) => (
                   <div 
                     key={item.id} 
                     className={`pricing-row ${selectedItem?.id === item.id ? 'active' : ''}`}
@@ -142,7 +161,7 @@ const Pricing = () => {
                   >
                     <div style={{flex: 2}}>{item.item_name}</div>
                     <div className="text-center" style={{flex: 1}}>₱{item.price}</div>
-                    <div className="text-right" style={{flex: 1, fontSize: '12px'}}>{item.price_last_update || item.date_added}</div>
+                    <div className="text-right" style={{flex: 1, fontSize: '12px'}}>{formatDateTime(item.price_last_update || item.date_added)}</div>
                   </div>
                 ))
               )}
@@ -168,7 +187,7 @@ const Pricing = () => {
                 <div className="form-group">
                     <label className="label">Last Updated:</label>
                     <div className="readonly-field">
-                        {selectedItem.price_last_update || selectedItem.date_added}
+                        {formatDateTime(selectedItem.price_last_update || selectedItem.date_added)}
                     </div>
                 </div>
 

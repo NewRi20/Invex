@@ -69,3 +69,79 @@
 .table tbody tr:last-child td {
   border-bottom: none;
 }
+
+/* ------------------ Responsive rules ------------------ */
+/* Tablet: two-column summary cards, slightly larger touch targets */
+@media (max-width: 1024px) {
+  .summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .summary-card {
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .inventory-search-wrap {
+    width: 45%;
+  }
+}
+
+/* Mobile: single-column summary cards and responsive table */
+@media (max-width: 600px) {
+  .summary-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .summary-card {
+    padding: 14px 16px;
+    border-radius: 12px;
+  }
+
+  .summary-card .title { font-size: 15px; }
+  .summary-card .desc { font-size: 13px; }
+
+  .inventory-search-wrap {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  /* Make table horizontally scrollable on small screens */
+  .table-card {
+    overflow-x: auto;
+  }
+
+  .table {
+    display: block;
+    width: 100%;
+    min-width: 600px; /* allow horizontal scroll when necessary */
+    white-space: nowrap;
+  }
+
+  /* Hide less important columns to improve readability on narrow screens */
+  .table thead th:nth-child(5),
+  .table thead th:nth-child(6),
+  .table thead th:nth-child(7),
+  .table tbody td:nth-child(5),
+  .table tbody td:nth-child(6),
+  .table tbody td:nth-child(7) {
+    display: none;
+  }
+
+  /* Reduce padding for table cells on mobile */
+  .table thead th,
+  .table tbody td {
+    padding: 8px 10px;
+  }
+
+  /* Smaller monospace id display */
+  .table tbody td:first-child { font-size: 11px; }
+}
+
+/* Very small devices: ensure summary grid spacing is compact */
+@media (max-width: 380px) {
+  .summary-grid { gap: 10px; }
+  .summary-card { padding: 12px; }
+}

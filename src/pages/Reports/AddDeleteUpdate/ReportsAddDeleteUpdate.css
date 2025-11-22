@@ -97,7 +97,7 @@
     border: 1px solid var(--primary-bg);
     outline: none;
     border-radius: 10px;
-    margin: 0 0 0 20px;
+  margin: 0 0 0 20px;
 }
 
 .reportadu-search {
@@ -122,6 +122,10 @@
   border-radius: var(--border-radius);
   padding: 0;
   overflow: hidden;
+}
+
+.reportadu-tablewrap .text-right {
+  text-align: right;
 }
 
 /* Action Buttons */
@@ -149,6 +153,33 @@
 
 .reportadu-additem .btn.btn-secondary:hover {
   background-color: var(--peach-bg-light);
+}
+
+/* Responsive: collapse the 3-column inputs into 2/1 columns */
+@media (max-width: 900px) {
+  .reportadu-additem-inputs {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .reportadu-searchwrap {
+    margin: 0 0 12px 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .reportadu-additem-inputs {
+    grid-template-columns: 1fr;
+  }
+
+  .reportadu-additem-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .reportadu-additem-btn {
+    width: 100%;
+  }
 }
 
 

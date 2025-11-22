@@ -256,6 +256,21 @@
   color: var(--white);
 }
 
+/* Responsive rules for Sales & Revenue */
+@media (max-width: 900px) {
+  .reportsales-inputrow { flex-direction: column; gap: 10px; }
+  .reportsales-inputrow .reportsales-input { width: 100%; }
+  .reportsales-summarycards { grid-template-columns: 1fr; }
+  .reportsales-display { max-height: 400px; }
+}
+
+@media (max-width: 600px) {
+  .reportsales-main { padding: 12px; }
+  .reportsales-header { padding: 12px; }
+  .reportsales-display table { min-width: 600px; }
+  .modal-content { padding: 16px; max-width: 95%; }
+}
+
 .modal-header {
   display: flex;
   justify-content: space-between;

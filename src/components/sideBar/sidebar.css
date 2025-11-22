@@ -13,6 +13,28 @@
   z-index: 1000;
 }
 
+/* Toggle button for tablet/mobile */
+.sidebar-toggle {
+  display: none;
+  position: fixed;
+  left: 12px;
+  top: 12px;
+  z-index: 1100;
+  background: var(--white);
+  border: none;
+  border-radius: 6px;
+  padding: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+  cursor: pointer;
+}
+
+.sidebar-toggle svg { color: var(--text-dark); }
+
+/* Overlay when sidebar is open on mobile */
+.sidebar-overlay {
+  display: none;
+}
+
 .sidebar .sidebar-header {
   padding: 0 0 15px;
   border-bottom: none;
@@ -100,11 +122,45 @@
 
 /* TABLET LAYOUT (Max 1024px wide) */
 @media screen and (max-width: 1024px) {
-    .sidebar {
-        width: 100px; 
-        padding: 15px 10px;
-        align-items: center;
-    }
+  .sidebar {
+    width: 100px; 
+    padding: 15px 10px;
+    align-items: center;
+    /* hide by default on tablet, slide in when .open */
+    transform: translateX(-120%);
+    transition: transform 200ms ease;
+  }
+
+  /* show toggle button on tablet */
+  .sidebar-toggle { display: block; }
+
+  /* overlay visible when sidebar has open class */
+  .sidebar.open + .sidebar-overlay,
+  .sidebar-overlay {
+    /* leave default hidden; we show overlay via sibling rendering in JSX */
+  }
+
+  /* When toggled open, expand the sidebar as an overlay */
+  .sidebar.open {
+    position: fixed;
+    left: 8px;
+    top: 8px;
+    width: 240px;
+    height: calc(100vh - 16px);
+    border-radius: 10px;
+    padding: 18px;
+    background-color: hsl(25, 9%, 25%);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    z-index: 1200;
+    overflow: auto;
+  }
+
+  /* when open, bring into view */
+  .sidebar.open { transform: translateX(0); }
+
+  .sidebar.open .sidebar-title { display: block; }
+  .sidebar.open .sidebar-footer { display: block; }
+  .sidebar.open .nav-link { font-size: 14px; }
 
     .sidebar-title {
         font-size: 18px;
@@ -122,6 +178,15 @@
     .sidebar-footer-text {
         font-size: 10px;
     }
+
+  /* Overlay for tablet when sidebar is toggled open */
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.28);
+    z-index: 1150;
+  }
 }
 
 
@@ -148,12 +213,41 @@
     
     
     .nav-link {
-        font-size: 0; 
-        line-height: 0;
+      font-size: 0; 
+      line-height: 0;
         padding: 5px 0;
     }
 
     .nav-icon {
         margin: 0 auto; 
+    }
+
+    /* Show toggle on mobile */
+    .sidebar-toggle { display: block; }
+
+    /* When open on mobile, expand to overlay and show text */
+    .sidebar.open {
+      position: fixed;
+      left: 8px;
+      top: 8px;
+      width: 220px;
+      height: calc(100vh - 16px);
+      border-radius: 10px;
+      padding: 12px;
+      z-index: 1200;
+      overflow: auto;
+    }
+
+    .sidebar.open .nav-link { font-size: 14px; gap: 8px; }
+    .sidebar.open .sidebar-title { display: block; }
+    .sidebar.open .sidebar-footer { display: block; }
+
+    /* Overlay element displayed via JSX when open */
+    .sidebar-overlay {
+      display: block;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.36);
+      z-index: 1150;
     }
 }

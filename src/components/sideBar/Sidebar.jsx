@@ -6,7 +6,8 @@ import {
   Tag,
   FileText,
   LogOut,
-  User
+  User,
+  
 } from 'lucide-react';
 import './sidebar.css';
 import { useAuth } from '../../AuthProvider';
@@ -14,6 +15,28 @@ import { useAuth } from '../../AuthProvider';
 const Sidebar = () => {
   const location = useLocation();
   const { signOut } = useAuth();
+  const [open, setOpen] = React.useState(false);
+
+  // Close sidebar on large screens
+  React.useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 1024 && open) setOpen(false);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [open]);
+
+  // Toggle sidebar in response to header hamburger
+  React.useEffect(() => {
+    const handler = () => setOpen(v => !v);
+    window.addEventListener('toggleSidebar', handler);
+    return () => window.removeEventListener('toggleSidebar', handler);
+  }, []);
+
+  // Close sidebar when navigating
+  React.useEffect(() => {
+    setOpen(false);
+  }, [location.pathname]);
 
   const navItems = [
     { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -25,7 +48,10 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className="sidebar">
+    <>
+      {open && <div className="sidebar-overlay" onClick={() => setOpen(false)} />}
+
+      <div className={`sidebar ${open ? 'open' : ''}`}>
       <div className="sidebar-header">
         <h1 className="sidebar-title">Invex</h1>
       </div>
@@ -64,7 +90,8 @@ const Sidebar = () => {
           Developed by Irwen Fronda
         </p>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 

@@ -384,11 +384,6 @@ const ReportsAddDeleteUpdate = () => {
             </div>
             
             
-            {/* <div className="reportadu-additem">
-                <button onClick={() => setShowCategoryModal(true)} className="btn btn-secondary">
-                    Add New Category
-                </button>
-            </div> */}
 
             {/* --- Adding New Category Modal --- */}
             {showCategoryModal && (

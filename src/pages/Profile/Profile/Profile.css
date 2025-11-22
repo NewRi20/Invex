@@ -5,6 +5,50 @@
 	gap: 16px;
 }
 
+/* Responsive: stack the two columns on tablets/mobile */
+@media (max-width: 900px) {
+	.profile-container {
+		grid-template-columns: 1fr;
+		gap: 12px;
+	}
+
+	.profile-section-title-container {
+		padding: 14px;
+	}
+
+	.business-profile-card,
+	.owner-profile-card {
+		padding: 16px;
+	}
+
+	.profile-field-group {
+		padding: 12px;
+	}
+
+	.profileedit-logout-container {
+		margin-left: 0;
+		margin-right: 0;
+		padding-top: 12px;
+	}
+}
+
+/* Mobile-specific smaller tweaks */
+@media (max-width: 420px) {
+	.profile-section-title {
+		font-size: 16px;
+	}
+
+	.profile-edit-btn {
+		padding: 8px 10px;
+		font-size: 12px;
+	}
+
+	.addBusinessInfo-Btn {
+		padding: 10px 12px;
+		font-size: 13px;
+	}
+}
+
 /* Cards */
 .business-profile-card,
 .owner-profile-card {

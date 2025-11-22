@@ -185,7 +185,11 @@ const Inventory = () => {
                                     return <tr><td colSpan="7" style={{textAlign:'center'}}>{message}</td></tr>;
                                 }
 
-                                return dataToShow.map((item) => (
+                                // Render items sorted by newest `date_added` first
+                                return dataToShow
+                                .slice()
+                                .sort((a, b) => new Date(b.date_added) - new Date(a.date_added))
+                                .map((item) => (
                                     <tr key={item.id}>
                                         <td style={{fontFamily: 'monospace', fontSize: '12px'}}>{String(item.id).substring(0, 8)}</td>
                                         <td>{item.item_name}</td>

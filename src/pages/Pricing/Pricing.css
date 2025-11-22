@@ -63,10 +63,11 @@
 
 .pricing-header-row {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr 1fr; /* name | price | last update */
   margin-bottom: 12px;
   font-weight: 600;
   font-size: 14px;
+  align-items: center;
 }
 
 
@@ -78,9 +79,11 @@
 
 .pricing-row {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr 1fr; /* match header: give name more space */
   padding: 8px 0;
   border-bottom: 1px solid #E0E0E0;
+  align-items: center;
+  gap: 8px;
 }
 
 .text-center { text-align: center; }
@@ -136,6 +139,119 @@
 
 .confirm-Btn:hover {
   background-color: var(--peach-bg-light);
+}
+
+/* ---------------- Responsive: Tablet & Mobile ---------------- */
+@media (max-width: 1024px) {
+  /* Keep three columns but tighten gaps on medium screens */
+  .pricing-header-row {
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 10px;
+  }
+
+  .pricing-page .grid.grid-2 {
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .pricing-row {
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 8px;
+  }
+
+  .search-wrap {
+    width: 60%;
+  }
+}
+
+@media (max-width: 600px) {
+  .pricing-page {
+    padding: 0 12px;
+  }
+
+  /* Single column layout */
+  .pricing-page .grid.grid-2 {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .pricing-header-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    align-items: start;
+  }
+
+  .pricing-row {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+    padding: 8px 0;
+  }
+
+  .pricing-card {
+    padding: 14px;
+  }
+
+  .search-wrap {
+    width: 100%;
+    margin-bottom: 12px;
+  }
+
+  .search-input { font-size: 14px; }
+
+  .readonly-field,
+  .inputNewPrice {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .confirm-Btn {
+    width: 100%;
+    padding: 12px;
+  }
+
+  .pricing-title { font-size: 18px; }
+}
+
+@media (max-width: 380px) {
+  .pricing-header { padding: 14px; }
+  .pricing-card { padding: 12px; }
+  .pricing-title { font-size: 16px; }
+}
+
+/* Ensure stacking at tablet sizes (e.g. iPad portrait) */
+@media (max-width: 768px) {
+  /* Force single column layout for pricing rows */
+  .pricing-page .grid.grid-2 {
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+
+  .pricing-row {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    grid-auto-rows: auto;
+    gap: 8px;
+  }
+
+  .pricing-header-row {
+    grid-template-columns: 1fr !important;
+    gap: 8px;
+  }
+
+  /* As a robust fallback, make each row use flex column on very narrow/tablet devices */
+  @supports (display: flex) {
+    .pricing-row > div {
+      width: 100% !important;
+    }
+  }
+}
+
+/* Prevent the last-update text from breaking lines unnecessarily */
+.pricing-row > div,
+.pricing-header-row > div {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 

@@ -134,3 +134,113 @@
 .searchicon{
     margin-left: -30px;
 }
+
+/* Responsive: table and inputs */
+@media (max-width: 900px) {
+    .reportstocks-header { flex-direction: column; gap: 12px; align-items: stretch; }
+    .reportstocks-searchbar { margin: 10px 0 0 0; width: 100%; justify-content: space-between; flex-wrap: wrap; }
+    .reportstocks-searchbar .searchinput { flex: 1 1 auto; }
+    .reportstocks-input { width: 100%; min-width: 0; }
+    /* Allow horizontal scroll for tablet widths so table doesn't break layout */
+    .reportstocks-tablewrap { max-height: 400px; overflow-x: auto; }
+    .reportstocks-tablewrap .table { min-width: 700px; }
+
+    /* Keep the Actions column visible while horizontally scrolling */
+    .reportstocks-tablewrap th:nth-child(7),
+    .reportstocks-tablewrap td:nth-child(7) {
+        position: sticky;
+        right: 0;
+        background: var(--white);
+        z-index: 3;
+        box-shadow: -6px 0 12px rgba(0,0,0,0.04);
+    }
+
+    /* At narrower tablet widths, hide less-important columns to preserve space */
+    @media (max-width: 700px) {
+        .reportstocks-tablewrap th:nth-child(1),
+        .reportstocks-tablewrap td:nth-child(1), /* Code */
+        .reportstocks-tablewrap th:nth-child(3),
+        .reportstocks-tablewrap td:nth-child(3)  /* Category */ {
+            display: none;
+        }
+        /* Reduce min-width so scroll isn't required as often */
+        .reportstocks-tablewrap .table { min-width: 540px; }
+    }
+}
+
+@media (max-width: 600px) {
+    .reportstocks-main { padding: 12px; }
+    .reportstocks-header { padding: 12px; }
+    .reportstocks-tablewrap { max-height: none; overflow-x: visible; }
+
+    /* Make the table responsive: convert rows to stacked cards */
+    .reportstocks-tablewrap table,
+    .reportstocks-tablewrap thead,
+    .reportstocks-tablewrap tbody,
+    .reportstocks-tablewrap th,
+    .reportstocks-tablewrap td,
+    .reportstocks-tablewrap tr {
+        display: block;
+        width: 100%;
+    }
+
+    /* Hide the header row on mobile */
+    .reportstocks-tablewrap thead { display: none; }
+
+    .reportstocks-tablewrap tbody tr {
+        margin-bottom: 12px;
+        background: var(--white);
+        padding: 12px;
+        border-radius: 10px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+
+
+    .reportstocks-tablewrap tbody td {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 0;
+        border: none;
+        font-size: 14px;
+    }
+
+    /* Add label before each cell and give labels a fixed width so action buttons don't disappear */
+    .reportstocks-tablewrap tbody td::before {
+        font-weight: 600;
+        margin-right: 8px;
+        flex: 0 0 90px; /* reserve label space */
+        white-space: nowrap;
+        color: var(--text-dark);
+    }
+    .reportstocks-tablewrap tbody td:nth-child(1)::before { content: "Code"; }
+    .reportstocks-tablewrap tbody td:nth-child(2)::before { content: "Name"; }
+    .reportstocks-tablewrap tbody td:nth-child(3)::before { content: "Category"; }
+    .reportstocks-tablewrap tbody td:nth-child(4)::before { content: "Current"; }
+    .reportstocks-tablewrap tbody td:nth-child(5)::before { content: "Damaged"; }
+    .reportstocks-tablewrap tbody td:nth-child(6)::before { content: "Adjustments"; }
+    .reportstocks-tablewrap tbody td:nth-child(7)::before { content: "Actions"; }
+
+    /* Ensure cell content can shrink and get ellipsis when needed */
+    .reportstocks-tablewrap tbody td > * {
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* Keep the action buttons visible and prevent them from shrinking */
+    .reportstocks-actionbtns { display: flex; gap: 8px; flex: 0 0 auto; }
+    .reportstocks-actionbtns .reportstocks-btn { white-space: nowrap; }
+
+    /* Make inputs and buttons full-width inside the stacked layout */
+    .reportstocks-actioninputs { flex-direction: column; align-items: stretch; }
+    .reportstocks-input { width: 100%; min-width: 0; }
+    .reportstocks-actionbtns { display: flex; gap: 8px; }
+    .reportstocks-actionbtns .reportstocks-btn { flex: 1 1 0; }
+
+    /* Fix searchbar margins on mobile */
+    .reportstocks-searchbar { margin: 10px 0 0 0; width: 100%; }
+}
