@@ -53,6 +53,8 @@ body {
 
 .content {
   padding: 30px;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 /* Sidebar Styles */
@@ -245,6 +247,10 @@ body {
     margin-left: 0;
   }
   
+  .content {
+    padding: 20px;
+  }
+  
   .grid-4 {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -257,6 +263,11 @@ body {
 @media (max-width: 600px) {
   .main-content {
     margin-left: 0;
+    width: 100%;
+  }
+  
+  .content {
+    padding: 15px;
   }
   
   .grid-4,

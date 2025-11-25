@@ -3,6 +3,8 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
   margin-bottom: 12px; /* mb-3 approx */
+  width: 100%;
+  max-width: 100%;
 }
 
 .summary-card {
@@ -38,6 +40,8 @@
   border-radius: 20px;
   padding: 10px;
   overflow-y: auto;
+  max-width: 100%;
+  overflow-x: auto;
 }
 
 .inventory-search-wrap{
@@ -111,13 +115,21 @@
   /* Make table horizontally scrollable on small screens */
   .table-card {
     overflow-x: auto;
+    padding: 8px;
   }
 
   .table {
-    display: block;
+    display: table;
     width: 100%;
-    min-width: 600px; /* allow horizontal scroll when necessary */
-    white-space: nowrap;
+    table-layout: auto;
+  }
+
+  .table thead,
+  .table tbody,
+  .table tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
   }
 
   /* Hide less important columns to improve readability on narrow screens */
