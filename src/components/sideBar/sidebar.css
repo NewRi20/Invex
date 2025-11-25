@@ -1,6 +1,6 @@
 .sidebar {
   width: 180px;
-  background-color: hsl(25, 9%, 25%);
+  background-color: rgba(17, 20, 35, 0.3);
   padding: 20px 0;
   display: flex;
   flex-direction: column;
@@ -90,13 +90,9 @@
   border-radius: 0;
   cursor: pointer; 
 
-
-  transition: none;
+  transition: color 200ms ease;
 }
 
-.nav-link.active {
-  color: var(--secondary-bg);
-}
 
 .nav-icon {
   margin-bottom: 4px;
@@ -126,21 +122,13 @@
     width: 100px; 
     padding: 15px 10px;
     align-items: center;
-    /* hide by default on tablet, slide in when .open */
     transform: translateX(-120%);
     transition: transform 200ms ease;
   }
 
-  /* show toggle button on tablet */
   .sidebar-toggle { display: block; }
 
-  /* overlay visible when sidebar has open class */
-  .sidebar.open + .sidebar-overlay,
-  .sidebar-overlay {
-    /* leave default hidden; we show overlay via sibling rendering in JSX */
-  }
-
-  /* When toggled open, expand the sidebar as an overlay */
+  
   .sidebar.open {
     position: fixed;
     left: 8px;
@@ -149,13 +137,13 @@
     height: calc(100vh - 16px);
     border-radius: 10px;
     padding: 18px;
-    background-color: hsl(25, 9%, 25%);
+    background-color: rgba(17, 20, 35, 0.95);
     box-shadow: 0 8px 24px rgba(0,0,0,0.15);
     z-index: 1200;
     overflow: auto;
   }
 
-  /* when open, bring into view */
+
   .sidebar.open { transform: translateX(0); }
 
   .sidebar.open .sidebar-title { display: block; }
@@ -179,7 +167,6 @@
         font-size: 10px;
     }
 
-  /* Overlay for tablet when sidebar is toggled open */
   .sidebar-overlay {
     display: block;
     position: fixed;
@@ -222,10 +209,10 @@
         margin: 0 auto; 
     }
 
-    /* Show toggle on mobile */
+    
     .sidebar-toggle { display: block; }
 
-    /* When open on mobile, expand to overlay and show text */
+    
     .sidebar.open {
       position: fixed;
       left: 8px;
@@ -234,6 +221,7 @@
       height: calc(100vh - 16px);
       border-radius: 10px;
       padding: 12px;
+      background-color: rgba(17, 20, 35, 0.95);
       z-index: 1200;
       overflow: auto;
     }
@@ -242,7 +230,7 @@
     .sidebar.open .sidebar-title { display: block; }
     .sidebar.open .sidebar-footer { display: block; }
 
-    /* Overlay element displayed via JSX when open */
+    
     .sidebar-overlay {
       display: block;
       position: fixed;

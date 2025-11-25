@@ -11,7 +11,7 @@
     text-decoration: none;    
     display: flex;
     flex-direction: column;
-    background-color: var(--peach-bg);
+    background-color: var(--secondary-bg);
     padding: 16px 20px;
     border-radius: 12px;
     margin-bottom: 0px;
@@ -19,7 +19,7 @@
 }
 
 .report-card:hover {
-    background-color: var(--peach-bg-light);
+    background-color: var(--secondary-bg-light);
     color: var(--primary-bg-light);
 }
 
@@ -28,8 +28,8 @@
 }
 
 .report-card.active {
-  background-color: var(--primary-bg);
-  color: var(--primary-bg-dark);
+  background-color: var(--primary-bg-light);
+  color: var(--white-blue-text);
 }
 
 .report-card-title {

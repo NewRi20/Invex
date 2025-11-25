@@ -187,11 +187,11 @@ const Dashboard = () => {
 
                 <div className='revenueGrowthCard'>
                     <div className='title-section'>
-                        <p className='title'>Total Inventory Value</p>
+                        <p className='title'>Total Inventory Price</p>
                         <span className="arrowIcon" onClick={() => navigate('/inventory/all-items')}></span>
                     </div>
                     <div><h3>₱{stats.totalInventoryValue.toLocaleString('en-US', { minimumFractionDigits: 2 })}</h3></div>
-                    <p className='desc'>Value of all saleable stock in inventory</p>
+                    <p className='desc'>Price of all saleable stock in inventory</p>
                 </div>
 
             </div>
@@ -224,7 +224,7 @@ const Dashboard = () => {
                         <thead className='itemListHeader'>
                             <tr>
                                 <th className="card-title">Low Stock Items</th>
-                                <th className='quantity'>Quantity</th>
+                                <th className='quantity'>Quantity Left</th>
                             </tr>
                         </thead>
 

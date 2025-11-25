@@ -66,7 +66,8 @@
 	flex-direction: row;
 	justify-content: space-between;
 	align-items: center;
-	background-color: var(--panel-bg);
+	background-color: var(--primary-bg-light);
+	color: var(--white-blue-text);
 	padding: 20px;
 	margin-bottom: 5px;
 	border-radius: 20px;
@@ -78,7 +79,7 @@
 }
 
 .profile-edit-btn {
-	background-color: var(--peach-bg);
+	background-color: var(--secondary-bg);
 	color: var(--primary-bg);
 	padding: 6px 12px;
 	font-size: 12px;
@@ -96,8 +97,8 @@
 
 /* Add Business Information Button */
 .addBusinessInfo-Btn {
-	background-color: var(--peach-bg);
-	color: var(--primary-bg);
+	background-color: var(--Btn-bg-blue);
+	color: var(--white-blue-text);
 	padding: 10px;
 	margin: 5px;
 	font-size: 12px;
@@ -111,7 +112,7 @@
 }
 
 .addBusinessInfo-Btn:hover {
-	background-color: var(--peach-bg-light);
+	background-color: var(--Btn-bg-blue-light);
 }
 
 .profile-field-group {
@@ -171,6 +172,7 @@
 	border-radius: 10px;
 	background-color: var(--card-bg);
 	color: var(--primary-bg);
+	transition: background-color 200ms ease, border-color 200ms ease;
 }
 
 .form-input::placeholder {
@@ -180,7 +182,9 @@
 
 .form-input:focus {
 	outline: none;
-	border-color: var(--peach-bg);
+	border-color: var(--primary-bg-light);
+	background-color: var(--primary-bg-light);
+	color: var(--white-blue-text);
 }
 
 .form-buttons {
@@ -191,16 +195,16 @@
 }
 
 .form-btn-save {
-	background-color: var(--peach-bg);
+	background-color: var(--Btn-bg-blue);
 	color: var(--primary-bg);
 }
 
 .form-btn-save:hover {
-	background-color: var(--peach-bg-light);
+	background-color: var(--Btn-bg-blue-light);
 }
 
 .form-btn-cancel {
-	background-color: var(--tertiary-bg);
+	background-color: var(--Btn-bg-blue);
 	color: var(--primary-bg);
 }
 
@@ -218,7 +222,7 @@
 .profileedit-logout-container {
   margin-top: auto; 
   padding-top: 20px; 
-  border-top: 1px solid var(--panel-bg);
+  border-top: 1px solid var(--secondary-bg);
   margin-left: 20px;
   margin-right: 20px;
 }
@@ -228,8 +232,8 @@
   border: none;
   border-radius: 10px;
   cursor: pointer;
-  background-color: var(--peach-bg);
-  color: var(--primary-bg);
+  background-color: var(--Btn-bg-blue);
+  color: var(--white-blue-text);
   padding: 10px;
   font-size: 14px;
   font-weight: bold;

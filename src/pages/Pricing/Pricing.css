@@ -1,10 +1,10 @@
 .pricing-header {
-    display: flex;
-    background-color: var(--panel-bg);
-    color: var(--card-bg);
-    padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 20px;
+  display: flex;
+  background-color: var(--secondary-bg);
+  color: var(--primary-bg);
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 20px;
 }
 
 .pricing-title{
@@ -129,7 +129,7 @@
 
 .confirm-Btn {
   padding: 10px 20px;
-  background-color: var(--peach-bg);
+  background-color: var(--secondary-bg);
   color: var(--text-dark);
   border: none;
   border-radius: var(--border-radius);
@@ -138,7 +138,7 @@
 }
 
 .confirm-Btn:hover {
-  background-color: var(--peach-bg-light);
+  background-color: var(--secondary-bg-light);
 }
 
 /* ---------------- Responsive: Tablet & Mobile ---------------- */

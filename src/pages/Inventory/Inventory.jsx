@@ -30,7 +30,6 @@ const Inventory = () => {
                     const itemsRes = await fetch(`${API_BASE_URL}/items/`, {
                         headers: { 'Authorization': `Bearer ${session.access_token}` }
                     });
-                    
 
                     const catRes = await fetch(`${API_BASE_URL}/items/categories`, {
                         headers: { 'Authorization': `Bearer ${session.access_token}` }
@@ -42,6 +41,7 @@ const Inventory = () => {
                         const itemList = Array.isArray(itemsResponse.items) ? itemsResponse.items : [];
                         setAllItems(itemList);
                     };
+
                     if (catRes.ok) setCategories(catData);
 
                 } catch (error) {
@@ -159,9 +159,10 @@ const Inventory = () => {
                                 <th>Item Code</th>
                                 <th>Item Name</th>
                                 <th>Category</th>
-                                <th>Quantity</th>
+                                <th>Quantity Left</th>
                                 <th>Price</th>
-                                <th>Damaged</th>
+                                <th>Unit Sold</th>
+                                <th>Damaged Quantity</th>
                                 <th>Date Added</th>
                             </tr>
                         )}
@@ -197,6 +198,7 @@ const Inventory = () => {
                                         <td>{item.item_category?.name || 'Uncategorized'}</td>
                                         <td>{item.quantity}</td>
                                         <td>₱{item.price}</td>
+                                        <td>{item.unit_sold}</td>
                                         <td>{item.damaged_quantity}</td>
                                         <td>{item.date_added}</td>
                                     </tr>

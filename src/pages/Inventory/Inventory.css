@@ -16,7 +16,7 @@
 
 .summary-card.active {
   background-color: var(--secondary-bg);
-  color: var(--card-bg);
+  color: var(--primary-bg);
 }
 
 .summary-card .title {

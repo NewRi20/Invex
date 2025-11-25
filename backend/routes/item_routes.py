@@ -15,6 +15,20 @@ def get_items(current_user_id):
                            .eq('user_id', current_user_id) \
                            .execute()
         all_items = response.data
+        
+
+        sales_response = supabase.table('sale_report') \
+                                 .select('item_id, unit_sold') \
+                                 .eq('user_id', current_user_id) \
+                                 .execute()
+        
+        sales_map = {}
+        for sale in sales_response.data:
+            i_id = sale.get('item_id')
+            # If item was deleted (null), skip it
+            if i_id is not None:
+                sales_map[i_id] = sales_map.get(i_id, 0) + int(sale['unit_sold'])
+
         total_inventory_value = 0
 
         for item in all_items:
@@ -30,6 +44,8 @@ def get_items(current_user_id):
 
             quantity = safe_float_convert(quantity_str)
             price = safe_float_convert(price_str)
+
+            item['unit_sold'] = sales_map.get(item['id'], 0)
             
             if quantity > 0 and price > 0:
                 total_inventory_value += quantity * price
@@ -280,3 +296,20 @@ def get_low_stock_items(current_user_id):
         return jsonify(response.data), 200
     except Exception as e:
         return jsonify({'message': 'Error fetching low stock list', 'error': str(e)}), 500
+    
+
+# --- Get Number of Sold Item Details by ID ---
+# @item_bp.route('/<item_id>/sold', methods=['GET'])
+# @token_required 
+# def get_sold_item_details(current_user_id, item_id):
+#     try:
+#         response = supabase.table('sale_report') \
+#                            .select('quantity_sold, sale_date') \
+#                            .eq('user_id', current_user_id) \
+#                            .eq('item_id', item_id) \
+#                            .order('sale_date', desc=True) \
+#                            .execute()
+        
+#         return jsonify(response.data), 200
+#     except Exception as e:
+#         return jsonify({'message': 'Error fetching sold item details', 'error': str(e)}), 500

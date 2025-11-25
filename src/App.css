@@ -8,7 +8,7 @@
 
 body {
   font-family: 'Instrument Sans', sans-serif;
-  background-color: hsl(25, 9%, 25%);
+  background-color: var(--primary-bg);
   color: #FFFFFF;
   overflow-x: hidden;
 }
@@ -21,16 +21,21 @@ body {
 
 /* Color Palette Variables */
 :root {
-  --primary-bg: hsl(25, 9%, 25%);
-  --primary-bg-light: hsl(25, 9%, 35%);
-  --secondary-bg: hsl(21, 6%, 51%);
-  --tertiary-bg: hsl(38, 8%, 72%);
+  --primary-bg: hsl(240, 19%, 12%);
+  --primary-bg-light: hsl(240, 19%, 22%);
+  --secondary-bg: hsl(185, 66%, 85%);
+  --secondary-bg-light: hsl(185, 66%, 90%);
   --card-bg: hsl(50, 21%, 95%);
-  --peach-bg: hsl(14, 51%, 75%);
-  --peach-bg-light: hsl(14, 51%, 78%);
   --panel-bg: hsla(0, 0%, 82%, 0.5);
   --border-radius: 8px;
   --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  /* For New Pallete */
+  --Btn-bg-blue: hsl(222, 76%, 62%);
+  --Btn-bg-blue-light: hsl(222, 76%, 72%);
+  /* --primary-bg-blue: hsl(240, 19%, 12%); */
+  --white-blue-text: hsl(184, 57%, 95%);
+  --blue-accent: hsl(185, 66%, 85%);
 }
 
 /* Layout Components */
@@ -42,7 +47,6 @@ body {
 .main-content {
   flex: 1;
   margin-left: 180px; /* Match your sidebar.css width */
-  background-color: hsl(25, 9%, 20%);
   min-height: 100vh;
 }
 
@@ -85,12 +89,12 @@ body {
 }
 
 .nav-link:hover {
-  background-color: var(--panel-bg);
+  background-color: var(--Btn-bg-blue);
 }
 
 .nav-link.active {
   background-color: var(--secondary-bg);
-  color: var(--card-bg);
+  color: var(--primary-bg);
 }
 
 .nav-icon {
@@ -110,7 +114,7 @@ body {
   margin-bottom: 20px;
 }
 
-.card-light {
+/* .card-light {
   background-color: var(--light-card-bg);
   color: var(--text-dark);
 }
@@ -123,7 +127,7 @@ body {
 .card-accent {
   background-color: var(--accent-bg);
   color: var(--text-dark);
-}
+} */
 
 /* Button Styles */
 .btn {
@@ -140,7 +144,7 @@ body {
 }
 
 
-
+/* 
 .btn-secondary {
   background-color: var(--card-bg);
   color: var(--white);
@@ -153,7 +157,7 @@ body {
 .btn-small {
   padding: 6px 12px;
   font-size: 12px;
-}
+} */
 
 /* Input Styles */
 .input {
@@ -236,13 +240,9 @@ body {
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
-  .sidebar {
-    width: 200px;
-  }
-  
+@media (max-width: 1024px) {
   .main-content {
-    margin-left: 200px;
+    margin-left: 0;
   }
   
   .grid-4 {
@@ -254,13 +254,7 @@ body {
   }
 }
 
-@media (max-width: 480px) {
-  .sidebar {
-    width: 100%;
-    position: relative;
-    height: auto;
-  }
-  
+@media (max-width: 600px) {
   .main-content {
     margin-left: 0;
   }

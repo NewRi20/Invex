@@ -9,8 +9,8 @@
 .reportstocks-header {
     display: flex;
     align-items: center;
-    background-color: var(--panel-bg);
-    color: var(--primary-bg);
+    color: var(--white-blue-text);
+    background-color: var(--primary-bg-light);
     padding: 20px;
     margin-bottom: 20px;
     border-radius: 20px;
@@ -26,10 +26,11 @@
     
     align-items: center;
     margin-bottom: 20px;
-    border: 1px solid var(--primary-bg);
+    border: 1px solid var(--white-blue-text);
     outline: none;
     border-radius: 10px;
     margin: 0 0 0 20px;
+    color: var(--white-blue-text);
     
 }
 
@@ -39,6 +40,7 @@
     outline: none;
     background-color: transparent;
     margin: 5px;
+    color: var(--white-blue-text);
 }
 
 
@@ -46,7 +48,7 @@
 .reportstocks-searchbar .searchicon{
     height: 20px;
     margin: 5px;
-    color: var(--primary-bg);
+    color: var(--white-blue-text);
 }
 
 .reportstocks-heading {
@@ -104,15 +106,15 @@
 }
 
 .reportstocks-btn {
-    background-color: var(--peach-bg);
-    color: var(--text-dark);
+    color: var(--white-blue-text);
     padding: 4px 8px;
     font-size: 10px;
     white-space: nowrap;
+    background-color: var(--Btn-bg-blue);
 }
 
 .reportstocks-btn:hover {
-    background-color: var(--peach-bg-light);
+    background-color: var(--Btn-bg-blue-light);
 }
 
 .reportstocks-title {

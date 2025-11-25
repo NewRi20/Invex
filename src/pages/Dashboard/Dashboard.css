@@ -1,7 +1,7 @@
 .welcome-card {
     display: flex;
-    background-color: var(--panel-bg);
-    color: var(--white);
+    background-color: var(--blue-accent);
+    color: var(--primary-bg-blue);
     text-align: center;
     padding: 20px;
     margin-bottom: 20px;
@@ -11,7 +11,14 @@
 .welcome-title {
   font-size: 20px;
   font-weight: bold;
+  color: var(--primary-bg);
 }
+
+.reportsales-dropdownwrap .reportsales-dropdown{
+  background-color: var(--Btn-bg-blue);
+  color: var(--white-blue-text);
+}
+
 
 
 .first-row {
@@ -74,7 +81,6 @@
   justify-content: center;
   border-radius: 20px;
   padding: 10px 20px;
-  color: var(--card-bg);
   margin-bottom: 20px;
 }
 
@@ -82,7 +88,7 @@
 .inner-container-lowCards .highSaleItemCard,
 .inner-container-lowCards .lowStockCard {
   background-color: var(--secondary-bg);
-  color: var(--card-bg);
+  color: var(--primary-bg);
 }
 
 .newItems,
@@ -94,8 +100,8 @@
 
 .salesCard,
 .revenueGrowthCard {  
-  background-color: var(--peach-bg);
-  color: var(--primary-bg);
+  background-color: var(--Btn-bg-blue);
+  color: var(--white-blue-text);
 }
 
 
@@ -181,7 +187,7 @@
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background-color: var(--peach-bg);
+  background-color: var(--Btn-bg-blue);
   cursor: pointer;
   padding: 0;
   display: flex;

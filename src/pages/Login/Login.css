@@ -22,7 +22,7 @@
   width: 100%;
   max-width: 400px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  background-color: var(--peach-bg);
+  background-color: var(--secondary-bg);
 }
 
 .login-page .auth-title {
@@ -54,9 +54,9 @@
 
 
 .login-page .google-btn {
-    background-color: #4285F4;
-    color: white;
-    border: 1px solid #4285F4;
+    background-color: var(--Btn-bg-blue);
+    color: var(--white-blue-text);
+    border: none;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -65,6 +65,5 @@
 }
 
 .login-page .google-btn:hover {
-    background-color: #357ae8;
-	color: white; 
+  background-color: var(--Btn-bg-blue-light);
 }
