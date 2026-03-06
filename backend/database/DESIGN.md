@@ -3,6 +3,8 @@
 ## Introduction
 Invex is a web-based inventory management system designed to help small business owners track their stock, manage product pricing, and analyze sales performance. This document details the design of the underlying PostgreSQL database (hosted on Supabase) that powers the application. It covers the database's purpose, the scope of its data model, a detailed breakdown of entities and relationships, and a discussion of design decisions regarding optimizations and known limitations.
 
+Video overview: https://youtu.be/KekfAS2JO88
+
 ## Purpose
 The primary purpose of the Invex database is to provide a persistent, relational store for business operational data. Unlike simple spreadsheet solutions, this database ensures data integrity, supports concurrent access, and enables complex querying for reporting purposes.
 
@@ -14,7 +16,7 @@ Specifically, the database is designed to:
 
 ## Scope
 The database schema is scoped to support the core functionalities of a single-owner business model.
-
+ 
 ### In Scope
 *   **User Management**: Storing extended profile data for users authenticated via Supabase Auth.
 *   **Business Profiles**: Managing the details of the business entity associated with each user.
