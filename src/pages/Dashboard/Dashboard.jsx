@@ -105,6 +105,35 @@ const Dashboard = () => {
             </Layout>
         );
     }
+
+    const handleGenerateReport = async () => {
+        if(!session || !session.user || !session.user.email) {
+            alert("No user email found. Please ensure you are logged in correctly.");
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/reports/generate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session.access_token}`
+                },
+                body: JSON.stringify({ email: session.user.email })
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                alert(result.message || "Report generation started!");
+            } else {
+                const errorData = await response.json();
+                alert(`Failed to generate report: ${errorData.message || 'Unknown error'}`);
+            }
+        } catch (error) {
+            console.error("Error generating report:", error);
+            alert("An error occurred while generating the report.");
+        }
+    };
     
     // Derived values for clean rendering
     const topSalesItem = stats.salesData?.top_items?.[0]?.name || 'N/A';
@@ -115,6 +144,9 @@ const Dashboard = () => {
             {/* Welcome Banner */}
             <div className="welcome-card">
                 <h2 className="welcome-title">Welcome back, {profile.first_name}!</h2>
+                <button onClick={handleGenerateReport}>
+                    <p>Generate Week Report</p>
+                </button>
             </div>
             
             {/* Filter Dropdown Row */}

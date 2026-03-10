@@ -2,6 +2,15 @@ from flask import Blueprint, jsonify, request
 from supabase_client import supabase
 from auth_decorator import token_required
 from datetime import datetime, timedelta
+# Import the weekly report task
+# Ensure backend directory is in path if needed, though usually app.py context handles it
+try:
+    from services.tasks import send_weekly_report
+except ImportError:
+    import sys
+    import os
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from services.tasks import send_weekly_report
 
 report_bp = Blueprint('report_bp', __name__)
 
@@ -235,4 +244,31 @@ def edit_sale_quantity(current_user_id, sale_id):
         return jsonify({'message': f'Sale transaction {sale_id} updated and stock adjusted.'}), 200
 
     except Exception as e:
+
         return jsonify({'message': 'Error updating sale', 'error': str(e)}), 500
+
+
+# --- Generate Weekly Report (Email) ---
+@report_bp.route('/generate', methods=['POST'])
+@token_required
+def generate_weekly_report(current_user_id):
+    try:
+        data = request.get_json()
+        # If user email is passed in the request, use it. Otherwise, assume authenticated.
+        # Ideally, we should fetch it from auth.users, but we might not have admin client.
+        # Assuming frontend passes it for now as it's the easiest integration.
+        user_email = data.get('email')
+
+        if not user_email:
+            # Try to fetch from custom user table if email is stored there (it isn't based on schema)
+            # Or return error asking for email
+            return jsonify({'message': 'Email address is required.'}), 400
+
+        # Trigger the report generation task synchronously
+        # In production, use send_weekly_report.delay(...) with Celery running
+        send_weekly_report(user_email, current_user_id)
+        
+        return jsonify({'message': f'Report generation started for {user_email}. Check your inbox.'}), 200
+
+    except Exception as e:
+        return jsonify({'message': 'Error triggering report generation', 'error': str(e)}), 500
