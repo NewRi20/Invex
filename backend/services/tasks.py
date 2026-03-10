@@ -3,6 +3,7 @@ import sys
 from datetime import datetime, timedelta
 import smtplib
 import requests
+from dotenv import load_dotenv
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
@@ -20,6 +21,10 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 backend_dir = os.path.dirname(current_dir)
 if backend_dir not in sys.path:
     sys.path.append(backend_dir)
+
+# Explicitly load .env from backend directory to ensure updates are picked up
+env_path = os.path.join(backend_dir, '.env')
+load_dotenv(env_path, override=True)
 
 try:
     from supabase_client import supabase
@@ -185,6 +190,13 @@ def send_email_with_attachment(to_email, file_path):
     if not sender_email or not sender_password:
         print("SMTP_EMAIL or SMTP_PASSWORD not set in environment variables. Skipping email.")
         return
+    
+    # Strip spaces from password if user copied them directly from Google
+    sender_password = sender_password.replace(' ', '')
+
+    print(f"DEBUG: Attempting to send email via {smtp_server}:{smtp_port}")
+    print(f"DEBUG: Sender: {sender_email}")
+    print(f"DEBUG: Password length: {len(sender_password)} characters")
 
     msg = MIMEMultipart()
     msg['From'] = sender_email
@@ -200,11 +212,19 @@ def send_email_with_attachment(to_email, file_path):
             part['Content-Disposition'] = f'attachment; filename="{os.path.basename(file_path)}"'
             msg.attach(part)
         
-        with smtplib.SMTP(smtp_server, smtp_port) as server:
-            server.starttls()
-            server.login(sender_email, sender_password)
-            server.send_message(msg)
-            print(f"Email sent to {to_email}")
+        # Connect to SMTP Server
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.starttls()
+        server.login(sender_email, sender_password)
+        text = msg.as_string()
+        server.sendmail(sender_email, to_email, text)
+        server.quit()
+        print(f"Email sent successfully to {to_email}")
+
+    except smtplib.SMTPAuthenticationError:
+        print("Error: SMTP Authentication Failed.")
+        print("If using Gmail, ensure you are using an App Password, not your regular password.")
+        print("See: https://support.google.com/accounts/answer/185833")
     except Exception as e:
         print(f"Failed to send email: {e}")
 
