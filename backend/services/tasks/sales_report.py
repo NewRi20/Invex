@@ -1,45 +1,15 @@
 import os
-import sys
-from datetime import datetime, timedelta
 import smtplib
-import requests
-from dotenv import load_dotenv
+from datetime import datetime, timedelta
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
-from celery import Celery
 import pandas as pd
 from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
-
-# Add parent directory to path to import supabase_client
-# This assumes tasks.py is in backend/services/ and supabase_client.py is in backend/
-current_dir = os.path.dirname(os.path.abspath(__file__))
-backend_dir = os.path.dirname(current_dir)
-if backend_dir not in sys.path:
-    sys.path.append(backend_dir)
-
-# Explicitly load .env from backend directory to ensure updates are picked up
-env_path = os.path.join(backend_dir, '.env')
-load_dotenv(env_path, override=True)
-
-try:
-    from supabase_client import supabase
-except ImportError:
-    # Fallback if running from root relative to module
-    try:
-        from backend.supabase_client import supabase
-    except ImportError:
-         print("Warning: Could not import supabase_client. Ensure it is in the python path.")
-         supabase = None
-
-# Initialize Celery
-# Broker URL should ideally come from environment variables
-CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')
-celery = Celery('tasks', broker=CELERY_BROKER_URL)
+from .core import celery, supabase
 
 @celery.task(name="tasks.send_weekly_report")
 def send_weekly_report(user_email, user_id=None):
@@ -61,6 +31,7 @@ def send_weekly_report(user_email, user_id=None):
         df = process_sales_data(sales_data)
         
         # 3. Generate PDF
+        current_dir = os.path.dirname(os.path.abspath(__file__))
         reports_dir = os.path.join(current_dir, 'reports')
         os.makedirs(reports_dir, exist_ok=True)
         pdf_filename = f"weekly_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
@@ -227,118 +198,3 @@ def send_email_with_attachment(to_email, file_path):
         print("See: https://support.google.com/accounts/answer/185833")
     except Exception as e:
         print(f"Failed to send email: {e}")
-
-# --- Low Stock Monitoring ---
-
-LOW_STOCK_THRESHOLD = int(os.environ.get('LOW_STOCK_THRESHOLD', 10))
-DISCORD_WEBHOOK_URL = os.environ.get('DISCORD_WEBHOOK_URL')
-# For admin notifications if no user context, or fallback
-ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL')
-
-@celery.task(name="tasks.monitor_low_stock")
-def monitor_low_stock(user_email=None, user_id=None):
-    """
-    Checks for items with quantity below threshold.
-    Sends an alert via Email or Discord (if configured).
-    """
-    print(f"Starting low stock check for user_id={user_id}, email={user_email}")
-    
-    try:
-        # 1. Fetch low stock items
-        items = fetch_low_stock_items(user_id)
-        
-        if not items:
-            print("No items found below low stock threshold.")
-            return "No low stock items found."
-
-        # 2. Format Alert
-        alert_message = format_low_stock_message(items)
-        
-        # 3. Send Notification
-        # Priority: User Email argument > ADMIN_EMAIL env var > Discord Webhook
-        
-        notification_sent = False
-        target_email = user_email or ADMIN_EMAIL
-        
-        if target_email:
-            send_low_stock_email(target_email, alert_message, items)
-            notification_sent = True
-        
-        if DISCORD_WEBHOOK_URL:
-            send_discord_alert(alert_message)
-            notification_sent = True
-            
-        if notification_sent:
-            return f"Alert sent for {len(items)} items."
-        else:
-            print("Low stock items found, but no EMAIL or DISCORD_WEBHOOK_URL configured.")
-            return "Items found, no alert sent."
-
-    except Exception as e:
-        print(f"Error in monitor_low_stock: {e}")
-        # raise rule so celery sees failure
-        raise e
-
-def fetch_low_stock_items(user_id=None):
-    if not supabase:
-        raise Exception("Supabase client not initialized")
-    
-    # Selecting item_category(name) relies on foreign key relation
-    query = supabase.table('item') \
-        .select('item_name, quantity, user_id, item_category(name)') \
-        .lt('quantity', LOW_STOCK_THRESHOLD)
-    
-    if user_id:
-        query = query.eq('user_id', user_id)
-        
-    response = query.execute()
-    return response.data
-
-def format_low_stock_message(items):
-    lines = [f"Low Stock Alert (Threshold: < {LOW_STOCK_THRESHOLD})", ""]
-    for item in items:
-        cat_data = item.get('item_category')
-        cat_name = "Uncategorized"
-        if isinstance(cat_data, dict):
-            cat_name = cat_data.get('name', 'Uncategorized')
-        
-        lines.append(f"- {item['item_name']}: {item['quantity']} remaining (Category: {cat_name})")
-    
-    return "\n".join(lines)
-
-def send_low_stock_email(to_email, body_text, items):
-    smtp_server = os.environ.get('SMTP_SERVER', 'smtp.gmail.com')
-    smtp_port = int(os.environ.get('SMTP_PORT', 587))
-    sender_email = os.environ.get('SMTP_EMAIL')
-    sender_password = os.environ.get('SMTP_PASSWORD')
-
-    if not sender_email or not sender_password:
-        print("Missing SMTP_EMAIL or SMTP_PASSWORD. Cannot send email.")
-        return
-
-    msg = MIMEMultipart()
-    msg['From'] = sender_email
-    msg['To'] = to_email
-    msg['Subject'] = f"Invex Low Stock Alert: {len(items)} items need restocking"
-    
-    msg.attach(MIMEText(body_text, 'plain'))
-    
-    try:
-        with smtplib.SMTP(smtp_server, smtp_port) as server:
-            server.starttls()
-            server.login(sender_email, sender_password)
-            server.send_message(msg)
-            print(f"Low stock email sent to {to_email}")
-    except Exception as e:
-        print(f"Failed to send low stock email: {e}")
-
-def send_discord_alert(message_text):
-    if not DISCORD_WEBHOOK_URL:
-        return
-    try:
-        payload = {"content": message_text}
-        resp = requests.post(DISCORD_WEBHOOK_URL, json=payload)
-        resp.raise_for_status()
-        print("Discord notification sent.")
-    except Exception as e:
-        print(f"Failed to send Discord webhook: {e}")
