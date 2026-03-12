@@ -1,5 +1,7 @@
 .pricing-header {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
   background-color: var(--secondary-bg);
   color: var(--primary-bg);
   padding: 20px;

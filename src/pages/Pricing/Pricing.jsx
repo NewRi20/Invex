@@ -16,6 +16,31 @@ const Pricing = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  // --- 5. Run Pricing Job ---
+  const handleRunPricingJob = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(`${API_BASE_URL}/items/run-pricing-job`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`
+        }
+      });
+      
+      const data = await res.json();
+      if (res.ok) {
+        alert(data.message || "Pricing job completed successfully!");
+        fetchItems(); // Refresh data
+      } else {
+        alert("Failed: " + (data.error || "Unknown error"));
+      }
+    } catch (err) {
+      alert("Error running pricing job: " + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Format ISO/date strings to a human-friendly date + time
   const formatDateTime = (value) => {
     if (!value) return '';
@@ -112,6 +137,13 @@ const Pricing = () => {
       <div className="pricing-page">
         <div className="pricing-header">
           <h2 className="pricing-title">Pricing</h2>
+          <button 
+            className="confirm-Btn" 
+            style={{marginLeft: '20px', backgroundColor: '#eab308', color: '#000'}}
+            onClick={handleRunPricingJob}
+          >
+            Run Smart Pricing
+          </button>
         </div>
 
         <div className="grid grid-2">

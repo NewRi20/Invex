@@ -2,8 +2,20 @@ from flask import Blueprint, jsonify, request
 from supabase_client import supabase
 from auth_decorator import token_required
 from datetime import datetime, timezone
+from services.tasks import adjust_prices_daily
 
 item_bp = Blueprint('item_bp', __name__)
+
+# --- 0. Run Smart Pricing (Test Feature) ---
+@item_bp.route('/run-pricing-job', methods=['POST'])
+@token_required
+def run_pricing_job(current_user_id):
+    try:
+        # Run directly for testing feedback
+        result = adjust_prices_daily(user_id=current_user_id)
+        return jsonify({'message': result}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 # --- 1. Get ALL Items (Protected) ---
 @item_bp.route('/', methods=['GET'])
