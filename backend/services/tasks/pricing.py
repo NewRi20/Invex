@@ -1,5 +1,5 @@
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from .core import celery, supabase
 
 # Configuration
@@ -43,20 +43,33 @@ def adjust_prices_daily(user_id=None):
             price_last_update_str = item.get('price_last_update')
             
             # Parse dates
-            now = datetime.utcnow()
-            date_added = datetime.fromisoformat(date_added_str) if date_added_str else now
+            # Ensure "now" is timezone-aware (UTC) to match Supabase timestamptz
+            now = datetime.now(timezone.utc)
+            
+            # Helper to make a naive datetime aware (assume UTC) if needed
+            def ensure_aware(dt):
+                if dt and dt.tzinfo is None:
+                    return dt.replace(tzinfo=timezone.utc)
+                return dt
+
+            date_added = ensure_aware(datetime.fromisoformat(date_added_str)) if date_added_str else now
             
             last_update = None
             if price_last_update_str:
                 # Handle potential variation in timestamp format
                 try:
-                    last_update = datetime.fromisoformat(price_last_update_str.replace('Z', '+00:00'))
+                    # Supabase often sends 'Z', verify replacement or native handling
+                    clean_str = price_last_update_str.replace('Z', '+00:00')
+                    last_update = datetime.fromisoformat(clean_str)
+                    last_update = ensure_aware(last_update)
                 except ValueError:
                     pass
             
             # Guard: Don't change price if it was updated recently
-            if last_update and (now - last_update).days < PRICE_COOLDOWN_DAYS:
-                continue
+            if last_update:
+                diff = now - last_update
+                if diff.days < PRICE_COOLDOWN_DAYS:
+                    continue
 
             # Check Sales History
             # Get max sale date and count of sales in last 7 days
@@ -98,7 +111,7 @@ def get_item_sales_stats(item_id, window_days=7):
     """
     Returns dict: {'last_sale_date': datetime|None, 'recent_count': int}
     """
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     window_start = now - timedelta(days=window_days)
     
     # We query sale_report for this item
@@ -117,16 +130,29 @@ def get_item_sales_stats(item_id, window_days=7):
     if sales:
         last_sale_str = sales[0]['sale_date']
         if last_sale_str:
-             last_sale_date = datetime.fromisoformat(last_sale_str)
+             # sale_date in DB is usually just 'YYYY-MM-DD' (naive) or ISO
+             try:
+                dt = datetime.fromisoformat(last_sale_str)
+                if dt.tzinfo is None:
+                    dt = dt.replace(tzinfo=timezone.utc)
+                last_sale_date = dt
+             except ValueError:
+                 pass
         
         # Count sales in window
         for sale in sales:
             sale_date_str = sale['sale_date']
             if not sale_date_str: continue
             
-            sale_date = datetime.fromisoformat(sale_date_str)
-            if sale_date >= window_start:
-                recent_count += (sale.get('unit_sold') or 0)
+            try:
+                sale_date = datetime.fromisoformat(sale_date_str)
+                if sale_date.tzinfo is None:
+                    sale_date = sale_date.replace(tzinfo=timezone.utc)
+                
+                if sale_date >= window_start:
+                    recent_count += (sale.get('unit_sold') or 0)
+            except ValueError:
+                continue
     
     return {
         'last_sale_date': last_sale_date,
