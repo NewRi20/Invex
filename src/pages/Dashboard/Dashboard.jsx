@@ -5,9 +5,11 @@ import './Dashboard.css';
 import { useAuth } from '../../AuthProvider';
 import { API_BASE_URL } from '../../config';
 import { ChevronDown } from 'lucide-react'; 
+import { useData } from '../../contexts/DataProvider';
 
 const Dashboard = () => {
     const { profile, session } = useAuth();
+    const { items: globalItems, totalInventoryValue: globalTotalValue, refreshData } = useData();
     const navigate = useNavigate();
     const location = useLocation();
     
@@ -47,14 +49,14 @@ const Dashboard = () => {
         
         const fetchPromises = [
             fetch(salesUrl, { headers }).then(res => res.json()), 
-            fetch(`${API_BASE_URL}/items/`, { headers }).then(res => res.ok ? res.json() : { items: [], totalInventoryValue: 0 }),         
+            // Removed items fetch, use globalItems
             fetch(`${API_BASE_URL}/items/low-stock`, { headers }).then(res => res.json()), 
         ];
 
         try {
-            const [salesReport, itemReport, lowStockList] = await Promise.all(fetchPromises);
-            const safeAllItems = Array.isArray(itemReport.items) ? itemReport.items : [];
-            const totalInventoryValue = itemReport.totalInventoryValue  || 0;
+            const [salesReport, lowStockList] = await Promise.all(fetchPromises);
+            const safeAllItems = globalItems || [];
+            const totalInventoryValue = globalTotalValue || 0;
             
             const dateThreshold = getDateRange(filter);
 
@@ -91,7 +93,11 @@ const Dashboard = () => {
         } finally {
             setLoading(false);
         }
-    }, [session, filter]);
+    }, [session, filter, globalItems, globalTotalValue]);
+
+    useEffect(() => {
+        refreshData();
+    }, []);
 
     useEffect(() => {
         fetchDashboardData();

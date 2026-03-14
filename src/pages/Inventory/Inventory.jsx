@@ -5,14 +5,16 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../AuthProvider';
 import { API_BASE_URL } from '../../config';
 import { Search } from 'lucide-react'; 
+import { useData } from '../../contexts/DataProvider';
 
 const Inventory = () => {
     const { session } = useAuth();
+    const { items: allItems, categories, loading, refreshData } = useData();
     const location = useLocation();
     const [activeTab, setActiveTab] = useState('all-items');
-    const [allItems, setAllItems] = useState([]);
-    const [categories, setCategories] = useState([]);
-    const [loading, setLoading] = useState(true);
+    // const [allItems, setAllItems] = useState([]); // Removed local state
+    // const [categories, setCategories] = useState([]); // Removed local state
+    // const [loading, setLoading] = useState(true); // Removed local state
     const [searchQuery, setSearchQuery] = useState('');
 
     
@@ -20,39 +22,21 @@ const Inventory = () => {
         setSearchQuery(e.target.value);
     };
 
-    
+    // Use shared data, but can trigger refresh if needed
+    useEffect(() => {
+        refreshData();
+    }, []); 
+
+    /* Removed local fetch logic
     useEffect(() => {
         if (session) {
             const fetchData = async () => {
-                setLoading(true);
-                try {
-                    
-                    const itemsRes = await fetch(`${API_BASE_URL}/items/`, {
-                        headers: { 'Authorization': `Bearer ${session.access_token}` }
-                    });
-
-                    const catRes = await fetch(`${API_BASE_URL}/items/categories`, {
-                        headers: { 'Authorization': `Bearer ${session.access_token}` }
-                    });
-                    const catData = await catRes.json();
-
-                    if (itemsRes.ok) {
-                        const itemsResponse = await itemsRes.json();
-                        const itemList = Array.isArray(itemsResponse.items) ? itemsResponse.items : [];
-                        setAllItems(itemList);
-                    };
-
-                    if (catRes.ok) setCategories(catData);
-
-                } catch (error) {
-                    console.error("Error loading inventory:", error);
-                } finally {
-                    setLoading(false);
-                }
+                // ...
             };
             fetchData();
         }
     }, [session]);
+    */
 
     
     const newItemsData = allItems.filter(item => {
