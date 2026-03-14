@@ -5,11 +5,14 @@ import App from './App.jsx'
 import './App.css'
 import './index.css'
 import { AuthProvider } from './AuthProvider';
+import { DataProvider } from './contexts/DataProvider';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <AuthProvider>
-      <App />
+      <DataProvider>
+        <App />
+      </DataProvider>
     </AuthProvider>
   </StrictMode>,
 )
