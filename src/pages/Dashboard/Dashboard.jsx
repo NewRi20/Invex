@@ -6,6 +6,7 @@ import { useAuth } from '../../AuthProvider';
 import { API_BASE_URL } from '../../config';
 import { ChevronDown } from 'lucide-react'; 
 import { useData } from '../../contexts/DataProvider';
+import LowStockReminder from '../../components/LowStockReminder/LowStockReminder';
 
 const Dashboard = () => {
     const { profile, session } = useAuth();
@@ -147,6 +148,7 @@ const Dashboard = () => {
 
     return (
         <Layout title="Dashboard">
+            <LowStockReminder lowStockCount={stats.lowStockCount} />
             {/* Welcome Banner */}
             <div className="welcome-card">
                 <h2 className="welcome-title">Welcome back, {profile.first_name}!</h2>
