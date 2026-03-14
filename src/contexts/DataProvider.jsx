@@ -19,7 +19,7 @@ export const DataProvider = ({ children }) => {
         if (!session) return;
         
         // If we have data and it's less than 5 minutes old, don't re-fetch unless forced
-        const fiveMinutes = 5 * 60 * 1000;
+        const fiveMinutes = 1 * 60 * 1000;
         if (!force && lastFetched && (Date.now() - lastFetched < fiveMinutes)) {
             return;
         }
