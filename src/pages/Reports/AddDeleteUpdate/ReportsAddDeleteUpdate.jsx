@@ -1,9 +1,9 @@
-import { Search, X } from 'lucide-react';
+import { Search, X, Upload } from 'lucide-react';
 import React, { useState, useEffect, useCallback } from 'react';
 import './ReportsAddDeleteUpdate.css';
 import { useAuth } from '../../../AuthProvider';
 import { API_BASE_URL } from '../../../config'; 
-
+import DataImportOverlay from '../../../components/DataImportOverlay/DataImportOverlay';
 
 const ReportsAddDeleteUpdate = () => {
     const { session } = useAuth();
@@ -18,6 +18,7 @@ const ReportsAddDeleteUpdate = () => {
     const [editFormData, setEditFormData] = useState({}); 
     const [newCategoryName, setNewCategoryName] = useState('');
     const [showCategoryModal, setShowCategoryModal] = useState(false);
+    const [showImportModal, setShowImportModal] = useState(false);
 
     // --- Form State for Adding New Item ---
     const [newItemForm, setNewItemForm] = useState({
@@ -95,10 +96,11 @@ const ReportsAddDeleteUpdate = () => {
         });
     };
     
+    
     // 1. Submit New Item
     const handleSaveNewItem = async (e) => {
         e.preventDefault();
-        
+
         try {
             const response = await fetch(`${API_BASE_URL}/items/add`, {
                 method: 'POST',
@@ -120,7 +122,7 @@ const ReportsAddDeleteUpdate = () => {
             }
             
             alert('Item added successfully!');
-            setNewItemForm({ name: '', category_id: '', quantity: '' });
+            setNewItemForm({ name: '', category_id: '', quantity: '', price: '' });
             fetchItems();
         } catch (error) {
             alert(`Error adding item: ${error.message}`);
@@ -278,6 +280,13 @@ const ReportsAddDeleteUpdate = () => {
 
     return (
         <>
+            <DataImportOverlay 
+                isOpen={showImportModal} 
+                onClose={() => setShowImportModal(false)}
+                onUploadSuccess={() => {
+                    fetchItems(); 
+                }}
+            />
             {/* Add Item Section */}
             <form className="reportadu-additem" onSubmit={handleSaveNewItem}>
                 <h3 className="reportadu-additem-title">Add Item</h3>
@@ -333,6 +342,9 @@ const ReportsAddDeleteUpdate = () => {
                     </button>
                     <button type="button" onClick={() => setNewItemForm({ name: '', category_id: '', quantity: '', price: '' })} className="btn btn-small reportadu-additem-btn">
                         Clear
+                    </button>
+                    <button type="button" className="btn btn-small reportadu-additem-btn" onClick={() => setShowImportModal(true)}>
+                        Import
                     </button>
                 </div>
             </form>

@@ -3,8 +3,112 @@ from supabase_client import supabase
 from auth_decorator import token_required
 from datetime import datetime, timezone
 from services.tasks import adjust_prices_daily
+import pandas as pd
+import io
 
 item_bp = Blueprint('item_bp', __name__)
+
+MAX_FILE_SIZE = 16 * 1024 * 1024 # 16MB file limit
+
+@item_bp.route('/import', methods=['POST'])
+@token_required
+def import_items(current_user_id):
+    if 'file' not in request.files:
+        return jsonify({'message': 'No file part'}), 400
+
+    file = request.files['file']
+
+    if file.filename == '':
+        return jsonify({'message': 'No selected file'}), 400
+
+    if not file.filename.lower().endswith(('.csv', '.xlsx', '.xls')):
+        return jsonify({'message': 'Invalid file type. Only CSV and Excel files are allowed.'}), 400
+
+    try:
+        # 1. Read file into DataFrame
+        if file.filename.lower().endswith('.csv'):
+            df = pd.read_csv(file)
+        else:
+            df = pd.read_excel(file)
+
+        # 2. Normalize and check required columns
+        # Expected: 'item_name', 'quantity', 'price', Optional: 'category_name' or just 'category'
+        # Convert user columns to lower case for leniency
+        df.columns = df.columns.astype(str).str.lower().str.strip()
+        
+        required_cols = {'item_name', 'quantity', 'price'}
+        if not required_cols.issubset(df.columns):
+            return jsonify({'message': f'Missing required columns. Found: {list(df.columns)}. Required: item_name, quantity, price'}), 400
+
+        # Handle NaNs
+        df = df.fillna('')
+        
+        # 3. Handle Categories
+        # Fetch all existing categories for user to map them
+        cat_response = supabase.table('item_category').select('id, name').eq('user_id', current_user_id).execute()
+        existing_categories = {row['name'].lower(): row['id'] for row in cat_response.data}
+
+        # Identify unique new categories
+        category_col = next((col for col in df.columns if 'category' in col), None)
+        
+        if category_col:
+            # Get unique category names from file that don't exist in DB
+            new_cats = set()
+            for cat_name in df[category_col].unique():
+                if cat_name and str(cat_name).strip() and str(cat_name).strip().lower() not in existing_categories:
+                    new_cats.add(str(cat_name).strip())
+            
+            # Create new categories
+            if new_cats:
+                new_cat_objects = [{'name': name, 'user_id': current_user_id} for name in new_cats]
+                # Insert and return created categories
+                new_cat_res = supabase.table('item_category').insert(new_cat_objects).execute()
+                for row in new_cat_res.data:
+                    existing_categories[row['name'].lower()] = row['id']
+
+        # 4. Prepare Items for Bulk Insert
+        items_to_insert = []
+        for _, row in df.iterrows():
+            item_name = str(row['item_name']).strip()
+            if not item_name:
+                continue
+
+            try:
+                qty = int(float(row['quantity'])) if row['quantity'] != '' else 0
+                price = float(row['price']) if row['price'] != '' else 0.0
+            except ValueError:
+                continue # Skip rows with bad numbers
+
+            category_id = None
+            if category_col:
+                cat_val = str(row[category_col]).strip()
+                if cat_val:
+                    category_id = existing_categories.get(cat_val.lower())
+
+            item_data = {
+                'user_id': current_user_id,
+                'item_name': item_name,
+                'quantity': qty,
+                'price': price,
+                'item_category': category_id,
+                'date_added': datetime.now(timezone.utc).isoformat()
+            }
+            items_to_insert.append(item_data)
+
+        if not items_to_insert:
+            return jsonify({'message': 'No valid items found to insert.'}), 400
+
+        # 5. Bulk Insert
+        # Supabase API might have limits, doing chunks of 100 just in case
+        chunk_size = 100
+        for i in range(0, len(items_to_insert), chunk_size):
+            chunk = items_to_insert[i:i + chunk_size]
+            supabase.table('item').insert(chunk).execute()
+
+        return jsonify({'message': f'Successfully imported {len(items_to_insert)} items.'}), 201
+
+    except Exception as e:
+        return jsonify({'message': 'Error processing file', 'error': str(e)}), 500
 
 # --- 0. Run Smart Pricing (Test Feature) ---
 @item_bp.route('/run-pricing-job', methods=['POST'])
