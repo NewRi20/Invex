@@ -146,3 +146,7 @@
     color: #f87171;
     border: 1px solid #b91c1c;
 }
+
+.status-message span {
+    margin-left: 5px;
+}
