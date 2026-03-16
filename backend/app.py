@@ -1,5 +1,6 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
+from extensions import cache
 
 from routes.user_routes import user_bp
 from routes.item_routes import item_bp
@@ -7,6 +8,7 @@ from routes.business_routes import business_bp
 from routes.report_routes import report_bp
 
 app = Flask(__name__)
+cache.init_app(app, config={'CACHE_TYPE': 'SimpleCache', 'CACHE_DEFAULT_TIMEOUT': 300})
 
 # Configure CORS with explicit origins (required for credentials)
 CORS(app, 

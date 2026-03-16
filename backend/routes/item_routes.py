@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+from extensions import cache
 from supabase_client import supabase
 from auth_decorator import token_required
 from datetime import datetime, timezone
@@ -15,6 +16,10 @@ MAX_FILE_SIZE = 16 * 1024 * 1024 # 16MB file limit
 def import_items(current_user_id):
     if 'file' not in request.files:
         return jsonify({'message': 'No file part'}), 400
+
+    cache.delete_memoized(get_items, current_user_id)
+    cache.delete_memoized(get_categories, current_user_id)
+    cache.delete_memoized(get_low_stock_items, current_user_id)
 
     file = request.files['file']
 
@@ -115,6 +120,7 @@ def import_items(current_user_id):
 @token_required
 def run_pricing_job(current_user_id):
     try:
+        cache.delete_memoized(get_items, current_user_id)
         # Run directly for testing feedback
         result = adjust_prices_daily(user_id=current_user_id)
         return jsonify({'message': result}), 200
@@ -124,6 +130,7 @@ def run_pricing_job(current_user_id):
 # --- 1. Get ALL Items (Protected) ---
 @item_bp.route('/', methods=['GET'])
 @token_required
+@cache.memoize(timeout=60)
 def get_items(current_user_id):
     try:
         response = supabase.table('item') \
@@ -179,6 +186,7 @@ def get_items(current_user_id):
 # --- 2. Get Categories  ---
 @item_bp.route('/categories', methods=['GET'])
 @token_required
+@cache.memoize(timeout=300)
 def get_categories(current_user_id):
     try:
         response = supabase.table('item_category').select('*').execute()
@@ -192,6 +200,8 @@ def get_categories(current_user_id):
 @token_required
 def update_item_price(current_user_id, item_id):
     try:
+        cache.delete_memoized(get_items, current_user_id)
+        
         data = request.get_json()
         new_price_str = data.get('price') 
         
@@ -240,6 +250,8 @@ def update_item_price(current_user_id, item_id):
 @token_required
 def update_item_stock(current_user_id, item_id):
     try:
+        cache.delete_memoized(get_items, current_user_id)
+        cache.delete_memoized(get_low_stock_items, current_user_id)
         incoming_data = request.get_json()
         
         current_item_res = supabase.table('item') \
@@ -290,6 +302,8 @@ def update_item_stock(current_user_id, item_id):
 @token_required
 def add_new_item(current_user_id):
     try:
+        cache.delete_memoized(get_items, current_user_id)
+        cache.delete_memoized(get_low_stock_items, current_user_id)
         data = request.get_json()
         timestamp_utc = datetime.now(timezone.utc)
         item_record = {
@@ -315,6 +329,8 @@ def add_new_item(current_user_id):
 @token_required
 def update_item_details(current_user_id, item_id):
     try:
+        cache.delete_memoized(get_items, current_user_id)
+        cache.delete_memoized(get_low_stock_items, current_user_id)
         data = request.get_json()
         
         updatable_fields = ['item_name', 'item_category', 'price', 'quantity', 'damaged_quantity']
@@ -343,6 +359,8 @@ def update_item_details(current_user_id, item_id):
 @token_required
 def delete_item(current_user_id, item_id):
     try:
+        cache.delete_memoized(get_items, current_user_id)
+        cache.delete_memoized(get_low_stock_items, current_user_id)
         response = supabase.table('item') \
                            .delete() \
                            .eq('id', item_id) \
@@ -359,6 +377,7 @@ def delete_item(current_user_id, item_id):
 @token_required
 def add_new_category(current_user_id):
     try:
+        cache.delete_memoized(get_categories, current_user_id)
         data = request.get_json()
         category_name = data.get('name')
 
@@ -378,6 +397,10 @@ def add_new_category(current_user_id):
 @token_required
 def delete_category(current_user_id, category_id):
     try:
+        cache.delete_memoized(get_categories, current_user_id)
+        cache.delete_memoized(get_items, current_user_id)
+
+        
         # Check if the category exists and perform deletion
         response = supabase.table('item_category') \
                            .delete() \
@@ -398,6 +421,7 @@ def delete_category(current_user_id, category_id):
 # --- Get Low Stock Items ---
 @item_bp.route('/low-stock', methods=['GET'])
 @token_required
+@cache.memoize(timeout=60)
 def get_low_stock_items(current_user_id):
     try:
         # Define the low stock threshold (e.g., quantity <= 5)
