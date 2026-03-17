@@ -424,6 +424,7 @@ def delete_category(current_user_id, category_id):
 @cache.memoize(timeout=60)
 def get_low_stock_items(current_user_id):
     try:
+        print("DEBUG: The function logic is actually running!")
         # Define the low stock threshold (e.g., quantity <= 5)
         response = supabase.table('item') \
                            .select('item_name, quantity') \
@@ -437,19 +438,3 @@ def get_low_stock_items(current_user_id):
     except Exception as e:
         return jsonify({'message': 'Error fetching low stock list', 'error': str(e)}), 500
     
-
-# --- Get Number of Sold Item Details by ID ---
-# @item_bp.route('/<item_id>/sold', methods=['GET'])
-# @token_required 
-# def get_sold_item_details(current_user_id, item_id):
-#     try:
-#         response = supabase.table('sale_report') \
-#                            .select('quantity_sold, sale_date') \
-#                            .eq('user_id', current_user_id) \
-#                            .eq('item_id', item_id) \
-#                            .order('sale_date', desc=True) \
-#                            .execute()
-        
-#         return jsonify(response.data), 200
-#     except Exception as e:
-#         return jsonify({'message': 'Error fetching sold item details', 'error': str(e)}), 500
