@@ -152,6 +152,14 @@ const Login = () => {
                   </div>
                 </label>
               </div>
+
+              <button
+                type="submit"
+                disabled={isLoggingIn}
+                className="w-full h-12 bg-primary text-white font-bold rounded-lg hover:bg-primary-dark transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+              >
+                {isLoggingIn ? 'Signing in...' : 'Sign In'}
+              </button>
             </form>
 
             <div className="space-y-4">
