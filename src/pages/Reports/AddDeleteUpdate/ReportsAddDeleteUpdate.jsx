@@ -1,6 +1,5 @@
 import { Search, X, Upload } from 'lucide-react';
 import React, { useState, useEffect, useCallback } from 'react';
-import './ReportsAddDeleteUpdate.css';
 import { useAuth } from '../../../AuthProvider';
 import { API_BASE_URL } from '../../../config'; 
 import DataImportOverlay from '../../../components/DataImportOverlay/DataImportOverlay';
@@ -288,24 +287,24 @@ const ReportsAddDeleteUpdate = () => {
                 }}
             />
             {/* Add Item Section */}
-            <form className="reportadu-additem" onSubmit={handleSaveNewItem}>
-                <h3 className="reportadu-additem-title">Add Item</h3>
+            <form className="bg-[var(--card-bg)] text-[var(--primary-bg)] rounded-[20px] p-5 mb-5" onSubmit={handleSaveNewItem}>
+                <h3 className="bg-[var(--primary-bg-light)] text-[var(--white-blue-text)] font-bold p-5 rounded-[20px] mb-5 text-lg whitespace-nowrap">Add Item</h3>
 
-                <div className="reportadu-additem-inputs">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-2.5">
                     <input
                         type="text"
                         name="name"
                         value={newItemForm.name}
                         onChange={handleNewItemChange}
                         placeholder="Name"
-                        className="input"
+                        className="input mb-0 border border-[var(--primary-bg)] placeholder:text-[var(--primary-bg-light)] placeholder:opacity-50 w-full"
                         required
                     />
                     <select
                         name="category_id"
                         value={newItemForm.category_id}
                         onChange={handleNewItemChange}
-                        className="input"
+                        className="input mb-0 border border-[var(--primary-bg)] w-full"
                         required
                     >
                         <option value="">Select Category</option>
@@ -319,7 +318,7 @@ const ReportsAddDeleteUpdate = () => {
                         value={newItemForm.quantity}
                         onChange={handleNewItemChange}
                         placeholder="Quantity"
-                        className="input"
+                        className="input mb-0 border border-[var(--primary-bg)] placeholder:text-[var(--primary-bg-light)] placeholder:opacity-50 w-full"
                         min="1"
                         required
                     />
@@ -330,39 +329,39 @@ const ReportsAddDeleteUpdate = () => {
                         value={newItemForm.price}
                         onChange={handleNewItemChange}
                         placeholder="Price"
-                        className="input"
+                        className="input mb-0 border border-[var(--primary-bg)] placeholder:text-[var(--primary-bg-light)] placeholder:opacity-50 w-full"
                         min="0"
                         required
                     />
                 </div>
 
-                <div className="reportadu-additem-buttons">
-                    <button type="submit" className="btn btn-small reportadu-additem-btn">
+                <div className="flex flex-col sm:flex-row justify-end gap-2">
+                    <button type="submit" className="btn btn-small bg-[var(--Btn-bg-blue)] text-[var(--white-blue-text)] hover:bg-[var(--Btn-bg-blue-light)] w-full sm:w-auto">
                         Save
                     </button>
-                    <button type="button" onClick={() => setNewItemForm({ name: '', category_id: '', quantity: '', price: '' })} className="btn btn-small reportadu-additem-btn">
+                    <button type="button" onClick={() => setNewItemForm({ name: '', category_id: '', quantity: '', price: '' })} className="btn btn-small bg-[var(--Btn-bg-blue)] text-[var(--white-blue-text)] hover:bg-[var(--Btn-bg-blue-light)] w-full sm:w-auto">
                         Clear
                     </button>
-                    <button type="button" className="btn btn-small reportadu-additem-btn" onClick={() => setShowImportModal(true)}>
+                    <button type="button" className="btn btn-small bg-[var(--Btn-bg-blue)] text-[var(--white-blue-text)] hover:bg-[var(--Btn-bg-blue-light)] w-full sm:w-auto" onClick={() => setShowImportModal(true)}>
                         Import
                     </button>
                 </div>
             </form>
 
             {/* --- Category Management List --- */}
-            <div className="reportadu-categorylist">
-                <div className='manageCatHeader'>
-                    <h3 className="reportadu-additem-title">Manage Categories</h3>
-                    <div className="reportadu-additem">
-                        <button onClick={() => setShowCategoryModal(true)} className="btn btn-secondary">
+            <div className="bg-[var(--card-bg)] text-[var(--primary-bg)] rounded-[20px] p-5 mb-5">
+                <div className='flex justify-between items-center mb-5'>
+                    <h3 className="bg-[var(--primary-bg-light)] text-[var(--white-blue-text)] font-bold p-5 rounded-[20px] text-lg whitespace-nowrap">Manage Categories</h3>
+                    <div className="">
+                        <button onClick={() => setShowCategoryModal(true)} className="btn btn-secondary bg-[var(--primary-bg)] text-[var(--white-blue-text)] hover:bg-[var(--primary-bg-light)]">
                             Add New Category
                         </button>
                     </div>
                 </div>
                 
                 
-                <div className="reportadu-tablewrap">
-                    <table className="table">
+                <div className="bg-white rounded-[var(--border-radius)] p-0 overflow-hidden">
+                    <table className="table w-full">
                         <thead>
                             <tr>
                                 <th>ID</th>
@@ -378,7 +377,7 @@ const ReportsAddDeleteUpdate = () => {
                                         <td>{cat.name}</td>
                                         <td className="text-right">
                                             <button 
-                                                className="btn btn-small reportadu-action-btn delete-cat-btn"
+                                                className="btn btn-small bg-[var(--Btn-bg-blue)] text-[var(--white-blue-text)] text-[10px] px-1.5 py-1 hover:bg-[var(--Btn-bg-blue-light)] rounded ml-auto"
                                                 onClick={() => handleDeleteCategory(cat.id, cat.name)}
                                             >
                                                 Delete
@@ -423,7 +422,7 @@ const ReportsAddDeleteUpdate = () => {
                             </div>
 
                             <div className="modal-actions">
-                                <button type="submit" className="btn btn-small btn-secondary" style={{width: '100%'}}>
+                                <button type="submit" className="btn btn-small btn-secondary w-full" style={{width: '100%'}}>
                                     Save Category
                                 </button>
                             </div>
@@ -433,26 +432,26 @@ const ReportsAddDeleteUpdate = () => {
             )}
 
             {/* Item List Section */}
-            <div className="reportadu-itemlist">
-                <div className="reportadu-itemlist-header">
-                    <h3 className="reportadu-itemlist-title">Item List</h3>
+            <div className="bg-[var(--card-bg)] text-[var(--primary-bg)] rounded-[20px] p-5 mb-5">
+                <div className="flex flex-col md:flex-row items-center bg-[var(--primary-bg-light)] text-[var(--white-blue-text)] font-bold p-5 rounded-[20px] mb-5 text-lg">
+                    <h3 className="mr-auto whitespace-nowrap mb-3 md:mb-0">Item List</h3>
 
                     {/* Search Bar */}
-                    <div className="reportadu-searchwrap">
+                    <div className="flex items-center border border-[var(--white-blue-text)] outline-none rounded-[10px] w-full md:w-auto ml-0 md:ml-5">
                         <input
                             type="text"
                             placeholder="Search"
-                            className="reportadu-search"
+                            className="p-1.5 border-none outline-none bg-transparent m-1.5 text-[var(--white-blue-text)] flex-1 min-w-0"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
-                        <Search size={20} className="reportadu-search-icon" />
+                        <Search size={20} className="h-5 w-5 m-1.5 text-[var(--white-blue-text)] flex-shrink-0" />
                     </div>
                 </div>
 
                 {/* Item Table */}
-                <div className="reportadu-tablewrap">
-                    <table className="table">
+                <div className="bg-white rounded-[var(--border-radius)] p-0 overflow-hidden overflow-x-auto">
+                    <table className="table w-full">
                         <thead>
                             <tr>
                                 <th>Code</th>
@@ -481,6 +480,7 @@ const ReportsAddDeleteUpdate = () => {
                                                         name="item_name" 
                                                         value={editFormData.item_name}
                                                         onChange={handleEditChange}
+                                                        className="input py-1 px-2 text-sm w-full"
                                                     />
                                                 ) : (
                                                     item.item_name
@@ -493,6 +493,7 @@ const ReportsAddDeleteUpdate = () => {
                                                         name="item_category"
                                                         value={editFormData.item_category}
                                                         onChange={handleEditChange}
+                                                        className="input py-1 px-2 text-sm w-full"
                                                     >
                                                         {categories.map(cat => (
                                                             <option key={cat.id} value={cat.id}>{cat.name}</option>
@@ -502,42 +503,37 @@ const ReportsAddDeleteUpdate = () => {
                                                     item.categoryName
                                                 )}
                                             </td>
-                                            <td>{item.quantity}</td>
+                                            
+                                            <td> {item.quantity} </td>
+                                            
                                             <td>
-                                                {`₱${item.price}`}
+                                                 {isEditing ? (
+                                                     <input 
+                                                        type="number"
+                                                        name="price"
+                                                        value={editFormData.price}
+                                                        onChange={handleEditChange}
+                                                        className="input py-1 px-2 text-sm w-20"
+                                                        step="0.01"
+                                                     />
+                                                 ) : (
+                                                     `₱${(item.price || 0).toFixed(2)}`
+                                                 )}
                                             </td>
-                                            <td>{item.date_added}</td>
+
+                                            <td>{item.last_modified ? new Date(item.last_modified).toLocaleDateString() : '-'}</td>
+                                            
                                             <td>
-                                                <div className="reportadu-actions">
+                                                <div className="flex gap-1 flex-wrap">
                                                     {isEditing ? (
                                                         <>
-                                                            <button 
-                                                                className="btn btn-small reportadu-action-btn"
-                                                                onClick={() => handleSaveChanges(item.id)}
-                                                            >
-                                                                Save
-                                                            </button>
-                                                            <button 
-                                                                className="btn btn-small reportadu-action-btn"
-                                                                onClick={handleCancelEdit}
-                                                            >
-                                                                Cancel
-                                                            </button>
+                                                            <button className="btn btn-small bg-[var(--Btn-bg-blue)] text-[var(--white-blue-text)] text-[10px] px-1.5 py-1 hover:bg-[var(--Btn-bg-blue-light)] rounded" onClick={() => handleSaveChanges(item.id)}>Save</button>
+                                                            <button className="btn btn-small bg-[var(--secondary-bg)] text-[var(--primary-bg)] text-[10px] px-1.5 py-1 hover:bg-[var(--secondary-bg-light)] rounded" onClick={handleCancelEdit}>Cancel</button>
                                                         </>
                                                     ) : (
                                                         <>
-                                                            <button 
-                                                                className="btn btn-small reportadu-action-btn"
-                                                                onClick={() => handleRenameClick(item)}
-                                                            >
-                                                                Edit Details
-                                                            </button>
-                                                            <button 
-                                                                className="btn btn-small reportadu-action-btn"
-                                                                onClick={() => handleDeleteItem(item.id)}
-                                                            >
-                                                                Delete
-                                                            </button>
+                                                            <button className="btn btn-small bg-[var(--Btn-bg-blue)] text-[var(--white-blue-text)] text-[10px] px-1.5 py-1 hover:bg-[var(--Btn-bg-blue-light)] rounded" onClick={() => handleRenameClick(item)}>Edit</button>
+                                                            <button className="btn btn-small bg-[var(--Btn-bg-blue)] text-[var(--white-blue-text)] text-[10px] px-1.5 py-1 hover:bg-[var(--Btn-bg-blue-light)] rounded" onClick={() => handleDeleteItem(item.id)}>Del</button>
                                                         </>
                                                     )}
                                                 </div>
