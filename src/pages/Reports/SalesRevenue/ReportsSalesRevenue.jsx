@@ -1,6 +1,5 @@
 import { Search, TrendingUp, ChevronDown, Plus, X } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
-import './ReportsSalesRevenue.css';
 import { useAuth } from '../../../AuthProvider';
 import { API_BASE_URL } from '../../../config';
 
@@ -172,24 +171,24 @@ const ReportsSalesRevenue = () => {
 
   return (
     <>
-      <div className="reportsales-main">
-        <div className="reportsales-header">
-          <h2 className="reportsales-heading">Sales & Revenue</h2>
-          <p className="reportsales-desc">
+      <div className="p-5 bg-[var(--card-bg)] text-[var(--primary-bg)] rounded-[20px] mb-5">
+        <div className="flex flex-col bg-[var(--primary-bg-light)] text-[var(--white-blue-text)] p-5 mb-5 rounded-[20px]">
+          <h2 className="text-xl font-bold mb-1.5">Sales & Revenue</h2>
+          <p className="text-base opacity-80">
             {filter === 'day' ? 'Daily' : filter === 'week' ? 'Weekly' : 'Monthly'} Sales Report
           </p>
         </div>
         
         {/* Report Display Area */}
-        <div className="reportsales-display">
-          <table>
+        <div className="bg-[var(--card-bg)] max-h-[300px] md:max-h-[400px] border border-[var(--primary-bg)] mb-2.5 p-2.5 text-[var(--primary-bg)] overflow-y-auto rounded-[10px]">
+          <table className="w-full min-w-[600px] lg:min-w-full">
             <thead>
-              <tr>
-                <th>Item Name</th>
-                <th>Unit Sold</th>
-                <th>Revenue</th>
-                <th>Date Sold</th>
-                <th>Action</th>
+              <tr className="border-b border-gray-200">
+                <th className="text-left p-2 md:p-3">Item Name</th>
+                <th className="text-center p-2 md:p-3">Unit Sold</th>
+                <th className="text-left p-2 md:p-3">Revenue</th>
+                <th className="text-left p-2 md:p-3">Date Sold</th>
+                <th className="text-left p-2 md:p-3">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -202,9 +201,9 @@ const ReportsSalesRevenue = () => {
                     const revenue = sale.unit_sold * itemPrice;
                     
                     return (
-                        <tr key={index}>
-                            <td>{itemName}</td> 
-                            <td className="text-center">
+                        <tr key={index} className="border-b border-gray-100 last:border-none">
+                            <td className="text-left p-2 md:p-3">{itemName}</td> 
+                            <td className="text-center p-2 md:p-3">
                                 {isEditing ? (
                                     <input 
                                         type="number" 
@@ -212,31 +211,34 @@ const ReportsSalesRevenue = () => {
                                         onChange={(e) => setEditQuantity(e.target.value)}
                                         min="1"
                                         style={{width: '70px', textAlign: 'center'}}
+                                        className="border rounded p-1"
                                     />
                                 ) : (
                                     sale.unit_sold
                                 )}
                             </td>
-                            <td>₱{revenue}</td> 
-                            <td>{sale.sale_date}</td> 
-                            <td className="text-center">
+                            <td className="text-left p-2 md:p-3">₱{revenue}</td> 
+                            <td className="text-left p-2 md:p-3">{sale.sale_date}</td> 
+                            <td className="text-center p-2 md:p-3">
                               {isEditing ? (
-                                  <div style={{display:'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap:'10px'}}>
+                                  <div className="grid grid-cols-2 gap-2.5">
                                       <button 
+                                          className="bg-[var(--Btn-bg-blue)] text-[var(--white-blue-text)] border-none py-1.5 px-3 rounded-[6px] text-sm hover:bg-[var(--Btn-bg-blue-light)]"
                                           onClick={() => handleSaveEdit(sale.id)}
                                       >
                                           Save
                                       </button>
                                       <button 
+                                          className="bg-[var(--Btn-bg-blue)] text-[var(--white-blue-text)] border-none py-1.5 px-3 rounded-[6px] text-sm hover:bg-[var(--Btn-bg-blue-light)]"
                                           onClick={() => setEditingSaleId(null)}
                                       >
                                           Cancel
                                       </button>
                                   </div>
                               ) : (
-                                  <div style={{display:'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap:'10px'}}>
+                                  <div className="grid grid-cols-2 gap-2.5">
                                     <button 
-                                          className="EditBtn"
+                                          className="bg-[var(--Btn-bg-blue)] text-[var(--white-blue-text)] border-none py-1.5 px-3 rounded-[6px] text-sm hover:bg-[var(--Btn-bg-blue-light)]"
                                           onClick={() => {
                                               setEditingSaleId(sale.id);
                                               setEditQuantity(sale.unit_sold.toString()); 
@@ -245,7 +247,7 @@ const ReportsSalesRevenue = () => {
                                           Edit
                                       </button>
                                       <button 
-                                          className="deleteBtn"
+                                          className="bg-[var(--Btn-bg-blue)] text-[var(--white-blue-text)] border-none py-1.5 px-3 rounded-[6px] text-sm hover:bg-[var(--Btn-bg-blue-light)]"
                                           onClick={() => handleDelete(sale.id)}
                                       >
                                           Undo Sale
@@ -257,30 +259,30 @@ const ReportsSalesRevenue = () => {
                     )
                 })
               ) : (
-                <tr><td colSpan="5" style={{textAlign:'center'}}>No sales found for this period</td></tr>
+                <tr><td colSpan="5" className="text-center p-4">No sales found for this period</td></tr>
               )}
             </tbody>
           </table>
         </div>
 
         {/* --- ACTION ROW --- */}
-        <div className="reportsales-inputrow">
-          <div style={{flex: 1, display: 'flex', alignItems: 'center', gap: '10px'}}>
-             <span style={{fontSize: '14px', opacity: 0.7}}>Record a new transaction:</span>
+        <div className="flex flex-col md:flex-row gap-3 mb-8">
+          <div className="flex-1 flex items-center gap-2.5">
+             <span className="text-sm opacity-70">Record a new transaction:</span>
           </div>
           <button 
-            className="btn btn-secondary reportsales-btn"
+            className="btn btn-secondary bg-[var(--primary-bg)] text-[var(--white-blue-text)] hover:bg-[var(--primary-bg-light)] min-w-[60px] flex items-center justify-center p-2 rounded"
             onClick={() => setShowModal(true)}
           >
-            <Plus size={16} style={{marginRight: '5px'}}/>
+            <Plus size={16} className="mr-1.5"/>
             Add Sale
           </button>
         </div>
 
         {/* Dropdown Filter */}
-        <div className="reportsales-dropdownwrap">
+        <div className="relative inline-block mt-5 mb-2.5">
           <select 
-            className="reportsales-dropdown" 
+            className="flex items-center gap-2 text-sm py-2 pl-3 pr-10 bg-[var(--peach-bg)] rounded-[10px] cursor-pointer border-none outline-none appearance-none text-[var(--primary-bg)] w-auto"
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
           >
@@ -288,35 +290,35 @@ const ReportsSalesRevenue = () => {
             <option value="week">Week</option>
             <option value="day">Day</option>
           </select>
-          <ChevronDown className="reportsales-dropdown-icon" size={16} color="var(--primary-bg)" />
+          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--primary-bg)]" size={16} />
         </div>
         
         {/* Summary Cards (Same as before) */} 
-        <div className="reportsales-summarycards">
-          <div className="card reportsales-summarycard">
-            <div className="reportsales-summaryrow">
-              <div className="reportsales-summarynum">{data.total_items_sold}</div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2.5 mb-6">
+          <div className="card bg-[var(--primary-bg-light)] text-[var(--white-blue-text)] rounded-[8px] p-4 mb-0">
+            <div className="flex items-center gap-2 text-[var(--primary-bg)]">
+              <div className="text-3xl font-bold text-[var(--white-blue-text)]">{data.total_items_sold}</div>
               <TrendingUp size={20} color="#00FF00" />
             </div>
-            <div className="reportsales-summarylabel">Items sold</div>
+            <div className="text-sm mt-1 text-[var(--white-blue-text)] opacity-80">Items sold</div>
           </div>
 
-          <div className="card reportsales-summarycard">
-            <div className="reportsales-summaryrow">
-              <div className="reportsales-summarynum">₱{data.total_revenue}</div>
+          <div className="card bg-[var(--primary-bg-light)] text-[var(--white-blue-text)] rounded-[8px] p-4 mb-0">
+            <div className="flex items-center gap-2 text-[var(--primary-bg)]">
+              <div className="text-3xl font-bold text-[var(--white-blue-text)]">₱{data.total_revenue}</div>
               <TrendingUp size={20} color="#00FF00" />
             </div>
-            <div className="reportsales-summarylabel">Total Revenue</div>
+            <div className="text-sm mt-1 text-[var(--white-blue-text)] opacity-80">Total Revenue</div>
           </div>
         </div>
 
 
         
         {/* --- TOP ITEM LIST --- */}
-        <div className="reportsales-topitemlist">
-          <h3 className="reportsales-topitemtitle">Top Item List</h3>
-          <div className="reportsales-topitemtablewrap">
-            <table className="table reportsales-topitemtable">
+        <div className="mb-6">
+          <h3 className="bg-[var(--primary-bg-light)] text-[var(--white-blue-text)] p-5 rounded-[20px] mb-2.5 text-lg font-bold">Top Item List</h3>
+          <div className="bg-white rounded-[var(--border-radius)] p-4 overflow-x-auto">
+            <table className="table w-full mb-0">
               <thead>
                 <tr>
                   <th>#</th>
@@ -336,7 +338,7 @@ const ReportsSalesRevenue = () => {
                       </tr>
                     ))
                 ) : (
-                    <tr><td colSpan="4" style={{textAlign:'center'}}>No data available</td></tr>
+                    <tr><td colSpan="4" className="text-center p-4">No data available</td></tr>
                 )}
               </tbody>
             </table>
@@ -344,10 +346,10 @@ const ReportsSalesRevenue = () => {
         </div>
 
         {/* --- TOP CATEGORY LIST --- */}
-        <div className="reportsales-topcatlist">
-          <h3 className="reportsales-topcattitle">Top Category List</h3>
-          <div className="reportsales-topcattablewrap">
-            <table className="table reportsales-topcattable">
+        <div className="mb-6">
+          <h3 className="bg-[var(--primary-bg-light)] text-[var(--white-blue-text)] p-5 rounded-[20px] mb-2.5 text-lg font-bold">Top Category List</h3>
+          <div className="bg-white rounded-[var(--border-radius)] p-4 overflow-x-auto">
+            <table className="table w-full mb-0">
               <thead>
                 <tr>
                   <th>#</th>
@@ -367,7 +369,7 @@ const ReportsSalesRevenue = () => {
                       </tr>
                     ))
                 ) : (
-                    <tr><td colSpan="4" style={{textAlign:'center'}}>No data available</td></tr>
+                    <tr><td colSpan="4" className="text-center p-4">No data available</td></tr>
                 )}
               </tbody>
             </table>
@@ -380,20 +382,20 @@ const ReportsSalesRevenue = () => {
 
       {/* --- MODAL --- */}
       {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)} >
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <div className="modal-header">
-                    <h3>Record New Sale</h3>
-                    <button onClick={() => setShowModal(false)} className="modal-close-btn">
+        <div className="fixed inset-0 w-full h-full bg-black/60 flex justify-center items-center z-[2000] backdrop-blur-[2px]" onClick={() => setShowModal(false)} >
+            <div className="bg-[var(--primary-bg-light)] p-6 rounded-[15px] w-[90%] max-w-[400px] shadow-[0_10px_25px_rgba(0,0,0,0.3)] text-[var(--white-blue-text)]" onClick={(e) => e.stopPropagation()}>
+                <div className="flex justify-between items-center mb-5 border-b border-white/10 pb-2.5">
+                    <h3 className="font-bold text-lg">Record New Sale</h3>
+                    <button onClick={() => setShowModal(false)} className="bg-transparent border-none cursor-pointer text-[var(--white-blue-text)] hover:opacity-75">
                         <X size={20} />
                     </button>
                 </div>
                 
                 <form onSubmit={handleSaleSubmit}>
-                    <div className="form-group">
-                        <label>Select Item</label>
+                    <div className="flex flex-col mb-4 gap-2">
+                        <label className="font-medium">Select Item</label>
                         <select 
-                            className="input" 
+                            className="input w-full p-2 rounded bg-white text-black border border-gray-300" 
                             required
                             value={saleForm.item_id}
                             onChange={(e) => setSaleForm({...saleForm, item_id: e.target.value})}
@@ -407,11 +409,11 @@ const ReportsSalesRevenue = () => {
                         </select>
                     </div>
 
-                    <div className="form-group">
-                        <label>Quantity Sold</label>
+                    <div className="flex flex-col mb-4 gap-2">
+                        <label className="font-medium">Quantity Sold</label>
                         <input 
                             type="number" 
-                            className="input" 
+                            className="input w-full p-2 rounded bg-white text-black border border-gray-300" 
                             placeholder="0"
                             min="1"
                             required
@@ -420,8 +422,8 @@ const ReportsSalesRevenue = () => {
                         />
                     </div>
 
-                    <div className="modal-actions">
-                        <button type="submit" className="btn btn-secondary" style={{width: '100%'}}>
+                    <div className="mt-5">
+                        <button type="submit" className="w-full bg-[var(--Btn-bg-blue)] text-[var(--white-blue-text)] py-2 rounded font-semibold hover:bg-[var(--Btn-bg-blue-light)] transition-colors">
                             Confirm Sale
                         </button>
                     </div>

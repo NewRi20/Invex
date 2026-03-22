@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Search } from 'lucide-react';
-import './ReportStocks.css';
 import { useAuth } from '../../../AuthProvider';
 import { API_BASE_URL } from '../../../config'; // Import Auth
 
@@ -153,24 +152,24 @@ const ReportsStocks = () => {
 
     return (
         <>
-            <div className="reportstocks-main">
-                <div className="reportstocks-header">
-                    <h2>Stocks Management</h2>
-                    <div className="reportstocks-searchbar">
+            <div className="p-5 bg-[var(--card-bg)] text-[var(--primary-bg)] rounded-[20px] mb-5">
+                <div className="flex flex-col md:flex-row items-center bg-[var(--primary-bg-light)] text-[var(--white-blue-text)] p-5 mb-5 rounded-[20px] gap-3 md:gap-0">
+                    <h2 className="text-lg font-bold whitespace-nowrap mr-auto">Stocks Management</h2>
+                    <div className="flex items-center w-full md:w-auto border border-[var(--white-blue-text)] rounded-[10px] ml-0 md:ml-5 text-[var(--white-blue-text)]">
                         <input
                             type="text"
                             placeholder="Search Name or Category"
-                            className="searchinput"
+                            className="p-2.5 bg-transparent border-none outline-none text-[var(--white-blue-text)] flex-1 min-w-0 placeholder:text-[var(--white-blue-text)]/50"
                             value={searchQuery}
                             onChange={handleSearch}
                         />
-                        <Search size={20} className="searchicon" />
+                        <Search size={20} className="h-5 w-5 mx-1.5 text-[var(--white-blue-text)]" />
                     </div>
                 </div>
                 
-                <div className="reportstocks-tablewrap">
-                    <table className="table">
-                        <thead>
+                <div className="bg-white rounded-[var(--border-radius)] p-0 overflow-y-auto max-h-[300px] md:max-h-[400px] sm:max-h-none sm:overflow-visible overflow-x-visible">
+                    <table className="table w-full block md:table">
+                        <thead className="hidden md:table-header-group">
                             <tr>
                               <th>Code</th>
                               <th>Name</th>
@@ -181,25 +180,41 @@ const ReportsStocks = () => {
                               <th></th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody className="block md:table-row-group">
                             {filteredItems.length === 0 ? (
-                                <tr><td colSpan="7" style={{textAlign: 'center'}}>No items matching search criteria.</td></tr>
+                                <tr className="block md:table-row"><td colSpan="7" style={{textAlign: 'center'}} className="block md:table-cell text-center p-4">No items matching search criteria.</td></tr>
                             ) : (
                                 filteredItems.map((item) => {
                                     const isEditing = !!editValues[item.id];
                                     return (
-                                      <tr key={item.id}>
-                                          <td>{String(item.id).substring(0, 8)}...</td>
-                                          <td>{item.item_name}</td>
-                                          <td>{item.categoryName}</td>
-                                          <td>{item.quantity}</td>
-                                          <td>{item.damaged_quantity}</td> 
-                                          <td>
-                                              <div className="reportstocks-actioninputs">
+                                      <tr key={item.id} className="block md:table-row mb-3 md:mb-0 bg-white md:bg-transparent p-3 md:p-0 rounded-[10px] md:rounded-none shadow md:shadow-none border-b md:border-b-0 border-gray-200">
+                                          <td className="flex md:table-cell flex-row items-center gap-2 py-1.5 md:py-3 px-0 md:px-2 border-none md:border text-sm">
+                                              <span className="font-semibold mr-2 w-[90px] inline-block md:hidden whitespace-nowrap text-gray-700">Code</span>
+                                              {String(item.id).substring(0, 8)}...
+                                          </td>
+                                          <td className="flex md:table-cell flex-row items-center gap-2 py-1.5 md:py-3 px-0 md:px-2 border-none md:border text-sm">
+                                              <span className="font-semibold mr-2 w-[90px] inline-block md:hidden whitespace-nowrap text-gray-700">Name</span>
+                                              {item.item_name}
+                                          </td>
+                                          <td className="flex md:table-cell flex-row items-center gap-2 py-1.5 md:py-3 px-0 md:px-2 border-none md:border text-sm">
+                                              <span className="font-semibold mr-2 w-[90px] inline-block md:hidden whitespace-nowrap text-gray-700">Category</span>
+                                              {item.categoryName}
+                                          </td>
+                                          <td className="flex md:table-cell flex-row items-center gap-2 py-1.5 md:py-3 px-0 md:px-2 border-none md:border text-sm">
+                                              <span className="font-semibold mr-2 w-[90px] inline-block md:hidden whitespace-nowrap text-gray-700">Current</span>
+                                              {item.quantity}
+                                          </td>
+                                          <td className="flex md:table-cell flex-row items-center gap-2 py-1.5 md:py-3 px-0 md:px-2 border-none md:border text-sm">
+                                              <span className="font-semibold mr-2 w-[90px] inline-block md:hidden whitespace-nowrap text-gray-700">Damaged</span>
+                                              {item.damaged_quantity}
+                                          </td> 
+                                          <td className="flex md:table-cell flex-row items-center gap-2 py-1.5 md:py-3 px-0 md:px-2 border-none md:border text-sm">
+                                              <span className="font-semibold mr-2 w-[90px] inline-block md:hidden whitespace-nowrap text-gray-700">Adjustments</span>
+                                              <div className="flex gap-2 items-center flex-wrap flex-col sm:flex-row w-full md:w-auto">
                                                   <input 
                                                       type="number" 
                                                       placeholder="Add Stock (+)" 
-                                                      className="reportstocks-input add-stock"
+                                                      className="py-1.5 px-2 border border-[#E0E0E0] rounded text-xs w-full sm:w-[120px] flex-1 min-w-[100px] focus:outline-none focus:border-[var(--primary-bg)] disabled:opacity-50"
                                                       value={editValues[item.id]?.addStock || ''}
                                                       onChange={(e) => handleInputChange(item.id, 'addStock', e.target.value)}
                                                       disabled={isEditing && !editValues[item.id]?.addStock}
@@ -207,25 +222,26 @@ const ReportsStocks = () => {
                                                   <input 
                                                       type="number" 
                                                       placeholder="Remove Damaged (-)" 
-                                                      className="reportstocks-input remove-damaged"
+                                                      className="py-1.5 px-2 border border-[#E0E0E0] rounded text-xs w-full sm:w-[120px] flex-1 min-w-[100px] focus:outline-none focus:border-[var(--primary-bg)] disabled:opacity-50"
                                                       value={editValues[item.id]?.removeDamaged || ''}
                                                       onChange={(e) => handleInputChange(item.id, 'removeDamaged', e.target.value)}
                                                       disabled={isEditing && !editValues[item.id]?.removeDamaged}
                                                   />
                                               </div>
                                           </td>
-                                          <td>
-                                              <div className="reportstocks-actionrow">
-                                                  <div className="reportstocks-actionbtns">
+                                          <td className="flex md:table-cell flex-row items-center gap-2 py-1.5 md:py-3 px-0 md:px-2 border-none md:border text-sm sticky right-0 bg-white md:bg-transparent z-10 shadow-[-6px_0_12px_rgba(0,0,0,0.04)] md:shadow-none">
+                                              <span className="font-semibold mr-2 w-[90px] inline-block md:hidden whitespace-nowrap text-gray-700">Actions</span>
+                                              <div className="flex gap-2 items-center flex-wrap w-full md:w-auto">
+                                                  <div className="flex gap-1 flex-wrap w-full">
                                                       <button 
-                                                          className="btn btn-small reportstocks-btn"
+                                                          className="btn btn-small text-[var(--white-blue-text)] px-2 py-1 text-[10px] whitespace-nowrap bg-[var(--Btn-bg-blue)] hover:bg-[var(--Btn-bg-blue-light)] rounded flex-1 md:flex-none disabled:opacity-50"
                                                           onClick={() => handleSave(item)}
                                                           disabled={!isEditing}
                                                       >
                                                           Save
                                                       </button>
                                                       <button 
-                                                          className="btn btn-small reportstocks-btn"
+                                                          className="btn btn-small text-[var(--white-blue-text)] px-2 py-1 text-[10px] whitespace-nowrap bg-[var(--Btn-bg-blue)] hover:bg-[var(--Btn-bg-blue-light)] rounded flex-1 md:flex-none disabled:opacity-50"
                                                           onClick={() => handleCancel(item.id)}
                                                           disabled={!isEditing}
                                                       >
