@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import Layout from '../../components/Layout';
-import './Inventory.css';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../AuthProvider';
 import { API_BASE_URL } from '../../config';
@@ -12,9 +11,6 @@ const Inventory = () => {
     const { items: allItems, categories, loading, refreshData } = useData();
     const location = useLocation();
     const [activeTab, setActiveTab] = useState('all-items');
-    // const [allItems, setAllItems] = useState([]); // Removed local state
-    // const [categories, setCategories] = useState([]); // Removed local state
-    // const [loading, setLoading] = useState(true); // Removed local state
     const [searchQuery, setSearchQuery] = useState('');
 
     
@@ -27,18 +23,6 @@ const Inventory = () => {
         refreshData();
     }, []); 
 
-    /* Removed local fetch logic
-    useEffect(() => {
-        if (session) {
-            const fetchData = async () => {
-                // ...
-            };
-            fetchData();
-        }
-    }, [session]);
-    */
-
-    
     const newItemsData = allItems.filter(item => {
         const dateAdded = new Date(item.date_added);
         const oneWeekAgo = new Date();
@@ -101,53 +85,58 @@ const Inventory = () => {
     return (
         <Layout title="Inventory">
             {/* Summary Cards */}
-            <div className="summary-grid">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-3 w-full max-w-full">
                 {summaryCardId.map((card) => {
                     const key = card.path.split('/').pop();
+                    const isActive = activeTab === key;
                     return (
                         <Link
                             key={card.id}
                             to={card.path}
-                            className={`summary-card ${activeTab === key ? 'active' : ''}`}
+                            className={`block rounded-[20px] p-4 cursor-pointer no-underline transition-colors ${
+                                isActive 
+                                ? 'bg-[var(--secondary-bg)] text-[var(--primary-bg)]' 
+                                : 'bg-[var(--card-bg)] text-[var(--primary-bg)]'
+                            }`}
                         >
-                            <h3 className="title">{card.title}</h3>
-                            <p className="desc">{card.description}</p>
+                            <h3 className="text-base font-semibold mb-2">{card.title}</h3>
+                            <p className="text-sm opacity-80">{card.description}</p>
                         </Link>
                     );
                 })}
             </div>
 
             {/* Inventory Table */}
-            <div className="table-card">
+            <div className="bg-[var(--card-bg)] text-[var(--primary-bg)] rounded-[20px] p-2.5 overflow-x-auto w-full">
                 {activeTab !== 'categories' && (
-                    <div className="inventory-search-wrap">
+                    <div className="flex items-center mb-3 w-full sm:w-[45%] lg:w-[30%] border border-black/10 rounded-lg px-2">
                         <input
                             type="text"
                             placeholder={`Search ${activeTab.replace('-', ' ')}...`}
-                            className="search-input"
+                            className="flex-1 border-none outline-none py-2 bg-transparent text-inherit"
                             value={searchQuery}
                             onChange={handleSearch}
                         />
-                        <Search size={20} className="search-icon" />
+                        <Search size={20} className="ml-2 text-current opacity-60" />
                     </div>
                 )}
                 
-                <table className="table">
+                <table className="w-full border-collapse min-w-[600px] mb-2">
                     <thead>
                         {activeTab === 'categories' ? (
                             <tr>
-                                <th>Category Name</th>
+                                <th className="text-left p-3 font-semibold border-b border-black/10 whitespace-nowrap">Category Name</th>
                             </tr>
                         ) : (
                             <tr>
-                                <th>Item Code</th>
-                                <th>Item Name</th>
-                                <th>Category</th>
-                                <th>Quantity Left</th>
-                                <th>Price</th>
-                                <th>Unit Sold</th>
-                                <th>Damaged Quantity</th>
-                                <th>Date Added</th>
+                                <th className="text-left p-3 font-semibold border-b border-black/10 whitespace-nowrap">Item Code</th>
+                                <th className="text-left p-3 font-semibold border-b border-black/10 whitespace-nowrap">Item Name</th>
+                                <th className="text-left p-3 font-semibold border-b border-black/10 whitespace-nowrap">Category</th>
+                                <th className="text-left p-3 font-semibold border-b border-black/10 whitespace-nowrap">Quantity Left</th>
+                                <th className="text-left p-3 font-semibold border-b border-black/10 whitespace-nowrap hidden sm:table-cell">Price</th>
+                                <th className="text-left p-3 font-semibold border-b border-black/10 whitespace-nowrap hidden md:table-cell">Unit Sold</th>
+                                <th className="text-left p-3 font-semibold border-b border-black/10 whitespace-nowrap hidden lg:table-cell">Damaged Quantity</th>
+                                <th className="text-left p-3 font-semibold border-b border-black/10 whitespace-nowrap hidden lg:table-cell">Date Added</th>
                             </tr>
                         )}
                     </thead>
@@ -157,18 +146,18 @@ const Inventory = () => {
                             categories.length > 0 ? (
                                 categories.map((cat) => (
                                     <tr key={cat.id}>
-                                        <td>{cat.name}</td>
+                                        <td className="p-3 border-b border-black/5 whitespace-nowrap last:border-b-0">{cat.name}</td>
                                     </tr>
                                 ))
                             ) : (
-                                <tr><td colSpan="2" style={{textAlign:'center'}}>No categories found</td></tr>
+                                <tr><td colSpan="2" style={{textAlign:'center'}} className="p-3">No categories found</td></tr>
                             )
                         ) : (
                             /* --- RENDER ITEMS (Filtered by Search) --- */
                             (() => {
                                 if (dataToShow.length === 0) {
                                     const message = searchQuery ? `No items found matching "${searchQuery}"` : "No items found.";
-                                    return <tr><td colSpan="7" style={{textAlign:'center'}}>{message}</td></tr>;
+                                    return <tr><td colSpan="8" style={{textAlign:'center'}} className="p-3">{message}</td></tr>;
                                 }
 
                                 // Render items sorted by newest `date_added` first
@@ -176,15 +165,15 @@ const Inventory = () => {
                                 .slice()
                                 .sort((a, b) => new Date(b.date_added) - new Date(a.date_added))
                                 .map((item) => (
-                                    <tr key={item.id}>
-                                        <td style={{fontFamily: 'monospace', fontSize: '12px'}}>{String(item.id).substring(0, 8)}</td>
-                                        <td>{item.item_name}</td>
-                                        <td>{item.item_category?.name || 'Uncategorized'}</td>
-                                        <td>{item.quantity}</td>
-                                        <td>₱{item.price}</td>
-                                        <td>{item.unit_sold}</td>
-                                        <td>{item.damaged_quantity}</td>
-                                        <td>{item.date_added}</td>
+                                    <tr key={item.id} className="last:border-b-0">
+                                        <td className="p-3 border-b border-black/5 whitespace-nowrap font-mono text-xs">{String(item.id).substring(0, 8)}</td>
+                                        <td className="p-3 border-b border-black/5 whitespace-nowrap">{item.item_name}</td>
+                                        <td className="p-3 border-b border-black/5 whitespace-nowrap">{item.item_category?.name || 'Uncategorized'}</td>
+                                        <td className="p-3 border-b border-black/5 whitespace-nowrap">{item.quantity}</td>
+                                        <td className="p-3 border-b border-black/5 whitespace-nowrap hidden sm:table-cell">₱{item.price}</td>
+                                        <td className="p-3 border-b border-black/5 whitespace-nowrap hidden md:table-cell">{item.unit_sold}</td>
+                                        <td className="p-3 border-b border-black/5 whitespace-nowrap hidden lg:table-cell">{item.damaged_quantity}</td>
+                                        <td className="p-3 border-b border-black/5 whitespace-nowrap hidden lg:table-cell">{item.date_added}</td>
                                     </tr>
                                 ));
                             })()

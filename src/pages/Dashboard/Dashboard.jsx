@@ -1,12 +1,22 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Layout from '../../components/Layout';
 import { useNavigate, useLocation } from 'react-router-dom'; 
-import './Dashboard.css';
 import { useAuth } from '../../AuthProvider';
 import { API_BASE_URL } from '../../config';
 import { ChevronDown } from 'lucide-react'; 
 import { useData } from '../../contexts/DataProvider';
 import LowStockReminder from '../../components/LowStockReminder/LowStockReminder';
+
+// Arrow Icon Component
+const ArrowIcon = ({ onClick }) => (
+    <div onClick={onClick} className="w-10 h-10 rotate-45 cursor-pointer text-current flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" className="w-full h-full fill-current">
+            <path d="M25 42c-9.4 0-17-7.6-17-17S15.6 8 25 8s17 7.6 17 17s-7.6 17-17 17m0-32c-8.3 0-15 6.7-15 15s6.7 15 15 15s15-6.7 15-15s-6.7-15-15-15"/>
+            <path d="M33.3 26.7L25 18.4l-8.3 8.3l-1.4-1.4l9.7-9.7l9.7 9.7z"/>
+            <path d="M24 17h2v17h-2z"/>
+        </svg>
+    </div>
+);
 
 const Dashboard = () => {
     const { profile, session } = useAuth();
@@ -108,7 +118,9 @@ const Dashboard = () => {
     if (loading || !profile) {
         return (
             <Layout title="Dashboard">
-                <div className="welcome-card"><h2 className="welcome-title">Loading Dashboard...</h2></div>
+                <div className="flex justify-between items-center bg-[var(--blue-accent)] text-[var(--primary-bg-blue)] p-5 mb-5 rounded-[20px]">
+                    <h2 className="text-xl font-bold text-[var(--primary-bg)]">Loading Dashboard...</h2>
+                </div>
             </Layout>
         );
     }
@@ -150,18 +162,21 @@ const Dashboard = () => {
         <Layout title="Dashboard">
             <LowStockReminder lowStockCount={stats.lowStockCount} />
             {/* Welcome Banner */}
-            <div className="welcome-card">
-                <h2 className="welcome-title">Welcome back, {profile.first_name}!</h2>
-                <button onClick={handleGenerateReport}>
+            <div className="flex justify-between items-center bg-[var(--blue-accent)] text-[var(--primary-bg-blue)] p-5 mb-5 rounded-[20px]">
+                <h2 className="text-xl font-bold text-[var(--primary-bg)]">Welcome back, {profile.first_name}!</h2>
+                <button 
+                    onClick={handleGenerateReport}
+                    className="bg-[var(--Btn-bg-blue)] text-[var(--white-blue-text)] border-none rounded-[10px] px-[15px] py-[10px] cursor-pointer text-sm"
+                >
                     <p>Generate Week Report</p>
                 </button>
             </div>
             
             {/* Filter Dropdown Row */}
-            <div className='dashboard-filter-row'>
-                <div className="reportsales-dropdownwrap">
+            <div className='flex justify-end mb-5 relative'>
+                <div className="relative inline-flex items-center">
                     <select 
-                        className="reportsales-dropdown" 
+                        className="appearance-none bg-[var(--Btn-bg-blue)] text-[var(--white-blue-text)] border-none rounded-[10px] py-[10px] pl-[15px] pr-[35px] cursor-pointer text-sm outline-none"
                         value={filter}
                         onChange={(e) => setFilter(e.target.value)}
                     >
@@ -169,122 +184,128 @@ const Dashboard = () => {
                         <option value="week">Last 7 Days</option>
                         <option value="day">Last 24 Hours</option>
                     </select>
-                    <ChevronDown className="reportsales-dropdown-icon" size={16} />
+                    <ChevronDown className="absolute right-[10px] text-[var(--white-blue-text)] pointer-events-none" size={16} />
                 </div>
             </div>
 
 
             {/* First Row - Stats Cards */}
-            <div className="first-row">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-5">
                 {/* Price Update (Not Dynamic Yet) */}
-                <div className='priceUpdate'>
-                    <div className='title-section'>
-                        <p className='title'>Items with Price Update</p>
-                        <span className="arrowIcon" onClick={() => navigate('/pricing')}></span>
+                <div className='h-[200px] flex flex-col justify-center rounded-[20px] px-5 py-2.5 mb-5 bg-[var(--secondary-bg)] text-[var(--primary-bg)]'>
+                    <div className='flex items-center justify-between -mt-2.5'>
+                        <p className='text-base font-normal whitespace-nowrap'>Items with Price Update</p>
+                        <ArrowIcon onClick={() => navigate('/pricing')} />
                     </div>
-                    <div><h3>{stats.priceUpdates}</h3></div>
-                    <p className='desc'>Review price changes {filter === 'day' ? 'today' : filter === 'week' ? 'this week' : 'this month'}</p>
+                    <div><h3 className="w-full text-[50px] sm:text-[70px] font-semibold mb-1 leading-none">{stats.priceUpdates}</h3></div>
+                    <p className='text-xs opacity-80'>Review price changes {filter === 'day' ? 'today' : filter === 'week' ? 'this week' : 'this month'}</p>
                 </div>
 
-                <div className='newItems'>
-                    <div className='title-section'>
-                        <p className='title'>New Items</p>
-                        <span className="arrowIcon" onClick={() => navigate('/inventory/new-items')}></span>
+                <div className='h-[200px] flex flex-col justify-center rounded-[20px] px-5 py-2.5 mb-5 bg-[var(--card-bg)] text-[var(--primary-bg)]'>
+                    <div className='flex items-center justify-between -mt-2.5'>
+                        <p className='text-base font-normal whitespace-nowrap'>New Items</p>
+                        <ArrowIcon onClick={() => navigate('/inventory/new-items')} />
                     </div>
-                    <div><h3>{stats.newItems}</h3></div>
-                    <p className='desc'>Items added {filter === 'day' ? 'today' : filter === 'week' ? 'this week' : 'this month'}</p>
+                    <div><h3 className="w-full text-[50px] sm:text-[70px] font-semibold mb-1 leading-none">{stats.newItems}</h3></div>
+                    <p className='text-xs opacity-80'>Items added {filter === 'day' ? 'today' : filter === 'week' ? 'this week' : 'this month'}</p>
                 </div>
 
-                <div className='allItems'>
-                    <div className='title-section'>
-                        <p className='title'>All Items</p>
-                        <span className="arrowIcon" onClick={() => navigate('/inventory/all-items')}></span>
+                <div className='h-[200px] flex flex-col justify-center rounded-[20px] px-5 py-2.5 mb-5 bg-[var(--card-bg)] text-[var(--primary-bg)]'>
+                    <div className='flex items-center justify-between -mt-2.5'>
+                        <p className='text-base font-normal whitespace-nowrap'>All Items</p>
+                        <ArrowIcon onClick={() => navigate('/inventory/all-items')} />
                     </div>
-                    <div><h3>{stats.totalItems}</h3></div>
-                    <p className='desc'>Total items in inventory</p>
+                    <div><h3 className="w-full text-[50px] sm:text-[70px] font-semibold mb-1 leading-none">{stats.totalItems}</h3></div>
+                    <p className='text-xs opacity-80'>Total items in inventory</p>
                 </div>
 
-                <div className='damagedItems'>
-                    <div className='title-section'>
-                        <p className='title'>Damaged Items</p>
-                        <span className="arrowIcon" onClick={() => navigate('/inventory/damaged-items')}></span>
+                <div className='h-[200px] flex flex-col justify-center rounded-[20px] px-5 py-2.5 mb-5 bg-[var(--card-bg)] text-[var(--primary-bg)]'>
+                    <div className='flex items-center justify-between -mt-2.5'>
+                        <p className='text-base font-normal whitespace-nowrap'>Damaged Items</p>
+                        <ArrowIcon onClick={() => navigate('/inventory/damaged-items')} />
                     </div>
-                    <div><h3>{stats.damagedItems}</h3></div>
-                    <p className='desc'>Items currently marked as damaged</p>
+                    <div><h3 className="w-full text-[50px] sm:text-[70px] font-semibold mb-1 leading-none">{stats.damagedItems}</h3></div>
+                    <p className='text-xs opacity-80'>Items currently marked as damaged</p>
                 </div>
             </div>
 
             {/* Second Row - Sales Cards */}
-            <div className='second-row'>
-                <div className='salesCard'>
-                    <div className='title-section'>
-                        <p className='title'>{filter === 'day' ? 'Today\'s' : filter === 'week' ? 'Weekly' : 'Monthly'} Sales Revenue</p>
-                        <span className="arrowIcon" onClick={() => navigate('/reports/sales/sales-revenue')}></span>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                <div className='h-[200px] flex flex-col justify-center rounded-[20px] px-5 py-2.5 mb-5 bg-[var(--Btn-bg-blue)] text-[var(--white-blue-text)]'>
+                    <div className='flex items-center justify-between -mt-2.5'>
+                        <p className='text-base font-normal whitespace-nowrap'>{filter === 'day' ? 'Today\'s' : filter === 'week' ? 'Weekly' : 'Monthly'} Sales Revenue</p>
+                        <ArrowIcon onClick={() => navigate('/reports/sales/sales-revenue')} />
                     </div>
-                    <div><h3>{totalRevenueDisplay}</h3></div>
-                    <p className='desc'>Total revenue {filter === 'day' ? 'today' : filter === 'week' ? 'this week' : 'this month'}</p>
+                    <div><h3 className="w-full text-[50px] sm:text-[70px] font-semibold mb-1 leading-none">{totalRevenueDisplay}</h3></div>
+                    <p className='text-xs opacity-80'>Total revenue {filter === 'day' ? 'today' : filter === 'week' ? 'this week' : 'this month'}</p>
                 </div>
 
-                <div className='revenueGrowthCard'>
-                    <div className='title-section'>
-                        <p className='title'>Total Inventory Price</p>
-                        <span className="arrowIcon" onClick={() => navigate('/inventory/all-items')}></span>
+                <div className='h-[200px] flex flex-col justify-center rounded-[20px] px-5 py-2.5 mb-5 bg-[var(--Btn-bg-blue)] text-[var(--white-blue-text)]'>
+                    <div className='flex items-center justify-between -mt-2.5'>
+                        <p className='text-base font-normal whitespace-nowrap'>Total Inventory Price</p>
+                        <ArrowIcon onClick={() => navigate('/inventory/all-items')} />
                     </div>
-                    <div><h3>₱{stats.totalInventoryValue.toLocaleString('en-US', { minimumFractionDigits: 2 })}</h3></div>
-                    <p className='desc'>Price of all saleable stock in inventory</p>
+                    <div><h3 className="w-full text-[50px] sm:text-[70px] font-semibold mb-1 leading-none">₱{stats.totalInventoryValue.toLocaleString('en-US', { minimumFractionDigits: 2 })}</h3></div>
+                    <p className='text-xs opacity-80'>Price of all saleable stock in inventory</p>
                 </div>
 
             </div>
 
             {/* Third Row */}
-            <div className='third-row'>
-                <div className='inner-container-lowCards'>
-                    <div className='highSaleItemCard'>
-                        <div className='title-section'>
-                            <p className='title'>Top Selling Item</p>
-                            <span className="arrowIcon" onClick={() => navigate('/reports/sales/sales-revenue')}></span>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5 lg:mb-0">
+                    <div className='h-[200px] flex flex-col justify-center rounded-[20px] px-5 py-2.5 bg-[var(--secondary-bg)] text-[var(--primary-bg)]'>
+                        <div className='flex items-center justify-between -mt-2.5'>
+                            <p className='text-base font-normal whitespace-nowrap'>Top Selling Item</p>
+                            <ArrowIcon onClick={() => navigate('/reports/sales/sales-revenue')} />
                         </div>
-                        <div><h3>{topSalesItem}</h3></div>
-                        <p className='desc'>Best performing item by revenue</p>
+                        <div><h3 className="w-full text-[2rem] font-semibold my-5 mx-0 sm:mx-[10px_0]">{topSalesItem}</h3></div>
+                        <p className='text-xs opacity-80'>Best performing item by revenue</p>
                     </div>
 
-                    <div className='lowStockCard'>
-                        <div className='title-section'>
-                            <p className='title'>Low Stock Items</p>
-                            <span className="arrowIcon" onClick={() => navigate('/reports/stocks')}></span>
+                    <div className='h-[200px] flex flex-col justify-center rounded-[20px] px-5 py-2.5 bg-[var(--secondary-bg)] text-[var(--primary-bg)]'>
+                        <div className='flex items-center justify-between -mt-2.5'>
+                            <p className='text-base font-normal whitespace-nowrap'>Low Stock Items</p>
+                            <ArrowIcon onClick={() => navigate('/reports/stocks')} />
                         </div>
-                        <div><h3>{stats.lowStockCount}</h3></div>
-                        <p className='desc'>Total items below threshold (5)</p>
+                        <div><h3 className="w-full text-[50px] sm:text-[70px] font-semibold mb-1 leading-none">{stats.lowStockCount}</h3></div>
+                        <p className='text-xs opacity-80'>Total items below threshold (5)</p>
                     </div>
                 </div>
 
                 {/* Item List Table (Low Stock List) */}
-                <div className="items-list-container">
-                    <table className="ItemsListCard">
-                        <thead className='itemListHeader'>
-                            <tr>
-                                <th className="card-title">Low Stock Items</th>
-                                <th className='quantity'>Quantity Left</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            {Array.isArray(stats.lowStockList) && stats.lowStockList.map((item, index) => (
-                                <tr key={index} className="item-row">
-                                    <td>{item.item_name}</td>
-                                    <td>{item.quantity}</td>
+                <div className="relative">
+                    <div className="relative h-[200px] max-h-[200px] overflow-y-auto flex flex-col justify-start rounded-[20px] px-[15px] py-5 bg-[var(--card-bg)] text-[var(--primary-bg)] mb-5">
+                       <table className="w-full border-collapse">
+                            <thead>
+                                <tr className="grid grid-cols-[2fr_1fr] items-center text-left font-semibold pb-2 border-b border-black/10">
+                                    <th>Low Stock Items</th>
+                                    <th>Quantity Left</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+
+                            <tbody>
+                                {Array.isArray(stats.lowStockList) && stats.lowStockList.map((item, index) => (
+                                    <tr key={index} className="grid grid-cols-[2fr_1fr] items-center text-sm py-1">
+                                        <td>{item.item_name}</td>
+                                        <td>{item.quantity}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
 
                     <button 
                         type="button" 
-                        className="plusIconBtn" 
+                        className="absolute bottom-5 -right-2.5 w-[50px] h-[50px] rounded-full border-none shadow-lg cursor-pointer flex items-center justify-center overflow-hidden bg-[var(--secondary-bg)]"
                         aria-label="Add new item" 
                         onClick={() => navigate('/reports/add-delete-update')}
                     >
-                        <span className="plusIcon" />
+                        <span className="w-7 h-7 inline-block">
+                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-full h-full fill-[var(--primary-bg)]">
+                                <path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/>
+                             </svg>
+                        </span>
                     </button>
                 </div>
             </div>
