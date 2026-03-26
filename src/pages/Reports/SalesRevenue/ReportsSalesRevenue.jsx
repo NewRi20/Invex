@@ -1,4 +1,4 @@
-import { Search, TrendingUp, ChevronDown, Plus, X } from 'lucide-react';
+import { TrendingUp, Plus, X } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../AuthProvider';
 import { API_BASE_URL } from '../../../config';
@@ -180,7 +180,7 @@ const ReportsSalesRevenue = () => {
         </div>
         
         {/* Report Display Area */}
-        <div className="bg-[var(--card-bg)] max-h-[300px] md:max-h-[400px] border border-[var(--primary-bg)] mb-2.5 p-2.5 text-[var(--primary-bg)] overflow-y-auto rounded-[10px]">
+        <div className="bg-[var(--card-bg)] max-h-[300px] md:max-h-[400px] border border-[var(--primary-bg)] mb-2.5 p-2.5 text-[var(--primary-bg-light)] overflow-y-auto rounded-[10px]">
           <table className="w-full min-w-[600px] lg:min-w-full">
             <thead>
               <tr className="border-b border-gray-200">
@@ -266,12 +266,12 @@ const ReportsSalesRevenue = () => {
         </div>
 
         {/* --- ACTION ROW --- */}
-        <div className="flex flex-col md:flex-row gap-3 mb-8">
+        <div className="flex md:flex-row gap-3 mb-8">
           <div className="flex-1 flex items-center gap-2.5">
              <span className="text-sm opacity-70">Record a new transaction:</span>
           </div>
           <button 
-            className="btn btn-secondary bg-[var(--primary-bg)] text-[var(--white-blue-text)] hover:bg-[var(--primary-bg-light)] min-w-[60px] flex items-center justify-center p-2 rounded"
+            className="flex whitespace-nowrap items-center justify-center p-2 rounded bg-[var(--primary-bg)] text-[var(--white-blue-text)] hover:bg-[var(--primary-bg-light)] min-w-[60px]"
             onClick={() => setShowModal(true)}
           >
             <Plus size={16} className="mr-1.5"/>
@@ -282,7 +282,7 @@ const ReportsSalesRevenue = () => {
         {/* Dropdown Filter */}
         <div className="relative inline-block mt-5 mb-2.5">
           <select 
-            className="flex items-center gap-2 text-sm py-2 pl-3 pr-10 bg-[var(--peach-bg)] rounded-[10px] cursor-pointer border-none outline-none appearance-none text-[var(--primary-bg)] w-auto"
+            className="flex items-center gap-2 text-sm py-2 pl-3 pr-10 bg-[var(--primary-bg-light)] rounded-[10px] cursor-pointer border-none outline-none appearance-none text-[var(--white-blue-text)] w-auto"
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
           >
@@ -290,25 +290,24 @@ const ReportsSalesRevenue = () => {
             <option value="week">Week</option>
             <option value="day">Day</option>
           </select>
-          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--primary-bg)]" size={16} />
         </div>
         
         {/* Summary Cards (Same as before) */} 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2.5 mb-6">
           <div className="card bg-[var(--primary-bg-light)] text-[var(--white-blue-text)] rounded-[8px] p-4 mb-0">
             <div className="flex items-center gap-2 text-[var(--primary-bg)]">
-              <div className="text-3xl font-bold text-[var(--white-blue-text)]">{data.total_items_sold}</div>
+              <div className="text-3xl font-bold text-[var(--primary-bg-light)]">{data.total_items_sold}</div>
               <TrendingUp size={20} color="#00FF00" />
             </div>
-            <div className="text-sm mt-1 text-[var(--white-blue-text)] opacity-80">Items sold</div>
+            <div className="text-sm mt-1 text-[var(--primary-bg-light)] opacity-80">Items sold</div>
           </div>
 
           <div className="card bg-[var(--primary-bg-light)] text-[var(--white-blue-text)] rounded-[8px] p-4 mb-0">
             <div className="flex items-center gap-2 text-[var(--primary-bg)]">
-              <div className="text-3xl font-bold text-[var(--white-blue-text)]">₱{data.total_revenue}</div>
+              <div className="text-3xl font-bold text-[var(--primary-bg-light)]">₱{data.total_revenue}</div>
               <TrendingUp size={20} color="#00FF00" />
             </div>
-            <div className="text-sm mt-1 text-[var(--white-blue-text)] opacity-80">Total Revenue</div>
+            <div className="text-sm mt-1 text-[var(--primary-bg-light)] opacity-80">Total Revenue</div>
           </div>
         </div>
 
