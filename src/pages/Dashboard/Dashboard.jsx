@@ -9,7 +9,7 @@ import LowStockReminder from '../../components/LowStockReminder/LowStockReminder
 
 // Arrow Icon Component
 const ArrowIcon = ({ onClick }) => (
-    <div onClick={onClick} className="w-10 h-10 rotate-45 cursor-pointer text-current flex items-center justify-center">
+    <div onClick={onClick} className="w-10 h-10 rotate-30 cursor-pointer text-current flex items-center justify-center">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" className="w-full h-full fill-current">
             <path d="M25 42c-9.4 0-17-7.6-17-17S15.6 8 25 8s17 7.6 17 17s-7.6 17-17 17m0-32c-8.3 0-15 6.7-15 15s6.7 15 15 15s15-6.7 15-15s-6.7-15-15-15"/>
             <path d="M33.3 26.7L25 18.4l-8.3 8.3l-1.4-1.4l9.7-9.7l9.7 9.7z"/>

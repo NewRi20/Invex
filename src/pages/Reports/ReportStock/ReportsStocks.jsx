@@ -159,7 +159,7 @@ const ReportsStocks = () => {
                         <input
                             type="text"
                             placeholder="Search Name or Category"
-                            className="p-2.5 bg-transparent border-none outline-none text-[var(--white-blue-text)] flex-1 min-w-0 placeholder:text-[var(--white-blue-text)]/50"
+                            className="p-2.5 bg-transparent border-none outline-none text-[var(--white-blue-text)] flex-1 min-w-0 placeholder:text-[var(--white-blue-text)]/50 focus:ring-0"
                             value={searchQuery}
                             onChange={handleSearch}
                         />

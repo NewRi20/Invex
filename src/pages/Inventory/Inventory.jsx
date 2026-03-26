@@ -109,11 +109,11 @@ const Inventory = () => {
             {/* Inventory Table */}
             <div className="bg-[var(--card-bg)] text-[var(--primary-bg)] rounded-[20px] p-2.5 overflow-x-auto w-full">
                 {activeTab !== 'categories' && (
-                    <div className="flex items-center mb-3 w-full sm:w-[45%] lg:w-[30%] border border-black/10 rounded-lg px-2">
+                    <div className="flex items-center mb-3 w-full sm:w-[45%] lg:w-[30%] border border-black/10 rounded-lg px-2 focus-within:ring-2 focus-within:ring-[var(--Btn-bg-blue)]">
                         <input
                             type="text"
                             placeholder={`Search ${activeTab.replace('-', ' ')}...`}
-                            className="flex-1 border-none outline-none py-2 bg-transparent text-inherit"
+                            className="flex-1 border-none py-2 bg-transparent text-inherit focus:ring-0"
                             value={searchQuery}
                             onChange={handleSearch}
                         />
