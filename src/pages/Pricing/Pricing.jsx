@@ -155,11 +155,11 @@ const Pricing = () => {
             <h3 className="text-base font-semibold mb-2.5">Pricing List</h3>
 
             {/* Search Bar */}
-            <div className="flex items-center mb-5 border border-[var(--primary-bg)] rounded-2xl px-2">
+            <div className="flex items-center mb-5 border border-[var(--primary-bg)] rounded-2xl px-2 focus-within:ring-2 focus-within:ring-[var(--Btn-bg-blue)]">
               <input
                 type="text"
                 placeholder="Search items..."
-                className="flex-1 border-none outline-none bg-transparent py-2 px-2 text-[var(--primary-bg)]"
+                className="flex-1 border-none outline-none bg-transparent py-2 px-2 text-[var(--primary-bg)] focus:ring-0"
                 value={searchQuery}
                 onChange={handleSearch}
               />

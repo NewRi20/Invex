@@ -441,7 +441,7 @@ const ReportsAddDeleteUpdate = () => {
                         <input
                             type="text"
                             placeholder="Search"
-                            className="p-1.5 border-none outline-none bg-transparent m-1.5 text-[var(--white-blue-text)] flex-1 min-w-0"
+                            className="p-1.5 border-none outline-none bg-transparent m-1.5 text-[var(--white-blue-text)] flex-1 min-w-0 focus:ring-0"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
