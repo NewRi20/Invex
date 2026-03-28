@@ -11,6 +11,14 @@ item_bp = Blueprint('item_bp', __name__)
 
 MAX_FILE_SIZE = 16 * 1024 * 1024 # 16MB file limit
 
+
+def normalize_user_id(user_id):
+    return str(user_id).strip().lower() if user_id is not None else ''
+
+
+def clear_low_stock_cache(current_user_id):
+    cache.delete_memoized(_get_low_stock_items_cached, normalize_user_id(current_user_id))
+
 @item_bp.route('/import', methods=['POST'])
 @token_required
 def import_items(current_user_id):
@@ -19,7 +27,7 @@ def import_items(current_user_id):
 
     cache.delete_memoized(get_items, current_user_id)
     cache.delete_memoized(get_categories, current_user_id)
-    cache.delete_memoized(get_low_stock_items, current_user_id)
+    clear_low_stock_cache(current_user_id)
 
     file = request.files['file']
 
@@ -251,7 +259,7 @@ def update_item_price(current_user_id, item_id):
 def update_item_stock(current_user_id, item_id):
     try:
         cache.delete_memoized(get_items, current_user_id)
-        cache.delete_memoized(get_low_stock_items, current_user_id)
+        clear_low_stock_cache(current_user_id)
         incoming_data = request.get_json()
         
         current_item_res = supabase.table('item') \
@@ -303,7 +311,7 @@ def update_item_stock(current_user_id, item_id):
 def add_new_item(current_user_id):
     try:
         cache.delete_memoized(get_items, current_user_id)
-        cache.delete_memoized(get_low_stock_items, current_user_id)
+        clear_low_stock_cache(current_user_id)
         data = request.get_json()
         timestamp_utc = datetime.now(timezone.utc)
         item_record = {
@@ -330,7 +338,7 @@ def add_new_item(current_user_id):
 def update_item_details(current_user_id, item_id):
     try:
         cache.delete_memoized(get_items, current_user_id)
-        cache.delete_memoized(get_low_stock_items, current_user_id)
+        clear_low_stock_cache(current_user_id)
         data = request.get_json()
         
         updatable_fields = ['item_name', 'item_category', 'price', 'quantity', 'damaged_quantity']
@@ -360,7 +368,7 @@ def update_item_details(current_user_id, item_id):
 def delete_item(current_user_id, item_id):
     try:
         cache.delete_memoized(get_items, current_user_id)
-        cache.delete_memoized(get_low_stock_items, current_user_id)
+        clear_low_stock_cache(current_user_id)
         response = supabase.table('item') \
                            .delete() \
                            .eq('id', item_id) \
@@ -417,18 +425,15 @@ def delete_category(current_user_id, category_id):
     except Exception as e:
         return jsonify({'message': 'Error deleting category', 'error': str(e)}), 500
     
-
+# Newly added modification: Clear low stock cache when categories are updated, since category changes can affect low stock item listings. 
+# This is done in the add_new_category and delete_category routes by calling clear_low_stock_cache(current_user_id) after modifying categories.
 # --- Get Low Stock Items ---
-@item_bp.route('/low-stock', methods=['GET'])
-@token_required
 @cache.memoize(timeout=60)
-def get_low_stock_items(current_user_id):
+def _get_low_stock_items_cached(normalized_user_id):
     try:
-        print("DEBUG: The function logic is actually running!")
-        # Define the low stock threshold (e.g., quantity <= 5)
         response = supabase.table('item') \
                            .select('item_name, quantity') \
-                           .eq('user_id', current_user_id) \
+                           .eq('user_id', normalized_user_id) \
                            .lte('quantity', 5) \
                            .order('quantity') \
                            .limit(6) \
@@ -437,4 +442,11 @@ def get_low_stock_items(current_user_id):
         return jsonify(response.data), 200
     except Exception as e:
         return jsonify({'message': 'Error fetching low stock list', 'error': str(e)}), 500
+
+
+@item_bp.route('/low-stock', methods=['GET'])
+@token_required
+def get_low_stock_items(current_user_id):
+    normalized_user_id = normalize_user_id(current_user_id)
+    return _get_low_stock_items_cached(normalized_user_id)
     
