@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Layout from '../../components/Layout';
-import { useNavigate, useLocation } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom'; 
 import { useAuth } from '../../AuthProvider';
 import { API_BASE_URL } from '../../config';
 import { ChevronDown } from 'lucide-react'; 
@@ -22,7 +22,6 @@ const Dashboard = () => {
     const { profile, session } = useAuth();
     const { items: globalItems, totalInventoryValue: globalTotalValue, refreshData } = useData();
     const navigate = useNavigate();
-    const location = useLocation();
     
     // --- State ---
     const [filter, setFilter] = useState('week'); 
@@ -66,45 +65,48 @@ const Dashboard = () => {
 
         try {
             const [salesReport, lowStockList] = await Promise.all(fetchPromises);
-            const safeAllItems = globalItems || [];
-            const totalInventoryValue = globalTotalValue || 0;
-            
-            const dateThreshold = getDateRange(filter);
 
-            const damagedItems = safeAllItems.filter(item => item.damaged_quantity > 0);
-            const newItems = safeAllItems.filter(item => {
-                const dateAdded = new Date(item.date_added);
-                return dateAdded >= dateThreshold;
-            });
-            const newPriceUpdates = safeAllItems.filter(item => {
-                if (!item.price_last_update) return false; 
-                const priceUpdatedDate = new Date(item.price_last_update);
-                priceUpdatedDate.setHours(0, 0, 0, 0);
-                return priceUpdatedDate >= dateThreshold;
-            });
-            
-            // 2. Aggregate final stats
-            setStats({
-                totalItems: safeAllItems.length,
-                newItems: newItems.length,
-                damagedItems: damagedItems.length,
-                priceUpdates: newPriceUpdates.length,
-                
-                // --- Metrics from Sales Report (Filtered) ---
-                totalSales: salesReport.total_revenue || 0, 
-                salesData: salesReport, 
-                
+            setStats(prev => ({
+                ...prev,
+                totalSales: salesReport.total_revenue || 0,
+                salesData: salesReport,
                 lowStockCount: lowStockList.length,
                 lowStockList: lowStockList,
-                totalInventoryValue: totalInventoryValue,
-            });
+            }));
 
         } catch (error) {
             console.error("Error fetching dashboard data:", error);
         } finally {
             setLoading(false);
         }
-    }, [session, filter, globalItems, globalTotalValue]);
+    }, [session, filter]);
+
+    useEffect(() => {
+        const safeAllItems = globalItems || [];
+        const totalInventoryValue = globalTotalValue || 0;
+        const dateThreshold = getDateRange(filter);
+
+        const damagedItems = safeAllItems.filter(item => item.damaged_quantity > 0);
+        const newItems = safeAllItems.filter(item => {
+            const dateAdded = new Date(item.date_added);
+            return dateAdded >= dateThreshold;
+        });
+        const newPriceUpdates = safeAllItems.filter(item => {
+            if (!item.price_last_update) return false;
+            const priceUpdatedDate = new Date(item.price_last_update);
+            priceUpdatedDate.setHours(0, 0, 0, 0);
+            return priceUpdatedDate >= dateThreshold;
+        });
+
+        setStats(prev => ({
+            ...prev,
+            totalItems: safeAllItems.length,
+            newItems: newItems.length,
+            damagedItems: damagedItems.length,
+            priceUpdates: newPriceUpdates.length,
+            totalInventoryValue: totalInventoryValue,
+        }));
+    }, [globalItems, globalTotalValue, filter]);
 
     useEffect(() => {
         refreshData();
@@ -112,7 +114,7 @@ const Dashboard = () => {
 
     useEffect(() => {
         fetchDashboardData();
-    }, [fetchDashboardData, location.key]);
+    }, [fetchDashboardData]);
 
     
     if (loading || !profile) {
