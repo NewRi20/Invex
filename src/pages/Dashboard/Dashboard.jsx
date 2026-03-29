@@ -7,6 +7,9 @@ import { ChevronDown } from 'lucide-react';
 import { useData } from '../../contexts/DataProvider';
 import LowStockReminder from '../../components/LowStockReminder/LowStockReminder';
 
+const DASHBOARD_CACHE_TTL_MS = 60 * 1000;
+const dashboardDataCache = new Map();
+
 // Arrow Icon Component
 const ArrowIcon = ({ onClick }) => (
     <div onClick={onClick} className="w-10 h-10 rotate-30 cursor-pointer text-current flex items-center justify-center">
@@ -52,29 +55,81 @@ const Dashboard = () => {
     // --- Data Fetching Logic ---
     const fetchDashboardData = useCallback(async () => {
         if (!session) return;
+
+        const cacheKey = `${session.user?.id || 'anonymous'}:${filter}`;
+        const cachedEntry = dashboardDataCache.get(cacheKey);
+
+        if (cachedEntry?.data && (Date.now() - cachedEntry.timestamp < DASHBOARD_CACHE_TTL_MS)) {
+            setStats(prev => ({
+                ...prev,
+                totalSales: cachedEntry.data.totalSales,
+                salesData: cachedEntry.data.salesData,
+                lowStockCount: cachedEntry.data.lowStockCount,
+                lowStockList: cachedEntry.data.lowStockList,
+            }));
+            setLoading(false);
+            return;
+        }
+
+        if (cachedEntry?.inFlightPromise) {
+            setLoading(true);
+            try {
+                const inFlightData = await cachedEntry.inFlightPromise;
+                setStats(prev => ({
+                    ...prev,
+                    totalSales: inFlightData.totalSales,
+                    salesData: inFlightData.salesData,
+                    lowStockCount: inFlightData.lowStockCount,
+                    lowStockList: inFlightData.lowStockList,
+                }));
+            } catch (error) {
+                console.error("Error fetching dashboard data:", error);
+            } finally {
+                setLoading(false);
+            }
+            return;
+        }
+
         setLoading(true);
 
         const headers = { 'Authorization': `Bearer ${session.access_token}` };
         const salesUrl = `${API_BASE_URL}/reports/sales?filter=${filter}`;
-        
-        const fetchPromises = [
-            fetch(salesUrl, { headers }).then(res => res.json()), 
-            // Removed items fetch, use globalItems
-            fetch(`${API_BASE_URL}/items/low-stock`, { headers }).then(res => res.json()), 
-        ];
+
+        const requestPromise = Promise.all([
+            fetch(salesUrl, { headers }).then(res => res.json()),
+            fetch(`${API_BASE_URL}/items/low-stock`, { headers }).then(res => res.json()),
+        ]).then(([salesReport, lowStockList]) => ({
+            totalSales: salesReport.total_revenue || 0,
+            salesData: salesReport,
+            lowStockCount: lowStockList.length,
+            lowStockList,
+        }));
+
+        dashboardDataCache.set(cacheKey, {
+            data: cachedEntry?.data || null,
+            timestamp: cachedEntry?.timestamp || 0,
+            inFlightPromise: requestPromise,
+        });
 
         try {
-            const [salesReport, lowStockList] = await Promise.all(fetchPromises);
+            const nextData = await requestPromise;
+
+            dashboardDataCache.set(cacheKey, {
+                data: nextData,
+                timestamp: Date.now(),
+                inFlightPromise: null,
+            });
 
             setStats(prev => ({
                 ...prev,
-                totalSales: salesReport.total_revenue || 0,
-                salesData: salesReport,
-                lowStockCount: lowStockList.length,
-                lowStockList: lowStockList,
+                totalSales: nextData.totalSales,
+                salesData: nextData.salesData,
+                lowStockCount: nextData.lowStockCount,
+                lowStockList: nextData.lowStockList,
             }));
 
         } catch (error) {
+            dashboardDataCache.delete(cacheKey);
             console.error("Error fetching dashboard data:", error);
         } finally {
             setLoading(false);
@@ -110,7 +165,7 @@ const Dashboard = () => {
 
     useEffect(() => {
         refreshData();
-    }, []);
+    }, [refreshData]);
 
     useEffect(() => {
         fetchDashboardData();
