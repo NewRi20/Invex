@@ -19,7 +19,7 @@ const sharedDataCache = {
 export const useData = () => useContext(DataContext);
 
 export const DataProvider = ({ children }) => {
-    const { session } = useAuth();
+    const { session, profile } = useAuth();
     const [items, setItems] = useState([]);
     const [totalInventoryValue, setTotalInventoryValue] = useState(0);
     const [categories, setCategories] = useState([]);
@@ -27,7 +27,7 @@ export const DataProvider = ({ children }) => {
     const [lastFetched, setLastFetched] = useState(null);
 
     const refreshData = useCallback(async (force = false) => {
-        if (!session) return;
+        if (!session, !profile) return;
 
         const token = session.access_token;
         if (sharedDataCache.token !== token) {
@@ -110,14 +110,14 @@ export const DataProvider = ({ children }) => {
             sharedDataCache.inFlightPromise = null;
             setLoading(false);
         }
-    }, [session]);
+    }, [session, profile]);
 
     // Initial fetch when session is available
     useEffect(() => {
-        if (session) {
+        if (session && profile) {
             refreshData();
         }
-    }, [session, refreshData]);
+    }, [session, profile, refreshData]);
 
     return (
         <DataContext.Provider value={{ items, totalInventoryValue, categories, loading, refreshData }}>
