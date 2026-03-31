@@ -9,7 +9,6 @@ import {
   User,
   
 } from 'lucide-react';
-import './sidebar.css';
 import { useAuth } from '../../AuthProvider';
 
 const Sidebar = () => {
@@ -49,14 +48,14 @@ const Sidebar = () => {
 
   return (
     <>
-      {open && <div className="sidebar-overlay" onClick={() => setOpen(false)} />}
+      {open && <div className="fixed inset-0 bg-black/28 z-[1150]" onClick={() => setOpen(false)} />}
 
-      <div className={`sidebar ${open ? 'open' : ''}`}>
-      <div className="sidebar-header">
-        <h1 className="sidebar-title">Invex</h1>
+      <div className={`fixed left-0 top-0 w-44 bg-slate-900/30 py-5 flex flex-col items-center h-screen overflow-hidden z-[1000] transition-transform duration-200 ${open ? 'max-lg:w-60 max-lg:left-2 max-lg:top-2 max-lg:h-[calc(100vh-16px)] max-lg:rounded-lg max-lg:p-4 max-lg:bg-slate-900/95 max-lg:shadow-2xl' : 'max-lg:translate-x-[-120%]'} max-sm:w-16 max-sm:py-2.5 max-sm:px-0`}>
+      <div className="pb-[15px] w-full text-center mb-[15px]">
+        <h1 className="text-white text-2xl font-bold tracking-wider mb-0 max-lg:block max-sm:hidden">Invex</h1>
       </div>
       <nav>
-        <ul className="nav-menu">
+        <ul className="list-none p-0 m-0 w-full flex-1 flex flex-col justify-around max-lg:justify-around max-sm:justify-start max-sm:gap-4 max-sm:pt-4">
           {navItems.map((item) => {
             const Icon = item.icon;
             // 4. Fixed the 'isActive' logic to be more robust
@@ -64,12 +63,12 @@ const Sidebar = () => {
             const isActive = location.pathname.startsWith(item.path);
             
             return (
-              <li key={item.path} className="nav-item">
+              <li key={item.path} className="text-center mb-0">
                 <Link
                   to={item.path}
-                  className={`nav-link${isActive ? ' active' : ''}`}
+                  className={`flex flex-col items-center justify-center gap-1.5 w-full text-white no-underline text-sm font-normal bg-transparent p-0 border-none rounded-none cursor-pointer transition-colors duration-200 ${isActive ? 'text-yellow-400' : ''}`}
                 >
-                  <Icon className="nav-icon" size={38} />
+                  <Icon className="mb-1 max-lg:block max-sm:mb-0.5" size={38} />
                     {item.label}
                 </Link>
               </li>
@@ -77,16 +76,16 @@ const Sidebar = () => {
           })}
 
           {/* 5. Added a real Logout button as a separate list item */}
-          <li className="nav-item">
-            <button className="nav-link" onClick={signOut}>
-              <LogOut className="nav-icon" size={38} />
+          <li className="text-center mb-0">
+            <button className="flex flex-col items-center justify-center gap-1.5 w-full text-white text-sm font-normal bg-transparent p-0 border-none rounded-none cursor-pointer transition-colors duration-200 hover:text-yellow-400" onClick={signOut}>
+              <LogOut className="mb-1 max-lg:block max-sm:mb-0.5" size={38} />
               Logout
             </button>
           </li>
         </ul>
       </nav>
-      <div className="sidebar-footer">
-        <p className="sidebar-footer-text">
+      <div className="p-3 w-full text-center flex-shrink-0 max-lg:block max-sm:hidden">
+        <p className="text-xs text-white text-center opacity-70 leading-snug">
           Developed by Irwen Fronda
         </p>
       </div>

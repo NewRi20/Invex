@@ -14,13 +14,13 @@ import Login from './pages/Login/Login';
 
 
 const ProtectedRoute = () => {
-  const { user, loading } = useAuth();
+  const { user, profile, loading } = useAuth();
 
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  if (!user) {
+  if (!user && !profile) {
     return <Navigate to="/login" replace />;
   }
 

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { API_BASE_URL } from './config';
 
@@ -61,37 +61,45 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
-  
+  const profileRequest = useRef(null);
+
   const fetchProfile = async (sessionData) => { 
-    try {
-      if (!sessionData || !sessionData.access_token) {
-        throw new Error("No session or access token found.");
+    if (profileRequest.current) return profileRequest.current;
+
+    profileRequest.current = (async () => {
+      try {
+        if (!sessionData || !sessionData.access_token) {
+          throw new Error("No session or access token found.");
+        }
+        
+        const token = sessionData.access_token;
+        console.log('Got session token.'); 
+
+        const response = await fetch(`${API_BASE_URL}/users/me`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        
+        console.log('Fetch response status:', response.status); 
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch user profile from backend');
+        }
+
+        const userProfile = await response.json();
+        console.log('Profile fetched:', userProfile); 
+        setProfile(userProfile);
+        
+      } catch (error) {
+        console.error('Error in fetchProfile:', error.message);
+      } finally {
+        setLoading(false);
       }
-      
-      const token = sessionData.access_token;
-      console.log('Got session token.'); 
+      profileRequest.current = null;
+    })();
 
-      const response = await fetch(`${API_BASE_URL}/users/me`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-      
-      console.log('Fetch response status:', response.status); 
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch user profile from backend');
-      }
-
-      const userProfile = await response.json();
-      console.log('Profile fetched:', userProfile); 
-      setProfile(userProfile);
-      
-    } catch (error) {
-      console.error('Error in fetchProfile:', error.message);
-    } finally {
-      setLoading(false);
-    }
+    return profileRequest.current;
   };
 
   
