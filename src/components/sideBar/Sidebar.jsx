@@ -1,4 +1,4 @@
-import React from 'react';
+import { useEffect, useState} from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -14,10 +14,10 @@ import { useAuth } from '../../AuthProvider';
 const Sidebar = () => {
   const location = useLocation();
   const { signOut } = useAuth();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
 
   // Close sidebar on large screens
-  React.useEffect(() => {
+  useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth > 1024 && open) setOpen(false);
     };
@@ -26,14 +26,14 @@ const Sidebar = () => {
   }, [open]);
 
   // Toggle sidebar in response to header hamburger
-  React.useEffect(() => {
+  useEffect(() => {
     const handler = () => setOpen(v => !v);
     window.addEventListener('toggleSidebar', handler);
     return () => window.removeEventListener('toggleSidebar', handler);
   }, []);
 
   // Close sidebar when navigating
-  React.useEffect(() => {
+  useEffect(() => {
     setOpen(false);
   }, [location.pathname]);
 
@@ -58,18 +58,17 @@ const Sidebar = () => {
         <ul className="list-none p-0 m-0 w-full flex-1 flex flex-col justify-around max-lg:justify-around max-sm:justify-start max-sm:gap-4 max-sm:pt-4">
           {navItems.map((item) => {
             const Icon = item.icon;
-            // 4. Fixed the 'isActive' logic to be more robust
-            // This now works for /inventory, /reports, and any sub-pages.
             const isActive = location.pathname.startsWith(item.path);
             
             return (
-              <li key={item.path} className="text-center mb-0">
+              <li key={item.path} className="text-center mb-4">
                 <Link
                   to={item.path}
-                  className={`flex flex-col items-center justify-center gap-1.5 w-full text-white no-underline text-sm font-normal bg-transparent p-0 border-none rounded-none cursor-pointer transition-colors duration-200 ${isActive ? 'text-yellow-400' : ''}`}
+                  className={`flex flex-col items-center justify-center gap-1.5 w-full no-underline text-sm font-normal px-4 py-2 -mx-2 border-none rounded-md cursor-pointer transition-colors duration-200 hover:bg-slate-700/60`}
+                  style={isActive ? { backgroundColor: 'var(--blue-accent)', color: '#000' } : undefined}
                 >
                   <Icon className="mb-1 max-lg:block max-sm:mb-0.5" size={38} />
-                    {item.label}
+                  {item.label}
                 </Link>
               </li>
             );
@@ -77,7 +76,7 @@ const Sidebar = () => {
 
           {/* 5. Added a real Logout button as a separate list item */}
           <li className="text-center mb-0">
-            <button className="flex flex-col items-center justify-center gap-1.5 w-full text-white text-sm font-normal bg-transparent p-0 border-none rounded-none cursor-pointer transition-colors duration-200 hover:text-yellow-400" onClick={signOut}>
+            <button className="flex flex-col items-center justify-center gap-1.5 w-full text-white text-sm font-normal bg-transparent px-4 py-2 -mx-4 border-none rounded-md cursor-pointer transition-colors duration-200 hover:bg-slate-700/60 focus-visible:bg-slate-700/60 focus-visible:outline-none" onClick={signOut}>
               <LogOut className="mb-1 max-lg:block max-sm:mb-0.5" size={38} />
               Logout
             </button>
