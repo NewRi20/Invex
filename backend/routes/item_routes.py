@@ -3,7 +3,7 @@ from extensions import cache
 from supabase_client import supabase
 from auth_decorator import token_required
 from datetime import datetime, timezone
-from services.tasks import adjust_prices_daily
+from services.tasks import adjust_prices_daily, generate_restock_reminder
 import pandas as pd
 import io
 
@@ -41,8 +41,13 @@ def import_items(current_user_id):
         # 1. Read file into DataFrame
         if file.filename.lower().endswith('.csv'):
             df = pd.read_csv(file)
+        elif file.filename.lower().endswith('.xlsx'):
+            df = pd.read_excel(file, engine='openpyxl')
         else:
-            df = pd.read_excel(file)
+            df = pd.read_excel(file, engine='xlrd')
+
+        if df.empty:
+            return jsonify({'message': 'The uploaded file is empty.'}), 400
 
         # 2. Normalize and check required columns
         # Expected: 'item_name', 'quantity', 'price', Optional: 'category_name' or just 'category'
@@ -50,15 +55,18 @@ def import_items(current_user_id):
         df.columns = df.columns.astype(str).str.lower().str.strip()
         
         required_cols = {'item_name', 'quantity', 'price'}
-        if not required_cols.issubset(df.columns):
-            return jsonify({'message': f'Missing required columns. Found: {list(df.columns)}. Required: item_name, quantity, price'}), 400
+        missing_cols = required_cols - set(df.columns)
+        if missing_cols:
+            return jsonify({
+                'message': f'Missing required columns: {list(missing_cols)}. Found: {list(df.columns)}. Required: item_name, quantity, price'
+            }), 400
 
         # Handle NaNs
         df = df.fillna('')
         
         # 3. Handle Categories
-        # Fetch all existing categories for user to map them
-        cat_response = supabase.table('item_category').select('id, name').eq('user_id', current_user_id).execute()
+        # Fetch all existing categories (not filtered by user_id, matching how categories are stored)
+        cat_response = supabase.table('item_category').select('id, name').execute()
         existing_categories = {row['name'].lower(): row['id'] for row in cat_response.data}
 
         # Identify unique new categories
@@ -73,7 +81,7 @@ def import_items(current_user_id):
             
             # Create new categories
             if new_cats:
-                new_cat_objects = [{'name': name, 'user_id': current_user_id} for name in new_cats]
+                new_cat_objects = [{'name': name} for name in new_cats]
                 # Insert and return created categories
                 new_cat_res = supabase.table('item_category').insert(new_cat_objects).execute()
                 for row in new_cat_res.data:
@@ -81,15 +89,18 @@ def import_items(current_user_id):
 
         # 4. Prepare Items for Bulk Insert
         items_to_insert = []
+        skipped_rows = 0
         for _, row in df.iterrows():
             item_name = str(row['item_name']).strip()
             if not item_name:
+                skipped_rows += 1
                 continue
 
             try:
                 qty = int(float(row['quantity'])) if row['quantity'] != '' else 0
                 price = float(row['price']) if row['price'] != '' else 0.0
-            except ValueError:
+            except (ValueError, TypeError):
+                skipped_rows += 1
                 continue # Skip rows with bad numbers
 
             category_id = None
@@ -98,18 +109,23 @@ def import_items(current_user_id):
                 if cat_val:
                     category_id = existing_categories.get(cat_val.lower())
 
+            timestamp_utc = datetime.now(timezone.utc)
             item_data = {
                 'user_id': current_user_id,
                 'item_name': item_name,
                 'quantity': qty,
                 'price': price,
-                'item_category': category_id,
-                'date_added': datetime.now(timezone.utc).isoformat()
+                'date_added': timestamp_utc.isoformat(),
+                'price_last_update': timestamp_utc.strftime('%Y-%m-%dT%H:%M:%SZ')
             }
+            # Only set item_category FK if we have a valid ID
+            if category_id is not None:
+                item_data['item_category'] = category_id
+
             items_to_insert.append(item_data)
 
         if not items_to_insert:
-            return jsonify({'message': 'No valid items found to insert.'}), 400
+            return jsonify({'message': 'No valid items found to insert. Check your column values.'}), 400
 
         # 5. Bulk Insert
         # Supabase API might have limits, doing chunks of 100 just in case
@@ -118,9 +134,14 @@ def import_items(current_user_id):
             chunk = items_to_insert[i:i + chunk_size]
             supabase.table('item').insert(chunk).execute()
 
-        return jsonify({'message': f'Successfully imported {len(items_to_insert)} items.'}), 201
+        msg = f'Successfully imported {len(items_to_insert)} items.'
+        if skipped_rows > 0:
+            msg += f' ({skipped_rows} rows skipped due to missing or invalid data.)'
+        return jsonify({'message': msg}), 201
 
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         return jsonify({'message': 'Error processing file', 'error': str(e)}), 500
 
 # --- 0. Run Smart Pricing (Test Feature) ---
@@ -131,6 +152,19 @@ def run_pricing_job(current_user_id):
         cache.delete_memoized(get_items, current_user_id)
         # Run directly for testing feedback
         result = adjust_prices_daily(user_id=current_user_id)
+        return jsonify({'message': result}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# --- 0b. Run Restock Reminder (Test Feature) ---
+@item_bp.route('/run-restock-check', methods=['POST'])
+@token_required
+def run_restock_check(current_user_id):
+    try:
+        data = request.get_json(silent=True) or {}
+        user_email = data.get('email')
+        result = generate_restock_reminder(user_email=user_email, user_id=current_user_id)
         return jsonify({'message': result}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
