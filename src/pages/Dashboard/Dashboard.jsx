@@ -35,6 +35,7 @@ const Dashboard = () => {
         totalSales: 0,
         lowStockCount: 0,
         lowStockList: [],
+        lowStockItems: [],
         totalInventoryValue: 0,
         priceUpdates: 0,
         salesData: {}, 
@@ -66,6 +67,7 @@ const Dashboard = () => {
                 salesData: cachedEntry.data.salesData,
                 lowStockCount: cachedEntry.data.lowStockCount,
                 lowStockList: cachedEntry.data.lowStockList,
+                lowStockItems: cachedEntry.data.lowStockItems || [],
             }));
             setLoading(false);
             return;
@@ -81,6 +83,7 @@ const Dashboard = () => {
                     salesData: inFlightData.salesData,
                     lowStockCount: inFlightData.lowStockCount,
                     lowStockList: inFlightData.lowStockList,
+                    lowStockItems: inFlightData.lowStockItems || [],
                 }));
             } catch (error) {
                 console.error("Error fetching dashboard data:", error);
@@ -98,11 +101,17 @@ const Dashboard = () => {
         const requestPromise = Promise.all([
             fetch(salesUrl, { headers }).then(res => res.json()),
             fetch(`${API_BASE_URL}/items/low-stock`, { headers }).then(res => res.json()),
-        ]).then(([salesReport, lowStockList]) => ({
+            fetch(`${API_BASE_URL}/items/run-restock-check`, {
+                method: 'POST',
+                headers: { ...headers, 'Content-Type': 'application/json' },
+                body: JSON.stringify({})
+            }).then(res => res.json()).catch(() => ({ low_stock_items: [] })),
+        ]).then(([salesReport, lowStockList, restockData]) => ({
             totalSales: salesReport.total_revenue || 0,
             salesData: salesReport,
             lowStockCount: lowStockList.length,
             lowStockList,
+            lowStockItems: restockData.low_stock_items || [],
         }));
 
         dashboardDataCache.set(cacheKey, {
@@ -126,6 +135,7 @@ const Dashboard = () => {
                 salesData: nextData.salesData,
                 lowStockCount: nextData.lowStockCount,
                 lowStockList: nextData.lowStockList,
+                lowStockItems: nextData.lowStockItems || [],
             }));
 
         } catch (error) {
@@ -210,6 +220,35 @@ const Dashboard = () => {
             alert("An error occurred while generating the report.");
         }
     };
+
+    const handleDailyReport = async () => {
+        if(!session || !session.user || !session.user.email) {
+            alert("No user email found. Please ensure you are logged in correctly.");
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/reports/daily-report`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session.access_token}`
+                },
+                body: JSON.stringify({ email: session.user.email })
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                alert(result.message || "Daily report sent!");
+            } else {
+                const errorData = await response.json();
+                alert(`Failed to send daily report: ${errorData.message || 'Unknown error'}`);
+            }
+        } catch (error) {
+            console.error("Error sending daily report:", error);
+            alert("An error occurred while sending the daily report.");
+        }
+    };
     
     // Derived values for clean rendering
     const topSalesItem = stats.salesData?.top_items?.[0]?.name || 'N/A';
@@ -217,16 +256,24 @@ const Dashboard = () => {
 
     return (
         <Layout title="Dashboard">
-            <LowStockReminder lowStockCount={stats.lowStockCount} />
+            <LowStockReminder lowStockCount={stats.lowStockCount} lowStockItems={stats.lowStockItems} />
             {/* Welcome Banner */}
             <div className="flex justify-between items-center bg-[var(--blue-accent)] text-[var(--primary-bg-blue)] p-5 mb-5 rounded-[20px]">
                 <h2 className="text-xl font-bold text-[var(--primary-bg)]">Welcome back, {profile.first_name}!</h2>
-                <button 
-                    onClick={handleGenerateReport}
-                    className="bg-[var(--Btn-bg-blue)] text-[var(--white-blue-text)] border-none rounded-[10px] px-[15px] py-[10px] cursor-pointer text-sm"
-                >
-                    <p>Generate Week Report</p>
-                </button>
+                <div className="flex gap-2.5">
+                    <button 
+                        onClick={handleDailyReport}
+                        className="bg-[var(--Btn-bg-blue)] text-[var(--white-blue-text)] border-none rounded-[10px] px-[15px] py-[10px] cursor-pointer text-sm font-medium hover:opacity-90 transition-opacity"
+                    >
+                        Send Daily Report
+                    </button>
+                    <button 
+                        onClick={handleGenerateReport}
+                        className="bg-[var(--Btn-bg-blue)] text-[var(--white-blue-text)] border-none rounded-[10px] px-[15px] py-[10px] cursor-pointer text-sm"
+                    >
+                        <p>Generate Week Report</p>
+                    </button>
+                </div>
             </div>
             
             {/* Filter Dropdown Row */}

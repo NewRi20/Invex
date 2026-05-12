@@ -5,12 +5,12 @@ from datetime import datetime, timedelta
 # Import the weekly report task
 # Ensure backend directory is in path if needed, though usually app.py context handles it
 try:
-    from services.tasks import send_weekly_report
+    from services.tasks import send_weekly_report, send_daily_report
 except ImportError:
     import sys
     import os
     sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    from services.tasks import send_weekly_report
+    from services.tasks import send_weekly_report, send_daily_report
 
 report_bp = Blueprint('report_bp', __name__)
 
@@ -272,3 +272,22 @@ def generate_weekly_report(current_user_id):
 
     except Exception as e:
         return jsonify({'message': 'Error triggering report generation', 'error': str(e)}), 500
+
+
+# --- Generate Daily Report Email ---
+@report_bp.route('/daily-report', methods=['POST'])
+@token_required
+def generate_daily_report(current_user_id):
+    try:
+        data = request.get_json()
+        user_email = data.get('email')
+
+        if not user_email:
+            return jsonify({'message': 'Email address is required.'}), 400
+
+        result = send_daily_report(user_email, current_user_id)
+
+        return jsonify({'message': result}), 200
+
+    except Exception as e:
+        return jsonify({'message': 'Error generating daily report', 'error': str(e)}), 500
