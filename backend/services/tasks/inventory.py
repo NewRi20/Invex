@@ -26,11 +26,15 @@ def generate_restock_reminder(user_email=None, user_id=None):
             print("Inventory is healthy. No restock needed.")
             return "Inventory healthy. No email sent."
 
-        # 2. Format as a shopping list
+        # 2. Fetch user email if not provided
+        if not user_email and user_id:
+            user_email = fetch_user_email(user_id)
+
+        # 3. Format as a shopping list
         email_body = format_restock_email_body(items)
         discord_msg = format_restock_discord_msg(items)
         
-        # 3. Send Notification
+        # 4. Send Notification
         notification_sent = False
         target_email = user_email or ADMIN_EMAIL
         
@@ -52,6 +56,17 @@ def generate_restock_reminder(user_email=None, user_id=None):
         print(f"Error in generate_restock_reminder: {e}")
         # raise rule so celery sees failure
         raise e
+
+def fetch_user_email(user_id):
+    """Fetch user email from database"""
+    if not supabase or not user_id:
+        return None
+    try:
+        response = supabase.table('user').select('email').eq('id', user_id).single().execute()
+        return response.data.get('email') if response.data else None
+    except Exception as e:
+        print(f"Failed to fetch user email: {e}")
+        return None
 
 def fetch_items_needing_restock(user_id=None):
     if not supabase:

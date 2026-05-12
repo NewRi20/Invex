@@ -39,6 +39,7 @@ CREATE TABLE public.item (
   item_category bigint,
   quantity bigint NOT NULL,
   price double precision NOT NULL,
+  cost double precision DEFAULT 0,
   damaged_quantity bigint DEFAULT 0,
   date_added date DEFAULT CURRENT_DATE,
   price_last_update timestamp with time zone NOT NULL,

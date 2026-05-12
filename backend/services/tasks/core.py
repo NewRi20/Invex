@@ -28,6 +28,19 @@ except ImportError:
 
 # Initialize Celery
 # Broker URL should ideally come from environment variables
-CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')
-CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND')
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
 celery = Celery('tasks', broker=CELERY_BROKER_URL, backend=CELERY_RESULT_BACKEND)
+
+# Load Celery configuration
+try:
+    from celery_config import CeleryConfig
+    celery.config_from_object(CeleryConfig)
+except ImportError:
+    print("Warning: celery_config.py not found. Using default configuration.")
+    # Fallback to basic configuration
+    celery.conf.update(
+        task_serializer='json',
+        accept_content=['json'],
+        result_serializer='json',
+    )

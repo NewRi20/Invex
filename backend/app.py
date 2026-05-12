@@ -2,6 +2,14 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 from extensions import cache
 
+# Import Celery for task initialization
+# This ensures all tasks are registered when the app starts
+try:
+    from services.tasks.core import celery
+    from services.tasks import inventory, pricing, sales_report
+except ImportError:
+    print("Warning: Celery tasks could not be imported. Background tasks may not work.")
+
 from routes.user_routes import user_bp
 from routes.item_routes import item_bp
 from routes.business_routes import business_bp
@@ -9,6 +17,9 @@ from routes.report_routes import report_bp
 
 app = Flask(__name__)
 cache.init_app(app, config={'CACHE_TYPE': 'SimpleCache', 'CACHE_DEFAULT_TIMEOUT': 300})
+
+# Initialize Celery with Flask app context
+celery.conf.update(app.config)
 
 # Configure CORS with explicit origins (required for credentials)
 CORS(app, 
