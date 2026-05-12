@@ -108,66 +108,129 @@ def process_sales_data(data):
     return pd.DataFrame(records)
 
 def generate_pdf_report(df, filepath, start_date, end_date):
-    doc = SimpleDocTemplate(filepath, pagesize=letter)
+    from reportlab.lib.units import inch
+    
+    doc = SimpleDocTemplate(filepath, pagesize=letter, topMargin=0.75*inch, bottomMargin=0.75*inch)
     elements = []
     styles = getSampleStyleSheet()
     
-    # Title
-    title_text = f"Weekly Sales Report"
-    date_range = f"Period: {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}"
+    # Custom styles for professional minimalist design
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
     
-    elements.append(Paragraph(title_text, styles['Title']))
-    elements.append(Paragraph(date_range, styles['Normal']))
+    # Create custom title style
+    title_style = styles['Heading1']
+    title_style.fontSize = 24
+    title_style.textColor = colors.HexColor('#1a1a1a')
+    title_style.spaceAfter = 6
+    title_style.alignment = TA_LEFT
+    
+    subtitle_style = styles['Normal']
+    subtitle_style.fontSize = 10
+    subtitle_style.textColor = colors.HexColor('#666666')
+    subtitle_style.spaceAfter = 24
+    
+    # Header with company name
+    elements.append(Paragraph("INVEX", styles['Heading2']))
+    elements.append(Paragraph("Weekly Sales Report", title_style))
+    
+    period_text = f"<font color='#999999'>{start_date.strftime('%B %d, %Y')} – {end_date.strftime('%B %d, %Y')}</font>"
+    elements.append(Paragraph(period_text, subtitle_style))
     elements.append(Spacer(1, 12))
     
-    # Summary
+    # Summary section with minimalist cards
     total_revenue = df['Revenue'].sum() if not df.empty else 0
     total_cost = df['Total Cost'].sum() if not df.empty else 0
     total_profit = df['Profit'].sum() if not df.empty else 0
     total_items = df['Quantity'].sum() if not df.empty else 0
+    profit_margin = ((total_profit / total_revenue * 100) if total_revenue > 0 else 0)
     
-    summary_text = f"""
-    <b>Financial Summary:</b><br/>
-    <b>Total Revenue:</b> ${total_revenue:,.2f}<br/>
-    <b>Total Cost:</b> ${total_cost:,.2f}<br/>
-    <b>Total Profit:</b> ${total_profit:,.2f}<br/>
-    <b>Profit Margin:</b> {((total_profit / total_revenue * 100) if total_revenue > 0 else 0):.1f}%<br/>
-    <b>Total Items Sold:</b> {total_items}
-    """
-    elements.append(Paragraph(summary_text, styles['Normal']))
+    # Create summary table (4 key metrics in a grid)
+    summary_data = [
+        [f"<b>Total Revenue</b><br/><font size=14><b>₱{total_revenue:,.2f}</b></font>",
+         f"<b>Total Profit</b><br/><font size=14><b>₱{total_profit:,.2f}</b></font>"],
+        [f"<b>Profit Margin</b><br/><font size=14><b>{profit_margin:.1f}%</b></font>",
+         f"<b>Items Sold</b><br/><font size=14><b>{int(total_items)}</b></font>"]
+    ]
+    
+    summary_table = Table(summary_data, colWidths=[3*inch, 3*inch])
+    summary_table.setStyle(TableStyle([
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f8f8f8')),
+        ('TEXTCOLOR', (0, 0), (-1, -1), colors.HexColor('#1a1a1a')),
+        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('PADDING', (0, 0), (-1, -1), 20),
+        ('TOPPADDING', (0, 0), (-1, -1), 20),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 20),
+        ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#e0e0e0')),
+        ('ROWBACKGROUNDS', (0, 0), (-1, -1), [colors.HexColor('#ffffff'), colors.HexColor('#f8f8f8')])
+    ]))
+    
+    elements.append(summary_table)
     elements.append(Spacer(1, 20))
     
+    # Details section header
     if not df.empty:
+        elements.append(Paragraph("Transaction Details", styles['Heading2']))
+        elements.append(Spacer(1, 8))
+        
         # Table Data
         headers = ['Date', 'Item', 'Category', 'Qty', 'Price', 'Cost', 'Revenue', 'Profit']
         data = [headers]
         
         for _, row in df.iterrows():
             data.append([
-                str(row['Date']),
-                str(row['Item'])[:25], # Truncate long names
+                str(row['Date'])[:10],  # Just the date part
+                str(row['Item'])[:25],
                 str(row['Category'])[:15],
-                str(row['Quantity']),
-                f"${row['Price']:.2f}",
-                f"${row['Cost']:.2f}",
-                f"${row['Revenue']:.2f}",
-                f"${row['Profit']:.2f}"
+                str(int(row['Quantity'])),
+                f"₱{row['Price']:.2f}",
+                f"₱{row['Cost']:.2f}",
+                f"₱{row['Revenue']:.2f}",
+                f"₱{row['Profit']:.2f}"
             ])
-            
-        # Table Style
-        table = Table(data, colWidths=[70, 120, 80, 40, 50, 50, 60, 60])
+        
+        # Professional table styling - minimalist
+        table = Table(data, colWidths=[60, 110, 75, 40, 50, 50, 60, 65])
         table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            # Header row
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#2c3e50')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor('#ffffff')),
+            ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
+            ('VALIGN', (0, 0), (-1, 0), 'MIDDLE'),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
             ('FONTSIZE', (0, 0), (-1, 0), 9),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-            ('GRID', (0, 0), (-1, -1), 1, colors.black),
-            ('FONTSIZE', (0, 1), (-1, -1), 7),
+            ('TOPPADDING', (0, 0), (-1, 0), 10),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
+            
+            # Data rows
+            ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#ffffff')),
+            ('TEXTCOLOR', (0, 1), (-1, -1), colors.HexColor('#333333')),
+            ('ALIGN', (0, 1), (-1, -1), 'RIGHT'),
+            ('ALIGN', (0, 1), (1, -1), 'LEFT'),  # Item and Category left-aligned
+            ('ALIGN', (2, 1), (2, -1), 'CENTER'),  # Category centered
+            ('FONTSIZE', (0, 1), (-1, -1), 8),
+            ('PADDING', (0, 1), (-1, -1), 8),
+            ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.HexColor('#ffffff'), colors.HexColor('#f9f9f9')]),
+            
+            # Borders
+            ('LINEBELOW', (0, 0), (-1, 0), 2, colors.HexColor('#2c3e50')),
+            ('LINEBELOW', (0, -1), (-1, -1), 1, colors.HexColor('#e0e0e0')),
+            ('GRID', (0, 1), (-1, -1), 0.5, colors.HexColor('#e0e0e0')),
         ]))
+        
         elements.append(table)
+        
+        # Footer with summary
+        elements.append(Spacer(1, 16))
+        footer_text = f"""
+        <font size=9 color='#666666'>
+        <b>Summary:</b> Total Cost: ₱{total_cost:,.2f} | Net Profit: ₱{total_profit:,.2f}<br/>
+        <i>Generated on {datetime.now().strftime('%B %d, %Y at %I:%M %p')}</i>
+        </font>
+        """
+        elements.append(Paragraph(footer_text, styles['Normal']))
     else:
         elements.append(Paragraph("No sales data recorded for this period.", styles['Normal']))
     
