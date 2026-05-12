@@ -60,8 +60,9 @@ def fetch_weekly_sales(user_id=None):
     start_date = end_date - timedelta(days=7)
     
     # Query logic matching report_routes.py
+    # Include cost column for profit calculation
     query = supabase.table('sale_report') \
-        .select('*, item(item_name, price, item_category(name))') \
+        .select('*, item(item_name, price, cost, item_category(name))') \
         .gte('sale_date', start_date.isoformat()) \
         .lte('sale_date', end_date.isoformat())
         
@@ -78,10 +79,16 @@ def process_sales_data(data):
         # Handle flattened structure from join
         item_name = item.get('item_name', 'Unknown Item')
         price = float(item.get('price', 0))
+        cost = float(item.get('cost', 0))  # Get cost for profit calculation
         qty = int(record['unit_sold'])
         
         category_data = item.get('item_category')
         category = category_data.get('name', 'Uncategorized') if category_data else 'Uncategorized'
+        
+        # Calculate revenue and profit
+        revenue = qty * price
+        total_cost = qty * cost
+        profit = revenue - total_cost
         
         records.append({
             'Date': record['sale_date'],
@@ -89,11 +96,14 @@ def process_sales_data(data):
             'Category': category,
             'Quantity': qty,
             'Price': price,
-            'Total': qty * price
+            'Cost': cost,
+            'Revenue': revenue,
+            'Total Cost': total_cost,
+            'Profit': profit
         })
     
     if not records:
-        return pd.DataFrame(columns=['Date', 'Item', 'Category', 'Quantity', 'Price', 'Total'])
+        return pd.DataFrame(columns=['Date', 'Item', 'Category', 'Quantity', 'Price', 'Cost', 'Revenue', 'Total Cost', 'Profit'])
         
     return pd.DataFrame(records)
 
@@ -111,40 +121,51 @@ def generate_pdf_report(df, filepath, start_date, end_date):
     elements.append(Spacer(1, 12))
     
     # Summary
-    total_revenue = df['Total'].sum() if not df.empty else 0
+    total_revenue = df['Revenue'].sum() if not df.empty else 0
+    total_cost = df['Total Cost'].sum() if not df.empty else 0
+    total_profit = df['Profit'].sum() if not df.empty else 0
     total_items = df['Quantity'].sum() if not df.empty else 0
     
-    summary_text = f"<b>Total Revenue:</b> ${total_revenue:,.2f}<br/><b>Total Items Sold:</b> {total_items}"
+    summary_text = f"""
+    <b>Financial Summary:</b><br/>
+    <b>Total Revenue:</b> ${total_revenue:,.2f}<br/>
+    <b>Total Cost:</b> ${total_cost:,.2f}<br/>
+    <b>Total Profit:</b> ${total_profit:,.2f}<br/>
+    <b>Profit Margin:</b> {((total_profit / total_revenue * 100) if total_revenue > 0 else 0):.1f}%<br/>
+    <b>Total Items Sold:</b> {total_items}
+    """
     elements.append(Paragraph(summary_text, styles['Normal']))
     elements.append(Spacer(1, 20))
     
     if not df.empty:
         # Table Data
-        headers = ['Date', 'Item', 'Category', 'Qty', 'Price', 'Total']
+        headers = ['Date', 'Item', 'Category', 'Qty', 'Price', 'Cost', 'Revenue', 'Profit']
         data = [headers]
         
         for _, row in df.iterrows():
             data.append([
                 str(row['Date']),
-                str(row['Item'])[:30], # Truncate long names
-                str(row['Category']),
+                str(row['Item'])[:25], # Truncate long names
+                str(row['Category'])[:15],
                 str(row['Quantity']),
                 f"${row['Price']:.2f}",
-                f"${row['Total']:.2f}"
+                f"${row['Cost']:.2f}",
+                f"${row['Revenue']:.2f}",
+                f"${row['Profit']:.2f}"
             ])
             
         # Table Style
-        table = Table(data, colWidths=[80, 150, 100, 50, 60, 70])
+        table = Table(data, colWidths=[70, 120, 80, 40, 50, 50, 60, 60])
         table.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
             ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, 0), 10),
+            ('FONTSIZE', (0, 0), (-1, 0), 9),
             ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
             ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
             ('GRID', (0, 0), (-1, -1), 1, colors.black),
-            ('FONTSIZE', (0, 1), (-1, -1), 8),
+            ('FONTSIZE', (0, 1), (-1, -1), 7),
         ]))
         elements.append(table)
     else:

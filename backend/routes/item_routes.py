@@ -165,10 +165,10 @@ def run_restock_check(current_user_id):
         from services.tasks.inventory import fetch_items_needing_restock
         data = request.get_json(silent=True) or {}
         user_email = data.get('email')
-        result = generate_restock_reminder(user_email=user_email, user_id=current_user_id)
+        result = generate_restock_reminder.delay(user_email=user_email, user_id=current_user_id)
         # Also return the actual low stock items for the frontend overlay
         low_stock_items = fetch_items_needing_restock(user_id=current_user_id)
-        return jsonify({'message': result, 'low_stock_items': low_stock_items}), 200
+        return jsonify({'message': f"Restock reminder queued: {result.id}", 'low_stock_items': low_stock_items}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

@@ -264,11 +264,10 @@ def generate_weekly_report(current_user_id):
             # Or return error asking for email
             return jsonify({'message': 'Email address is required.'}), 400
 
-        # Trigger the report generation task synchronously
-        # In production, use send_weekly_report.delay(...) with Celery running
-        send_weekly_report(user_email, current_user_id)
+        # Trigger the report generation task asynchronously via Celery
+        result = send_weekly_report.delay(user_email, current_user_id)
         
-        return jsonify({'message': f'Report generation started for {user_email}. Check your inbox.'}), 200
+        return jsonify({'message': f'Report generation started for {user_email}. Check your inbox.', 'task_id': result.id}), 200
 
     except Exception as e:
         return jsonify({'message': 'Error triggering report generation', 'error': str(e)}), 500
