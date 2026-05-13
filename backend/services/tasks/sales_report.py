@@ -108,132 +108,126 @@ def process_sales_data(data):
     return pd.DataFrame(records)
 
 def generate_pdf_report(df, filepath, start_date, end_date):
+    # Simple, robust PDF generator with optional Unicode TTF font for peso sign
     from reportlab.lib.units import inch
-    
-    doc = SimpleDocTemplate(filepath, pagesize=letter, topMargin=0.75*inch, bottomMargin=0.75*inch)
+    from reportlab.pdfbase import pdfmetrics
+    from reportlab.pdfbase.ttfonts import TTFont
+
+    # Candidate font paths to try (common locations)
+    candidate_paths = [
+        os.path.join(os.environ.get('WINDIR', 'C:\\Windows'), 'Fonts', 'DejaVuSans.ttf'),
+        os.path.join(os.environ.get('WINDIR', 'C:\\Windows'), 'Fonts', 'Arial.ttf'),
+        '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
+        '/usr/share/fonts/truetype/freefont/FreeSans.ttf',
+    ]
+
+    # Allow explicit override via env var REPORT_FONT_PATH
+    env_font = os.environ.get('REPORT_FONT_PATH')
+    if env_font:
+        candidate_paths.insert(0, env_font)
+
+    unicode_font_name = None
+    for p in candidate_paths:
+        try:
+            if p and os.path.exists(p):
+                font_key = 'ReportSans'
+                pdfmetrics.registerFont(TTFont(font_key, p))
+                unicode_font_name = font_key
+                break
+        except Exception:
+            continue
+
+    # If no TTF found, leave unicode_font_name as None and fallback to built-ins
+
+    def fmt_currency(amount):
+        if unicode_font_name:
+            return f"₱{amount:,.2f}"
+        return f"PHP {amount:,.2f}"
+
+    doc = SimpleDocTemplate(filepath, pagesize=letter)
     elements = []
     styles = getSampleStyleSheet()
-    
-    # Custom styles for professional minimalist design
-    from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
-    
-    # Create custom title style
-    title_style = styles['Heading1']
-    title_style.fontSize = 24
-    title_style.textColor = colors.HexColor('#1a1a1a')
-    title_style.spaceAfter = 6
-    title_style.alignment = TA_LEFT
-    
-    subtitle_style = styles['Normal']
-    subtitle_style.fontSize = 10
-    subtitle_style.textColor = colors.HexColor('#666666')
-    subtitle_style.spaceAfter = 24
-    
-    # Header with company name
-    elements.append(Paragraph("INVEX", styles['Heading2']))
-    elements.append(Paragraph("Weekly Sales Report", title_style))
-    
-    period_text = f"<font color='#999999'>{start_date.strftime('%B %d, %Y')} – {end_date.strftime('%B %d, %Y')}</font>"
-    elements.append(Paragraph(period_text, subtitle_style))
+
+    # Title and date
+    elements.append(Paragraph("Weekly Sales Report", styles['Title']))
+    date_range = f"Period: {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')}"
+    subtitle = styles['Normal'].clone('subtitle')
+    subtitle.spaceAfter = 12
+    if unicode_font_name:
+        subtitle.fontName = unicode_font_name
+    elements.append(Paragraph(date_range, subtitle))
     elements.append(Spacer(1, 12))
-    
-    # Summary section with minimalist cards
+
+    # Summary block (plain text; no HTML)
     total_revenue = df['Revenue'].sum() if not df.empty else 0
     total_cost = df['Total Cost'].sum() if not df.empty else 0
     total_profit = df['Profit'].sum() if not df.empty else 0
     total_items = df['Quantity'].sum() if not df.empty else 0
     profit_margin = ((total_profit / total_revenue * 100) if total_revenue > 0 else 0)
-    
-    # Create summary table (4 key metrics in a grid)
-    summary_data = [
-        [f"<b>Total Revenue</b><br/><font size=14><b>₱{total_revenue:,.2f}</b></font>",
-         f"<b>Total Profit</b><br/><font size=14><b>₱{total_profit:,.2f}</b></font>"],
-        [f"<b>Profit Margin</b><br/><font size=14><b>{profit_margin:.1f}%</b></font>",
-         f"<b>Items Sold</b><br/><font size=14><b>{int(total_items)}</b></font>"]
+
+    summary_lines = [
+        ('Financial Summary:', True),
+        (f"Total Revenue: {fmt_currency(total_revenue)}", False),
+        (f"Total Cost: {fmt_currency(total_cost)}", False),
+        (f"Total Profit: {fmt_currency(total_profit)}", False),
+        (f"Profit Margin: {profit_margin:.1f}%", False),
+        (f"Total Items Sold: {int(total_items)}", False)
     ]
-    
-    summary_table = Table(summary_data, colWidths=[3*inch, 3*inch])
-    summary_table.setStyle(TableStyle([
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f8f8f8')),
-        ('TEXTCOLOR', (0, 0), (-1, -1), colors.HexColor('#1a1a1a')),
-        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
-        ('FONTSIZE', (0, 0), (-1, -1), 10),
-        ('PADDING', (0, 0), (-1, -1), 20),
-        ('TOPPADDING', (0, 0), (-1, -1), 20),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 20),
-        ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#e0e0e0')),
-        ('ROWBACKGROUNDS', (0, 0), (-1, -1), [colors.HexColor('#ffffff'), colors.HexColor('#f8f8f8')])
-    ]))
-    
-    elements.append(summary_table)
+
+    for text, is_bold in summary_lines:
+        s = styles['Normal'].clone('s')
+        s.spaceAfter = 4
+        if unicode_font_name:
+            s.fontName = unicode_font_name
+        if is_bold:
+            s.fontName = unicode_font_name or 'Helvetica-Bold'
+        elements.append(Paragraph(text, s))
+
     elements.append(Spacer(1, 20))
-    
-    # Details section header
+
+    # Table of transactions
     if not df.empty:
-        elements.append(Paragraph("Transaction Details", styles['Heading2']))
-        elements.append(Spacer(1, 8))
-        
-        # Table Data
         headers = ['Date', 'Item', 'Category', 'Qty', 'Price', 'Cost', 'Revenue', 'Profit']
         data = [headers]
-        
         for _, row in df.iterrows():
             data.append([
-                str(row['Date'])[:10],  # Just the date part
+                str(row['Date'])[:10],
                 str(row['Item'])[:25],
                 str(row['Category'])[:15],
                 str(int(row['Quantity'])),
-                f"₱{row['Price']:.2f}",
-                f"₱{row['Cost']:.2f}",
-                f"₱{row['Revenue']:.2f}",
-                f"₱{row['Profit']:.2f}"
+                fmt_currency(row['Price']),
+                fmt_currency(row['Cost']),
+                fmt_currency(row['Revenue']),
+                fmt_currency(row['Profit'])
             ])
-        
-        # Professional table styling - minimalist
-        table = Table(data, colWidths=[60, 110, 75, 40, 50, 50, 60, 65])
+
+        colWidths = [70, 120, 80, 40, 50, 50, 60, 60]
+        table = Table(data, colWidths=colWidths)
+
+        # Base table style
+        base_font = unicode_font_name or 'Helvetica'
+        header_font = unicode_font_name or 'Helvetica-Bold'
+
         table.setStyle(TableStyle([
-            # Header row
-            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#2c3e50')),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor('#ffffff')),
-            ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
-            ('VALIGN', (0, 0), (-1, 0), 'MIDDLE'),
-            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), header_font),
             ('FONTSIZE', (0, 0), (-1, 0), 9),
-            ('TOPPADDING', (0, 0), (-1, 0), 10),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
-            
-            # Data rows
-            ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#ffffff')),
-            ('TEXTCOLOR', (0, 1), (-1, -1), colors.HexColor('#333333')),
-            ('ALIGN', (0, 1), (-1, -1), 'RIGHT'),
-            ('ALIGN', (0, 1), (1, -1), 'LEFT'),  # Item and Category left-aligned
-            ('ALIGN', (2, 1), (2, -1), 'CENTER'),  # Category centered
-            ('FONTSIZE', (0, 1), (-1, -1), 8),
-            ('PADDING', (0, 1), (-1, -1), 8),
-            ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.HexColor('#ffffff'), colors.HexColor('#f9f9f9')]),
-            
-            # Borders
-            ('LINEBELOW', (0, 0), (-1, 0), 2, colors.HexColor('#2c3e50')),
-            ('LINEBELOW', (0, -1), (-1, -1), 1, colors.HexColor('#e0e0e0')),
-            ('GRID', (0, 1), (-1, -1), 0.5, colors.HexColor('#e0e0e0')),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+            ('FONTSIZE', (0, 1), (-1, -1), 7),
+            ('FONTNAME', (0, 1), (-1, -1), base_font),
         ]))
-        
+
         elements.append(table)
-        
-        # Footer with summary
-        elements.append(Spacer(1, 16))
-        footer_text = f"""
-        <font size=9 color='#666666'>
-        <b>Summary:</b> Total Cost: ₱{total_cost:,.2f} | Net Profit: ₱{total_profit:,.2f}<br/>
-        <i>Generated on {datetime.now().strftime('%B %d, %Y at %I:%M %p')}</i>
-        </font>
-        """
-        elements.append(Paragraph(footer_text, styles['Normal']))
     else:
-        elements.append(Paragraph("No sales data recorded for this period.", styles['Normal']))
-    
+        empty_style = styles['Normal'].clone('empty')
+        if unicode_font_name:
+            empty_style.fontName = unicode_font_name
+        elements.append(Paragraph("No sales data recorded for this period.", empty_style))
+
     doc.build(elements)
 
 def send_email_with_attachment(to_email, file_path):
