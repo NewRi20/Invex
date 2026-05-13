@@ -7,7 +7,7 @@ from email.mime.text import MIMEText
 from .core import celery, supabase
 
 LOW_STOCK_THRESHOLD = int(os.environ.get('LOW_STOCK_THRESHOLD', 10))
-DISCORD_WEBHOOK_URL = os.environ.get('DISCORD_WEBHOOK_URL')
+# DISCORD_WEBHOOK_URL = os.environ.get('DISCORD_WEBHOOK_URL')
 ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL')
 
 @celery.task(name="tasks.generate_restock_reminder")
@@ -42,9 +42,9 @@ def generate_restock_reminder(user_email=None, user_id=None):
             send_restock_email(target_email, email_body, len(items))
             notification_sent = True
         
-        if DISCORD_WEBHOOK_URL:
-            send_discord_alert(discord_msg)
-            notification_sent = True
+        # if DISCORD_WEBHOOK_URL:
+        #     send_discord_alert(discord_msg)
+        #     notification_sent = True
             
         if notification_sent:
             return f"Restock reminder sent for {len(items)} items."
@@ -138,13 +138,13 @@ def send_restock_email(to_email, body_text, item_count):
     except Exception as e:
         print(f"Failed to send restock email: {e}")
 
-def send_discord_alert(message_text):
-    if not DISCORD_WEBHOOK_URL:
-        return
-    try:
-        payload = {"content": message_text}
-        resp = requests.post(DISCORD_WEBHOOK_URL, json=payload)
-        resp.raise_for_status()
-        print("Discord notification sent.")
-    except Exception as e:
-        print(f"Failed to send Discord webhook: {e}")
+# def send_discord_alert(message_text):
+#     if not DISCORD_WEBHOOK_URL:
+#         return
+#     try:
+#         payload = {"content": message_text}
+#         resp = requests.post(DISCORD_WEBHOOK_URL, json=payload)
+#         resp.raise_for_status()
+#         print("Discord notification sent.")
+#     except Exception as e:
+#         print(f"Failed to send Discord webhook: {e}")

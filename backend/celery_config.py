@@ -2,9 +2,10 @@
 Celery Beat Configuration for Automated Scheduled Tasks
 
 This module configures the Celery Beat scheduler to run:
-1. Low Stock Reminder - Daily at 8:00 AM
-2. Dynamic Pricing Adjustments - Daily at 6:00 AM
-3. Weekly Sales Report - Every Sunday at 9:00 PM
+1. Dynamic Pricing Adjustments - Daily at 6:00 AM UTC
+2. Low Stock Reminder - Daily at 8:00 AM UTC
+3. Daily Activity Report - Daily at 8:00 PM UTC
+4. Weekly Sales Report - Every Sunday at 9:00 PM UTC
 """
 
 import os
@@ -42,6 +43,18 @@ class CeleryConfig:
             'kwargs': {},
             'options': {
                 'expires': 3600,
+            }
+        },
+        'send-daily-report': {
+            'task': 'tasks.send_daily_report',
+            'schedule': crontab(hour=20, minute=0),  # Daily at 8:00 PM UTC
+            'args': (),
+            'kwargs': {
+                'user_email': ADMIN_EMAIL,
+                'user_id': None,  # None means fetch all users/all data
+            },
+            'options': {
+                'expires': 3600,  # Task expires after 1 hour
             }
         },
         'send-weekly-report': {
