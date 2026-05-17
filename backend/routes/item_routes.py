@@ -4,6 +4,7 @@ from supabase_client import supabase
 from auth_decorator import token_required
 from datetime import datetime, timezone
 from services.tasks import adjust_prices_daily, generate_restock_reminder
+from services.tasks.inventory import LOW_STOCK_THRESHOLD
 import pandas as pd
 import io
 
@@ -19,6 +20,9 @@ def normalize_user_id(user_id):
 def clear_low_stock_cache(current_user_id):
     cache.delete_memoized(_get_low_stock_items_cached, normalize_user_id(current_user_id))
 
+def clear_restock_items_cache(current_user_id):
+    cache.delete_memoized(_get_restock_items_cached, normalize_user_id(current_user_id))
+
 @item_bp.route('/import', methods=['POST'])
 @token_required
 def import_items(current_user_id):
@@ -28,6 +32,7 @@ def import_items(current_user_id):
     cache.delete_memoized(get_items, current_user_id)
     cache.delete_memoized(get_categories, current_user_id)
     clear_low_stock_cache(current_user_id)
+    clear_restock_items_cache(current_user_id)
 
     file = request.files['file']
 
@@ -297,6 +302,7 @@ def update_item_stock(current_user_id, item_id):
     try:
         cache.delete_memoized(get_items, current_user_id)
         clear_low_stock_cache(current_user_id)
+        clear_restock_items_cache(current_user_id)
         incoming_data = request.get_json()
         
         current_item_res = supabase.table('item') \
@@ -349,6 +355,7 @@ def add_new_item(current_user_id):
     try:
         cache.delete_memoized(get_items, current_user_id)
         clear_low_stock_cache(current_user_id)
+        clear_restock_items_cache(current_user_id)
         data = request.get_json()
         timestamp_utc = datetime.now(timezone.utc)
         item_record = {
@@ -376,6 +383,7 @@ def update_item_details(current_user_id, item_id):
     try:
         cache.delete_memoized(get_items, current_user_id)
         clear_low_stock_cache(current_user_id)
+        clear_restock_items_cache(current_user_id)
         data = request.get_json()
         
         updatable_fields = ['item_name', 'item_category', 'price', 'quantity', 'damaged_quantity']
@@ -406,6 +414,7 @@ def delete_item(current_user_id, item_id):
     try:
         cache.delete_memoized(get_items, current_user_id)
         clear_low_stock_cache(current_user_id)
+        clear_restock_items_cache(current_user_id)
         response = supabase.table('item') \
                            .delete() \
                            .eq('id', item_id) \
@@ -486,4 +495,26 @@ def _get_low_stock_items_cached(normalized_user_id):
 def get_low_stock_items(current_user_id):
     normalized_user_id = normalize_user_id(current_user_id)
     return _get_low_stock_items_cached(normalized_user_id)
+    
+
+# --- Get Restock Items (with category info, no email side-effect) ---
+@cache.memoize(timeout=60)
+def _get_restock_items_cached(normalized_user_id):
+    try:
+        response = supabase.table('item') \
+            .select('item_name, quantity, user_id, item_category(name)') \
+            .lt('quantity', LOW_STOCK_THRESHOLD) \
+            .eq('user_id', normalized_user_id) \
+            .order('quantity') \
+            .execute()
+        return jsonify({'low_stock_items': response.data}), 200
+    except Exception as e:
+        return jsonify({'low_stock_items': [], 'error': str(e)}), 500
+
+
+@item_bp.route('/restock-items', methods=['GET'])
+@token_required
+def get_restock_items(current_user_id):
+    normalized_user_id = normalize_user_id(current_user_id)
+    return _get_restock_items_cached(normalized_user_id)
     

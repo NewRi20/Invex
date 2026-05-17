@@ -101,11 +101,8 @@ const Dashboard = () => {
         const requestPromise = Promise.all([
             fetch(salesUrl, { headers }).then(res => res.json()),
             fetch(`${API_BASE_URL}/items/low-stock`, { headers }).then(res => res.json()),
-            fetch(`${API_BASE_URL}/items/run-restock-check`, {
-                method: 'POST',
-                headers: { ...headers, 'Content-Type': 'application/json' },
-                body: JSON.stringify({})
-            }).then(res => res.json()).catch(() => ({ low_stock_items: [] })),
+            fetch(`${API_BASE_URL}/items/restock-items`, { headers })
+                .then(res => res.json()).catch(() => ({ low_stock_items: [] })),
         ]).then(([salesReport, lowStockList, restockData]) => ({
             totalSales: salesReport.total_revenue || 0,
             salesData: salesReport,
